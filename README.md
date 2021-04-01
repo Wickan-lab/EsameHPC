@@ -19,7 +19,7 @@ Your report has to include:
 - Describe different solutions
 - Describe and motivate your optimal configuration
 - A Description of the test cases
-- your APIs description (if any)
+- Your APIs description (if any)
 - Description on how to setup a system to reproduce (automatically) your results (of course on a different system)
 
 If you use Colab, include the notebook as attachment (do not copy the notebook in the pdf ...)
