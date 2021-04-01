@@ -20,6 +20,7 @@ with open('measures_log.csv', mode='w') as measures_file:
     
     for prbl_size in problem_size_cases:
         for tsks in n_threads_cases:
+            results_to_print = []
             print(f"Threads: {tsks}\tRows: {prbl_size[0]}\tColumns: {prbl_size[1]}")
             for _ in range(n_measures):
                 command = ['../build/program']+prbl_size
@@ -28,5 +29,6 @@ with open('measures_log.csv', mode='w') as measures_file:
 
                 row_to_write = command[1:]
                 row_to_write.append(result.stdout.decode('utf-8').strip())
+                results_to_print.append(row_to_write)
 
-                measures_writer.writerow(row_to_write)
+            measures_writer.writerows(results_to_print)
