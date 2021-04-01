@@ -8,7 +8,7 @@
 
 #ifdef _OPENMP
 	#include <omp.h>
-#else 
+#else
 	#define get_thread_num() 0
 #endif
 
@@ -23,7 +23,7 @@
 #define ENDTIME(id,x) end_time_42_id=clock(); x=((double) (end_time_42_id-start_time_42_id)) /  CLOCKS_PER_SEC
 
 /**
- * @brief This function initializes all the data structures needed in the program. 
+ * @brief This function initializes all the data structures needed in the program.
  * @param a        pointer to the matrix used in the dot product.
  * @param b        pointer to the array used in the dot product.
  * @param result   pointer to array used to store the result of dot product.
@@ -44,31 +44,31 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
 				tmp_a = (double *)malloc((rows * columns) * sizeof(double));
 				if (tmp_a == NULL)
 					perror("Memory Allocation - a");
-	        }
+	    }
 
-	        #pragma omp section 
-	        {
-	        	tmp_b = (double *)malloc(columns * sizeof(double));	        	
-	        	if (tmp_b == NULL)
-					perror("Memory Allocation - b");
-	        }
+	    #pragma omp section
+	    {
+	       	tmp_b = (double *)malloc(columns * sizeof(double));
+	       	if (tmp_b == NULL)
+						perror("Memory Allocation - b");
+	    }
 
-	        #pragma omp section
-	        {
-	        	tmp_result = (double *)malloc(rows * sizeof(double));
+	    #pragma omp section
+	    {
+	    	tmp_result = (double *)malloc(rows * sizeof(double));
 				if (tmp_result == NULL)
 					perror("Memory Allocation - result");
-	        }
-		}		
+	    }
+		}
 
-		#pragma omp for 
+		#pragma omp for nowait
 			for (int i = 0; i < columns; ++i)
 				tmp_b[i] = 2.0;
 
 		#pragma omp for
 		for (int i = 0; i < rows; ++i)
-			for (int j = 0; j < columns; ++j) 
-				tmp_a[i*columns + j] = (double)(i + 1);		
+			for (int j = 0; j < columns; ++j)
+				tmp_a[i*columns + j] = (double)(i + 1);
 	}
 
 	*a = tmp_a;
@@ -77,7 +77,7 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
 }
 
 /**
- * @brief This function makes the dot product between the matrix 'a' and the array 'b'. 
+ * @brief This function makes the dot product between the matrix 'a' and the array 'b'.
  * @param a          pointer to the matrix used in the dot product.
  * @param b          pointer to the array used in the dot product.
  * @param result     pointer to array used to store the result of dot product.
@@ -87,26 +87,26 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
  */
 void dot_product(double *a, double *b, double *result, int rows, int columns, int threads){
 
-	int i, j; 
+	int i, j;
 	double dot;
 
 	#pragma omp parallel for default(none) shared(a, b, result, rows, columns) private (i, j, dot) num_threads(threads)
-		for(i = 0; i < rows; ++i){			
+		for(i = 0; i < rows; ++i){
 			dot = 0.0;
 			for (j = 0; j < columns; ++j)
-				dot += a[i*columns + j]*b[j];			
+				dot += a[i*columns + j]*b[j];
 			result[i] = dot;
 		}
 }
 
 int main(int argc, char const *argv[])
-{	
+{
 
-	double dot, *a, *b, *result, timefind = 0.0;
-	int i, j, rows, columns, threads;	
+	double *a, *b, *result, timefind = 0.0;
+	int rows, columns, threads;
 
 	if(argc < 4)
-		printf("ERROR! Usage: ./main rows columns threads");	
+		printf("ERROR! Usage: ./main rows columns threads");
 
 	rows = atoi(argv[1]);
 	columns = atoi(argv[2]);
@@ -119,7 +119,9 @@ int main(int argc, char const *argv[])
 
 	ENDTIME(1,timefind);
 
-	printf("Time : %f\n", timefind);
-
+	//printf("Time : %f\n", timefind);
+	for(int i = 0; i < rows; i++){
+		printf("%f\n", result[i]);
+	}
 	return 0;
 }
