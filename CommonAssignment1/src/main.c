@@ -44,22 +44,23 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
 				tmp_a = (double *)malloc((rows * columns) * sizeof(double));
 				if (tmp_a == NULL)
 					perror("Memory Allocation - a");
-	    }
 
-	    #pragma omp section
-	    {
-	       	tmp_b = (double *)malloc(columns * sizeof(double));
-	       	if (tmp_b == NULL)
-						perror("Memory Allocation - b");
-	    }
+			}
 
-	    #pragma omp section
-	    {
-	    	tmp_result = (double *)malloc(rows * sizeof(double));
+			#pragma omp section 
+			{
+				tmp_b = (double *)malloc(columns * sizeof(double));	        	
+				if (tmp_b == NULL)
+					perror("Memory Allocation - b");
+			}
+
+			#pragma omp section
+			{
+				tmp_result = (double *)malloc(rows * sizeof(double));
 				if (tmp_result == NULL)
 					perror("Memory Allocation - result");
-	    }
-		}
+			}
+		}		
 
 		#pragma omp for nowait
 			for (int i = 0; i < columns; ++i)
@@ -103,10 +104,13 @@ int main(int argc, char const *argv[])
 {
 
 	double *a, *b, *result, timefind = 0.0;
-	int rows, columns, threads;
+	int rows, columns, threads;	
 
-	if(argc < 4)
-		printf("ERROR! Usage: ./main rows columns threads");
+	if(argc < 4){
+		printf("ERROR! Usage: ./main rows columns threads");	
+		exit(1);
+	}
+
 
 	rows = atoi(argv[1]);
 	columns = atoi(argv[2]);
