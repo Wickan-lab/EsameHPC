@@ -14,25 +14,49 @@ parser.add_argument(
 	dest="n",
 	default=1,
 	type=int,
+    required=True,
 	help="How many tests to run"
+)
+
+parser.add_argument(
+	"-c",
+	"--cols",
+	dest="cols",
+	default=1,
+	type=int,
+    required=True,
+	help="How many cols"
+)
+
+parser.add_argument(
+	"-r",
+	"--rows",
+	dest="rows",
+	default=1,
+	type=int,
+    required=True,
+	help="How many rows"
 )
 
 args = parser.parse_args()
 
 def main():
-    rows = 10
-    cols = 10
+    rows = args.rows
+    cols = args.cols
     threads = 1
 
-    for i in range(args.n){
-        a,b = getStructs(rows,cols,a,b)
+    for i in range(args.n):
+        a,b = getStructs(rows,cols)
         result = a.dot(b)
-        p_result = subprocess.run(['../src/main',rows,cols,threads]).returncode
-        if result != p_result:
-            print("Discrepancy !!!")
-            print(a,b)
-            print(result,p_result)
-    }
+        subprocess.run(['./../src/main',str(rows),str(cols),str(threads),' > results.txt'])
+        with open('results.txt','r'):
+            lines = f.read().splitlines()
+            p_result = np.array(lines,int)
+            if numpy.array_equal(p_result,result):
+                print("Discrepancy !!!")
+                print(a,b)
+                print(result,p_result)
+
     #a,b = getStructs(rows,cols)
 
 def getStructs(rows,cols):
