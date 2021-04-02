@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TESTS (3)
-
 void test_init_structure(double* a,int size){
 	int i = 0;
 	printf("check_dims of array of (hypotetical) size %d\n",size);
@@ -25,11 +23,11 @@ int main(int argc, char const *argv[])
 	int threads = 4;
 	int columns = 10;
 	int rows = 10;
+
 	init_structures(&a, &b, &result, rows, columns, threads);
 	test_init_structure(a,(rows*columns));
 	test_init_structure(b,columns);
 	test_init_structure(result,rows);
-
 	
 	double a1[rows*columns];
 	double a2[rows*columns];
@@ -39,10 +37,6 @@ int main(int argc, char const *argv[])
 	double b2[columns];
 	double b3[columns];
 	double b4[columns];
-
-	double result1[rows]; 
-	double result3[rows]; 
-	double result2[rows]; 
 
 	double expected_result4[] = {20,40,60,80,100,120,140,160,180,200};
 	double expected_result2[] = {385,385,385,385,385,385,385,385,385,385};
@@ -57,9 +51,7 @@ int main(int argc, char const *argv[])
 				a3[i*columns + j] = (double)(i + 1); 
 			else
 				a3[i*columns + j] = 0.0;
-
 		}
-
 	}
 
 	for(int k = 0; k < columns; k++){

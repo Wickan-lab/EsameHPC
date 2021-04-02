@@ -30,8 +30,10 @@ int main(int argc, char const *argv[])
 	ENDTIME(1,timefind);
 
 	printf("%f\n", timefind);
-	//for(int i = 0; i < rows; i++){
-	//	printf("%f\n", result[i]);
-	//}
+
+	free(a);
+	free(b);
+	free(result);
+
 	return 0;
 }
