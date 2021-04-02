@@ -1,9 +1,9 @@
 import os
 import subprocess
 import csv
-
+import time
 def main():
-	n_measures = 10000
+	n_measures = 3000
 	fieldnames = ['rows', 'columns', 'threads', 'time']  
 	n_threads_cases = ['0', '1', '2', '4', '8']
 	problem_size_cases = [ ['10000', '10000'] ]
