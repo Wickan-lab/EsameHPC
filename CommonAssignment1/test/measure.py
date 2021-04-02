@@ -22,7 +22,7 @@ def main():
 				row_to_write.append(result.stdout.decode('utf-8').strip())
 				results_to_print.append(row_to_write)
 
-			with open('test/measures_log'+ time.strftime("%H-%M-%S") + '.csv', mode='w') as measures_file: 
+			with open('measures_log'+ time.strftime("%H-%M-%S") + '.csv', mode='a') as measures_file: 
 				measures_writer = csv.writer(measures_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)  
 				measures_writer.writerows(results_to_print)
 
