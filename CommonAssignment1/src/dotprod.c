@@ -1,5 +1,5 @@
 /**
-	@file main.c
+	@file dotprod.c
 */
 
 #include <stdio.h>
@@ -91,4 +91,3 @@ void dot_product(double *a, double *b, double *result, int rows, int columns, in
 			result[i] = dot;
 		}
 }
-
