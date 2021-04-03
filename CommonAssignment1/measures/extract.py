@@ -11,7 +11,8 @@ def _extract(path_to_folder,plot_columns):
 
 	os.chdir(path_to_folder)
 	filenames = os.listdir()
-	os.mkdir("jpg")
+	if os.path.exists(path_to_folder + "jpg/"):
+		os.mkdir("jpg")
 
 	for filename in filenames:
 		if (filename.split(".")[-1] != "csv"):
@@ -36,6 +37,8 @@ def _extract(path_to_folder,plot_columns):
 			plt.close()
 			file_mean[mean] = mean
 		means[filename] = file_mean
+	#go back to file folder
+	os.chdir(os.path.dirname(__file__))
 	return means
 
 def _compute_speedup(t,tp,nt):
@@ -43,7 +46,7 @@ def _compute_speedup(t,tp,nt):
 	logging.info("Speedup P = " + str(nt) + " -> " + str(means[t/tp))
 	logging.info("-"*30)
 
-def extraction(folder=".",cols=['elapsed'],threads=[0,1,2,4,8]):
+def extraction(folder="measure/",cols=['elapsed'],threads=[0,1,2,4,8]):
 	logging.basicConfig(filename='extraction.log',encoding='utf-8', level=logging.DEBUG,format='%(asctime)s %(message)s')
 	means = _extract(folder,cols)
 	logging.info("Problem size grows going towards the end of the file")
