@@ -14,9 +14,9 @@ for ths in "${ARRAY_THS[@]}"; do
 		echo "row,columns,threads,user,elapsed,sys,pCPU" >$OUT_FILE
 		for ((i = 0 ; i < $NMEASURES	; i++)); do
 			if [[ $ths -ne 0 ]]; then 
-				/usr/bin/time -f "$size,$size,$ths,%U,%e,%S,%P" -o $OUT_FILE --append ../build/program $size $size $ths
+				/usr/bin/time -f "$size,$size,$ths,%U,%e,%S,%P" -o $OUT_FILE --append ../../build/CommonAssignment1/program $size $size $ths
 			else
-				/usr/bin/time -f "$size,$size,$ths,%U,%e,%S,%P" -o $OUT_FILE --append ../build/program_seq $size $size $ths
+				/usr/bin/time -f "$size,$size,$ths,%U,%e,%S,%P" -o $OUT_FILE --append ../../build/CommonAssignment1/program_seq $size $size $ths
 			fi
 			printf "\r> %d/%d %3.1d%% " $i $NMEASURES $(expr \( $i \* 100 \) / $NMEASURES)
 			printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
