@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 	threads = atoi(argv[3]);
 
 	init_structures(&a, &b, &result, rows, columns, threads);
-	dot_product(a, b, result, rows, columns, threads);
+	dot_product_upgr(a, b, result, rows, columns, threads);
 
 	free(a);
 	free(b);
