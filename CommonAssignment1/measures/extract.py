@@ -5,71 +5,81 @@ from scipy import stats
 import matplotlib.pyplot as plt
 import csv
 import pandas as pd
+import logging
+
+def _clean(filename):
+	with open(filename,"r+") as f:
+		d = f.readlines()
+		f.seek(0)
+		for i in d:
+			if not ("Command" in i):
+				f.write(i)
+		f.truncate()
+
+def _extract(path_to_folder,plot_columns):
+	os.chdir(path_to_folder)
+	filenames = os.listdir()
+	if not os.path.exists("jpg"):
+		os.mkdir("jpg")
+
+	for filename in filenames:
+		if (filename.split(".")[-1] != "csv"):
+			filenames.remove(filename)
+
+	filenames = sorted(filenames)
+
+	means = {}
+
+	for filename in filenames:
+		file_mean = {}
+		print('Processing : ' + filename)
+		_clean(filename)
+		ds = pd.read_csv(filename)
+		for col in plot_columns.keys():
+			#extract the selected column
+			x_data = ds[col]
+			#plot data fitting a gaussian
+			mean,std=stats.norm.fit(x_data)
+			file_mean[col] = mean
+			if not plot_columns[col]['jpg']:
+				continue
+			plt.hist(x_data, bins=200, density=True)
+			xmin, xmax = plt.xlim()
+			x = np.linspace(xmin, xmax, 100)
+			y = stats.norm.pdf(x, mean, std)
+			plt.plot(x, y)
+			plt.savefig("jpg/" + str(col)+ "_" + filename.split('.')[0] + ".jpg")
+			plt.close()
+		means[filename] = file_mean
+	return means
+
+def _compute_speedup(t,tp,nt,psize):
+	logging.info("-"*30)
+	if tp == 0:
+		logging.info("Speedup P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
+	logging.info("Speedup P = " + str(nt) +  " & Problem Size = " + psize + " -> " + str(t/tp))
+	logging.info("-"*30)
+
+def extraction(folder="measure/", cols={'elapsed':{'jpg':True,'speedup':True},'user':{'jpg':False,'speedup':False},'sys':{'jpg':False,'speedup':False}}, threads=[0,1,2,4,8]):
+	logging.basicConfig(filename='extraction.log' ,level=logging.INFO, format='%(asctime)s %(message)s')
+	means = _extract(folder,cols)
+	logging.info("Problem size grows going towards the end of the file.\n All of the data was computed using square matrices")
+	logging.info("Means : %s", means)
+	#per calcolare lo speedup devo dividere il tempo elapsed sequenziale per il tempo parallelo elapsed
+	nt_index = 0
+	for filename_key in means:
+		for col in cols:
+			if not cols[col]['speedup']:
+				continue
+			if "NTH-0" in  filename_key:
+				seq = means[filename_key][col]
+			splitted_filename=filename_key.split("-")
+			nt = splitted_filename[3]
+			psize = splitted_filename[1]
+			_compute_speedup(seq,means[filename_key][col],nt,psize)
 
 
-os.chdir("5Kx5K_3000meas")
-filenames = os.listdir()
-
-for filename in filenames:
-	if (filename.split(".")[-1] != "csv"):
-		filenames.remove(filename)
-
-filenames = sorted(filenames)
-
-five_k_means = []
-
-for filename in filenames:
-	ds = pd.read_csv(filename)
-	x_data = ds['time']
-	mean,std=stats.norm.fit(x_data)
-	five_k_means.append(mean)
-	plt.hist(x_data, bins=200, density=True)
-	xmin, xmax = plt.xlim()
-	x = np.linspace(xmin, xmax, 100)
-	y = stats.norm.pdf(x, mean, std)
-	plt.plot(x, y)
-	plt.savefig("jpg/" + filename.split('.')[0] + ".jpg")
-	plt.close()
-
-eight_k_means = []
-
-os.chdir("../8Kx8K_3000meas")
-filenames = os.listdir()
-
-for filename in filenames:
-        if (filename.split(".")[-1] != "csv"):
-                filenames.remove(filename)
-
-filenames = sorted(filenames)
-print(filenames)
 
 
-for filename in filenames:
-        ds = pd.read_csv(filename)
-        x_data = ds['time']
-        mean,std=stats.norm.fit(x_data)
-        eight_k_means.append(mean)
-        plt.hist(x_data, bins=200, density=True)
-        xmin, xmax = plt.xlim()
-        x = np.linspace(xmin, xmax, 100)
-        y = stats.norm.pdf(x, mean, std)
-        plt.plot(x, y)
-        plt.savefig("jpg/" + filename.split('.')[0] + ".jpg")
-        plt.close()
-
-print(five_k_means)
-
-seq_five_time = five_k_means[0]
-seq_eight_time = eight_k_means[0]
-
-n_threads = ['0','1','2','4','8']
-print("5000 elements ")
-for i in range(1,len(five_k_means)):
-	print("Speedup P = " + n_threads[i] + " -> " + str(seq_five_time/five_k_means[i]))
-
-print("-"*100)
-print(eight_k_means)
-
-print("8000 elements")
-for i in range(1,len(five_k_means)):
-        print("Speedup P = " + n_threads[i] + " -> " + str(seq_eight_time/eight_k_means[i]))
+if __name__ == "__main__":
+	extraction()

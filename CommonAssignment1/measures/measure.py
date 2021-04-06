@@ -26,7 +26,5 @@ def main():
 				measures_writer.writerow(fieldnames)
 				measures_writer.writerows(results_to_print)
 
-			
-
 if __name__ == '__main__':
 	main()
