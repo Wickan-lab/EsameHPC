@@ -18,11 +18,12 @@ def _clean(filename):
 
 def _extract(path_to_folder,plot_columns):
 	os.chdir(path_to_folder)
-	filenames = os.listdir()
+	filenames =  [f for f in os.listdir('.') if os.path.isfile(f)]
 	if not os.path.exists("jpg"):
 		os.mkdir("jpg")
 
 	for filename in filenames:
+		os.path.isdir(filename)
 		if (filename.split(".")[-1] != "csv"):
 			filenames.remove(filename)
 
