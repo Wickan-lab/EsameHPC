@@ -86,4 +86,6 @@ int main(int argc, char const *argv[])
 	free(a);
 	free(b);
 
+	exit(EXIT_SUCCESS);
+
 }
