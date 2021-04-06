@@ -11,14 +11,18 @@ typedef void (* decorableDot)(double *a, double *b, double *result, int rows, in
 typedef void (* decorableInit)(double **a, double **b, double **result, int rows, int columns, int threads);
 
 void test_init_structure(double **a, double **b, double **result, int rows, int columns, int threads, decorableInit init){
-	init(&a, &b, &result, rows, columns, threads);
+	init(a, b, result, rows, columns, threads);
 
 	int i = 0;
-	//printf("check_dims of array of (hypotetical) size %d\n",size);
+	//printf("check_dims of array of (hypotetical) size %f\n",(*a)[1]);
+	
 	FILE *fp;
 	fp = fopen("test_dims.txt","w");
-	fwrite(a,sizeof(double), rows*columns*sizeof(double),fp);
-	fwrite(b,sizeof(double), columns*sizeof(double),fp);
+	
+	assert((rows*columns*sizeof(double)) == fwrite(*a,sizeof(double), rows*columns*sizeof(double),fp));
+	assert((columns*sizeof(double)) == fwrite(*b,sizeof(double), columns*sizeof(double),fp));
+	assert((rows*sizeof(double)) == fwrite(*result,sizeof(double), rows*sizeof(double),fp));
+	
 	fclose(fp);
 }
 
@@ -37,11 +41,8 @@ int main(int argc, char const *argv[])
 	int threads = 4;
 	int columns = 10;
 	int rows = 10;
-
-	//init_structures(&a, &b, &result, rows, columns, threads);
-	//test_init_structure(a,(rows*columns));
-	//test_init_structure(b,columns);
-	//test_init_structure(result,rows);
+	
+	test_init_structure(&a, &b, &result, rows, columns, threads, init_structures);
 
 	double a1[rows*columns];
 	double a2[rows*columns];
