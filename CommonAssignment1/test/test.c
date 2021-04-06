@@ -14,11 +14,11 @@ void test_init_structure(double **a, double **b, double **result, int rows, int 
 	init(&a, &b, &result, rows, columns, threads);
 
 	int i = 0;
-	printf("check_dims of array of (hypotetical) size %d\n",size);
+	//printf("check_dims of array of (hypotetical) size %d\n",size);
 	FILE *fp;
 	fp = fopen("test_dims.txt","w");
-	fwrite(a,sizeof(double), rows*colums*sizeof(double),fp);
-	fwrite(b,sizeof(double), colums*sizeof(double),fp);
+	fwrite(a,sizeof(double), rows*columns*sizeof(double),fp);
+	fwrite(b,sizeof(double), columns*sizeof(double),fp);
 	fclose(fp);
 }
 
