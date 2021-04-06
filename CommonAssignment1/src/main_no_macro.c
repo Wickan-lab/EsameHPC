@@ -10,10 +10,10 @@ int main(int argc, char const *argv[])
 {
 
 	double *a, *b, *result;
-	int rows, columns, threads;	
+	int rows, columns, threads;
 
 	if(argc < 4){
-		printf("ERROR! Usage: ./main rows columns threads");	
+		printf("ERROR! Usage: ./main rows columns threads");
 		exit(1);
 	}
 
