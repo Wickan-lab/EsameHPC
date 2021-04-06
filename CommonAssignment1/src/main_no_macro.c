@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
 	columns = atoi(argv[2]);
 	threads = atoi(argv[3]);
 
-	init_structures_upgr(&a, &b, &result, rows, columns, threads);
+	init_structures(&a, &b, &result, rows, columns, threads);
 	dot_product_upgr(a, b, result, rows, columns, threads);
 
 	free(a);

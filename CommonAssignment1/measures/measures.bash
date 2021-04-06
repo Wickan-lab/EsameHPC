@@ -5,11 +5,11 @@ ARRAY_RC=(2000 5000 8000 10000)
 ARRAY_THS=(0 1 2 4 8)
 
 trap "exit" INT
-mkdir -p measure/m-$TIME_STAMP 2> /dev/null 
+mkdir -p measure/ 2> /dev/null 
 
 for ths in "${ARRAY_THS[@]}"; do
 	for size in "${ARRAY_RC[@]}"; do
-		OUT_FILE=measure/m-$TIME_STAMP/SIZE-$size-NTH-$ths-$TIME_STAMP.csv
+		OUT_FILE=measure/SIZE-$size-NTH-$ths-$TIME_STAMP.csv
 		echo $OUT_FILE
 		echo "row,columns,threads,user,elapsed,sys,pCPU" >$OUT_FILE
 		for ((i = 0 ; i < $NMEASURES	; i++)); do
