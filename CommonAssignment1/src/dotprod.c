@@ -109,15 +109,15 @@ void init_structures_upgr(double **a, double **b, double **result, int rows, int
 
 	#pragma omp parallel default(none) shared(tmp_a, tmp_b, tmp_result, rows, columns) num_threads(threads)
 	{
-		
+
 		tmp_a = (double *)malloc((rows * columns) * sizeof(double));
 			if (tmp_a == NULL)
 				perror("Memory Allocation - a");
-	    
+
 	    tmp_b = (double *)malloc(columns * sizeof(double));
 	       	if (tmp_b == NULL)
 				perror("Memory Allocation - b");
-	    
+
 	    tmp_result = (double *)malloc(rows * sizeof(double));
 			if (tmp_result == NULL)
 				perror("Memory Allocation - result");
@@ -151,7 +151,7 @@ void dot_product_upgr(double *a, double *b, double *result, int rows, int column
 	int i, j;
 	double dot;
 
-	#pragma omp parallel for default(none) shared(a, b, result, rows, columns) private (i, j, dot) num_threads(threads)
+	#pragma omp parallel for default(none) shared(a, b, result, rows, columns, threads) private (i, j, dot) schedule(static, rows/threads) num_threads(threads)
 		for(i = 0; i < rows; ++i){
 			dot = 0.0;
 			for (j = 0; j < columns; j+=2){
