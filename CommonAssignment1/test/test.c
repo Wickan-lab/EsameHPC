@@ -17,6 +17,10 @@
  * along with EsameHPC.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+	@file test.c
+*/
+
 #include "dotprod.h"
 #include <assert.h>
 #include <stdio.h>
@@ -29,30 +33,53 @@
 typedef void (* decorableDot)(double *, double *, double *, int, int, int);
 typedef void (* decorableInit)(double **, double **, double **, int, int, int);
 
+
+/**
+ * @brief This function tests the initialization of all the data structures needed in the program without using sections OpenMP macro.
+ * @param a        pointer to the matrix used in the dot product.
+ * @param b        pointer to the array used in the dot product.
+ * @param result   pointer to array used to store the result of dot product.
+ * @param rows     number of rows.
+ * @param columns  number of columns.
+ * @param threads  number of threads.
+ * @param init     decorated function init_structures.
+ */
 void test_init_structure(double **a, double **b, double **result, int rows, int columns, int threads, decorableInit init){
 	init(a, b, result, rows, columns, threads);
 
 	int i = 0;
-	
+
 	FILE *fp;
 	fp = fopen("test_dims.txt","w");
-	
+
 	assert((rows*columns*DOUBLE) == fwrite(*a,DOUBLE, rows*columns*DOUBLE,fp));
 	assert((columns*DOUBLE) == fwrite(*b,DOUBLE, columns*DOUBLE,fp));
 	assert((rows*DOUBLE) == fwrite(*result,DOUBLE, rows*DOUBLE,fp));
 
 	assert((rows*columns*FLOAT) == fwrite(*a,FLOAT, rows*columns*FLOAT,fp));
 	assert((columns*FLOAT) == fwrite(*b,FLOAT, columns*FLOAT,fp));
-	assert((rows*FLOAT) == fwrite(*result,FLOAT, rows*FLOAT,fp));	
+	assert((rows*FLOAT) == fwrite(*result,FLOAT, rows*FLOAT,fp));
 
 	assert((rows*columns*INT) == fwrite(*a,INT, rows*columns*INT,fp));
 	assert((columns*INT) == fwrite(*b,INT, columns*INT,fp));
 	assert((rows*INT) == fwrite(*result,INT, rows*INT,fp));
-	
+
 	fclose(fp);
 
 }
 
+/**
+ * @brief This function tests the dot product between the matrix 'a' and the array 'b'.
+ * @param expec      expected dot product result.
+ * @param size       size of the result.
+ * @param a          pointer to the matrix used in the dot product.
+ * @param b          pointer to the array used in the dot product.
+ * @param result     pointer to array used to store the result of dot product.
+ * @param rows       number of rows.
+ * @param columns    number of columns.
+ * @param threads    number of threads.
+ * @param dot        decorated dot product function.
+ */
 void test_dot_product(double*expec,int size, double *a, double *b, double *result, int rows, int columns, int threads, decorableDot dot){ //double*a,double*b,int size, 
 	dot(a,b,result,rows,columns,threads);
 
@@ -69,7 +96,7 @@ int main(int argc, char const *argv[])
 	int threads = 4;
 	int columns = 10;
 	int rows = 10;
-	
+
 	test_init_structure(&a, &b, &result, rows, columns, threads, init_structures);
 
 	double a1[rows*columns];
@@ -106,15 +133,15 @@ int main(int argc, char const *argv[])
 		b3[k] = 1.0;
 		b4[k] = 2.0;
 	}
-	
-	test_dot_product(expected_result1, rows, a1, b1, result, rows, columns, threads, dot_product); 
-	test_dot_product(expected_result2, rows, a2, b2, result, rows, columns, threads, dot_product);	
+
+	test_dot_product(expected_result1, rows, a1, b1, result, rows, columns, threads, dot_product);
+	test_dot_product(expected_result2, rows, a2, b2, result, rows, columns, threads, dot_product);
 	test_dot_product(expected_result3, rows, a3, b3, result, rows, columns, threads, dot_product);
 	test_dot_product(expected_result4, rows, a1, b4, result, rows, columns, threads, dot_product);
-	
+
 	rows = 20;
 	columns = 7;
-	
+
 	for(int j=0; j<(rows);j++){
 		for(int z = 0; z < columns; z++){
 			a5[j*columns + z] = 42;
@@ -123,7 +150,7 @@ int main(int argc, char const *argv[])
 	for(int t = 0; t < columns; t++){
 		b5[t]= 42;
 	}
-	
+
 	test_dot_product(expected_result5, rows, a5, b5, result, rows, columns, threads, dot_product);
 
 	free(a);

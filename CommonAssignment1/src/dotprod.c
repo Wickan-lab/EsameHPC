@@ -40,7 +40,7 @@
  * @param b        pointer to the array used in the dot product.
  * @param result   pointer to array used to store the result of dot product.
  * @param rows     number of rows.
- * @param colums   number of columns.
+ * @param columns  number of columns.
  * @param threads  number of threads.
  */
 void init_structures(double **a, double **b, double **result, int rows, int columns, int threads){
@@ -94,7 +94,7 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
  * @param b          pointer to the array used in the dot product.
  * @param result     pointer to array used to store the result of dot product.
  * @param rows       number of rows.
- * @param colums     number of columns.
+ * @param columns    number of columns.
  * @param threads    number of threads.
  */
 void dot_product(double *a, double *b, double *result, int rows, int columns, int threads){
@@ -119,7 +119,7 @@ void dot_product(double *a, double *b, double *result, int rows, int columns, in
  * @param b        pointer to the array used in the dot product.
  * @param result   pointer to array used to store the result of dot product.
  * @param rows     number of rows.
- * @param colums   number of columns.
+ * @param columns  number of columns.
  * @param threads  number of threads.
  */
 void init_structures_upgr(double **a, double **b, double **result, int rows, int columns, int threads){
@@ -162,7 +162,7 @@ void init_structures_upgr(double **a, double **b, double **result, int rows, int
  * @param b          pointer to the array used in the dot product.
  * @param result     pointer to array used to store the result of dot product.
  * @param rows       number of rows.
- * @param colums     number of columns.
+ * @param columns     number of columns.
  * @param threads    number of threads.
  */
 void dot_product_upgr(double *a, double *b, double *result, int rows, int columns, int threads){
