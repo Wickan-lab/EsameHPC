@@ -19,38 +19,20 @@ void test_init_structure(double **a, double **b, double **result, int rows, int 
 	FILE *fp;
 	fp = fopen("test_dims.txt","w");
 	
-	if(!(rows*columns*DOUBLE) == fwrite(*a,DOUBLE, rows*columns*DOUBLE,fp))
-		i++;
-	if(!(columns*DOUBLE) == fwrite(*b,DOUBLE, columns*DOUBLE,fp))
-		i++;
-	if(!(rows*DOUBLE) == fwrite(*result,DOUBLE, rows*DOUBLE,fp))
-		i++;
+	assert((rows*columns*DOUBLE) == fwrite(*a,DOUBLE, rows*columns*DOUBLE,fp));
+	assert((columns*DOUBLE) == fwrite(*b,DOUBLE, columns*DOUBLE,fp));
+	assert((rows*DOUBLE) == fwrite(*result,DOUBLE, rows*DOUBLE,fp));
 
-	if (!i)
-		return;
+	assert((rows*columns*FLOAT) == fwrite(*a,FLOAT, rows*columns*FLOAT,fp));
+	assert((columns*FLOAT) == fwrite(*b,FLOAT, columns*FLOAT,fp));
+	assert((rows*FLOAT) == fwrite(*result,FLOAT, rows*FLOAT,fp));	
 
-	if(!(rows*columns*FLOAT) == fwrite(*a,FLOAT, rows*columns*FLOAT,fp))
-		i++;
-	if(!(columns*FLOAT) == fwrite(*b,FLOAT, columns*FLOAT,fp))
-		i++;
-	if(!(rows*FLOAT) == fwrite(*result,FLOAT, rows*FLOAT,fp))
-		i++;
-	
-	if (!i)
-		return;
-
-	if(!(rows*columns*INT) == fwrite(*a,INT, rows*columns*INT,fp))
-		i++;
-	if(!(columns*INT) == fwrite(*b,INT, columns*INT,fp))
-		i++;
-	if(!(rows*INT) == fwrite(*result,INT, rows*INT,fp))
-		i++;	
+	assert((rows*columns*INT) == fwrite(*a,INT, rows*columns*INT,fp));
+	assert((columns*INT) == fwrite(*b,INT, columns*INT,fp));
+	assert((rows*INT) == fwrite(*result,INT, rows*INT,fp));
 	
 	fclose(fp);
-	
-	if(!i){
-		exit(EXIT_FAILURE);
-	}
+
 }
 
 void test_dot_product(double*expec,int size, double *a, double *b, double *result, int rows, int columns, int threads, decorableDot dot){ //double*a,double*b,int size, 
