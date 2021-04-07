@@ -114,7 +114,7 @@ void dot_product(double *a, double *b, double *result, int rows, int columns, in
 
 
 /**
- * @brief This function initializes all the data structures needed in the program.
+ * @brief This function initializes all the data structures needed in the program without using sections OpenMP macro.
  * @param a        pointer to the matrix used in the dot product.
  * @param b        pointer to the array used in the dot product.
  * @param result   pointer to array used to store the result of dot product.
@@ -157,7 +157,7 @@ void init_structures_upgr(double **a, double **b, double **result, int rows, int
 }
 
 /**
- * @brief This function makes the dot product between the matrix 'a' and the array 'b'.
+ * @brief This function makes the dot product between the matrix 'a' and the array 'b' using optimized for loop.
  * @param a          pointer to the matrix used in the dot product.
  * @param b          pointer to the array used in the dot product.
  * @param result     pointer to array used to store the result of dot product.

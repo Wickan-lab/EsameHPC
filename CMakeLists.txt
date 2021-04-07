@@ -24,5 +24,8 @@ project(EsameHPC
 	LANGUAGES C
 	)
 
+# Generate comile_commands.json for semantic completion in YCM
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 enable_testing()
 add_subdirectory(CommonAssignment1)

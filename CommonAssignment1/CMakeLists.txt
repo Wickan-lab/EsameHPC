@@ -37,8 +37,8 @@ target_include_directories(program_seq PRIVATE include)
 
 find_package(OpenMP)
 if(OpenMP_C_FOUND)
-	target_link_libraries(program PUBLIC OpenMP::OpenMP_C)
-	target_compile_options(program PUBLIC -O2)
+	target_link_libraries(program PRIVATE OpenMP::OpenMP_C)
+	target_compile_options(program PRIVATE -O2)
 endif()
 
 target_compile_features(program PRIVATE c_std_11)
@@ -49,3 +49,15 @@ target_include_directories(dotprod_test PRIVATE include)
 
 add_test(NAME dotprod_test
 	COMMAND dotprod_test )
+
+# Search fo doxygen
+find_package(Doxygen
+             REQUIRED dot)
+
+if(DOXYGEN_FOUND)
+	set(DOXYGEN_GENERATE_XML YES)
+	doxygen_add_docs(
+		docs
+		./src/dotprod.c ./include/dotprod.h ./test/test.c 
+		)
+endif()
