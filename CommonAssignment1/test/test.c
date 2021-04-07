@@ -33,7 +33,6 @@ void test_init_structure(double **a, double **b, double **result, int rows, int 
 	init(a, b, result, rows, columns, threads);
 
 	int i = 0;
-	//printf("check_dims of array of (hypotetical) size %f\n",(*a)[1]);
 	
 	FILE *fp;
 	fp = fopen("test_dims.txt","w");
@@ -56,8 +55,7 @@ void test_init_structure(double **a, double **b, double **result, int rows, int 
 
 void test_dot_product(double*expec,int size, double *a, double *b, double *result, int rows, int columns, int threads, decorableDot dot){ //double*a,double*b,int size, 
 	dot(a,b,result,rows,columns,threads);
-	//for(int j = 0; j<size;j++)
-	//	printf("%f\n",result[j]);
+
 	for (int i = 0; i < size; i++){
 		printf("%f %f\n",expec[i],(result)[i]);
 		assert(expec[i] == (result)[i]);
@@ -85,10 +83,10 @@ int main(int argc, char const *argv[])
 	double b4[columns];
 	double b5[columns];
 
-	double expected_result4[] = {20,40,60,80,100,120,140,160,180,200};
+	double expected_result1[] = {0,0,0,0,0,0,0,0,0,0};
 	double expected_result2[] = {385,385,385,385,385,385,385,385,385,385};
 	double expected_result3[] = {1,2,3,4,5,6,7,8,9,10};
-	double expected_result1[] = {0,0,0,0,0,0,0,0,0,0};
+	double expected_result4[] = {20,40,60,80,100,120,140,160,180,200};
 	double expected_result5[] = {12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348};
 
 	for(int i=0; i<(rows);i++){
@@ -109,15 +107,10 @@ int main(int argc, char const *argv[])
 		b4[k] = 2.0;
 	}
 	
-	test_dot_product(expected_result1,rows,a1,b1, result,rows,columns,threads,dot_product); //expected_result1,result,rows
-
-	test_dot_product(expected_result2,rows,a2,b2, result,rows,columns,threads,dot_product);
-	
-	test_dot_product(expected_result3,rows,a3,b3, result,rows,columns,threads,dot_product);
-
-	test_dot_product(expected_result4,rows,a1,b4, result,rows,columns,threads,dot_product);
-	
-	
+	test_dot_product(expected_result1, rows, a1, b1, result, rows, columns, threads, dot_product); 
+	test_dot_product(expected_result2, rows, a2, b2, result, rows, columns, threads, dot_product);	
+	test_dot_product(expected_result3, rows, a3, b3, result, rows, columns, threads, dot_product);
+	test_dot_product(expected_result4, rows, a1, b4, result, rows, columns, threads, dot_product);
 	
 	rows = 20;
 	columns = 7;
@@ -129,14 +122,12 @@ int main(int argc, char const *argv[])
 	}
 	for(int t = 0; t < columns; t++){
 		b5[t]= 42;
-		//printf("%f\n",b5[t]);
 	}
 	
-	test_dot_product(expected_result5,rows,a5,b5, result,rows,columns,threads,dot_product);
+	test_dot_product(expected_result5, rows, a5, b5, result, rows, columns, threads, dot_product);
 
 	free(a);
 	free(b);
 
 	exit(EXIT_SUCCESS);
-
 }
