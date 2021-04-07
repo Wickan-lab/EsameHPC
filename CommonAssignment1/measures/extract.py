@@ -58,7 +58,9 @@ def _compute_speedup(t,tp,nt,psize):
 	logging.info("-"*30)
 	if tp == 0:
 		logging.info("Speedup P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
+		logging.info("Efficiency P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
 	logging.info("Speedup P = " + str(nt) +  " & Problem Size = " + psize + " -> " + str(t/tp))
+	logging.info("Efficiency P = " + str(nt) +  " & Problem Size = " + psize + " -> " + str(t/(tp*float(nt))))
 	logging.info("-"*30)
 
 def extraction(folder="measure/", cols={'elapsed':{'jpg':True,'speedup':True},'user':{'jpg':False,'speedup':False},'sys':{'jpg':False,'speedup':False}}, threads=[0,1,2,4,8]):

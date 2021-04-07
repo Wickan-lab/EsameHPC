@@ -151,7 +151,7 @@ void dot_product_upgr(double *a, double *b, double *result, int rows, int column
 	int i, j;
 	double dot;
 
-	#pragma omp parallel for default(none) shared(a, b, result, rows, columns, threads) private (i, j, dot) schedule(dynamic, rows/threads) num_threads(threads)
+	#pragma omp parallel for default(none) shared(a, b, result, rows, columns, threads) private (i, j, dot) num_threads(threads)
 		for(i = 0; i < rows; ++i){
 			dot = 0.0;
 			for (j = 0; j < columns; j+=2){
