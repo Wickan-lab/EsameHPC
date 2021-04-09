@@ -28,7 +28,7 @@
 int main(int argc, char const *argv[])
 {
 
-	double *a, *b, *result, timefind = 0.0;
+	double *a, *b, *result, time_dot = 0.0, time_init = 0.0;
 	int rows, columns, threads;	
 
 	if(argc < 4){
@@ -36,19 +36,19 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
-
 	rows = atoi(argv[1]);
 	columns = atoi(argv[2]);
 	threads = atoi(argv[3]);
 
 	STARTTIME(1);
-
 	init_structures(&a, &b, &result, rows, columns, threads);
+	ENDTIME(1, time_init);
+
+	STARTTIME(2);
 	dot_product(a, b, result, rows, columns, threads);
+	ENDTIME(2, time_dot);
 
-	ENDTIME(1,timefind);
-
-	printf("%f\n", timefind);
+	printf("%f,%f\n", time_init, time_dot);
 
 	free(a);
 	free(b);

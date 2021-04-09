@@ -34,7 +34,6 @@
 
 void init_structures(double**, double **, double **, int , int , int);
 void dot_product(double *, double *, double *, int , int , int );
-void init_structures_upgr(double**, double **, double **, int , int , int);
 void dot_product_upgr(double *, double *, double *, int , int , int );
 
 #endif
