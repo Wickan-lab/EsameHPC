@@ -1,0 +1,29 @@
+set terminal wxt size 350,262 enhanced font 'Verdana,10' persist
+
+
+# Line width of the axes
+set border linewidth 1.5
+# Line styles
+set style line 1 linecolor rgb '#0060ad' linetype 1 linewidth 2
+set style line 2 linecolor rgb '#dd181f' linetype 1 linewidth 2
+set style line 3 linecolor rgb '#008000' linetype 1 linewidth 2
+set style line 4 linecolor rgb '#000000' linetype 1 linewidth 2
+set style line 5 lc rgb 'black' pt 5   # square
+
+
+N = 10000
+i(x) = x
+f(x) = (N + N*N + N*N)/ ((N + N*N + N*N)/ x) 
+
+set logscale x
+set logscale y
+set xrange [1:N*10]
+set yrange [1:N*10]
+set ylabel 'Speedup'
+set xlabel 'Processors'
+set title sprintf("N=%d",N)
+set term eps
+set output sprintf("speedup%d.eps",N)
+
+# Plot
+plot f(x) title '(N + N*N + N*N)/ P' with lines linestyle 1, i(x) title 'Ideal' with lines linestyle 4, "<echo '8 4'"   using 1:2:(sprintf("(%.2f, %d)", 8, 4)) with labels point  pt 7 offset char 1,1 notitle
