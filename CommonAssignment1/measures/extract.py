@@ -29,6 +29,18 @@ from prettytable import PrettyTable
 from prettytable import MARKDOWN
 
 config = {
+			'init':{
+
+				'jpg':False,
+				'speedup':False
+				
+			},
+			'dotprod':{
+
+				'jpg':False,
+				'speedup':False
+
+			},
 			'user':{
 
 				'jpg':False,
