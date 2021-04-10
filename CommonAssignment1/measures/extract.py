@@ -20,88 +20,187 @@
 import os
 import numpy as np
 import scipy as sp
-from scipy import stats
 import matplotlib.pyplot as plt
-import csv
 import pandas as pd
 import logging
+import plotly.graph_objects as go
+from scipy import stats
+from prettytable import PrettyTable
+from prettytable import MARKDOWN
+
+config = {
+			'user':{
+
+				'jpg':False,
+				'speedup':False
+
+				},
+			'sys':{
+
+				'jpg':False,
+				'speedup':False
+
+				},
+			'elapsed':{
+
+				'jpg':True,
+				'speedup':True
+
+				}
+		}
 
 def _clean(filename):
 	with open(filename,"r+") as f:
 		d = f.readlines()
 		f.seek(0)
 		for i in d:
-			if not ("Command" in i):
+			if not ("Command" in i): # TODO : use regex instead, and print in log something to signal it
 				f.write(i)
 		f.truncate()
 
 def _extract(path_to_folder,plot_columns):
+	prev = os.getcwd()
 	os.chdir(path_to_folder)
+
+	#List diresctory
 	filenames =  [f for f in os.listdir('.') if os.path.isfile(f)]
 	if not os.path.exists("jpg"):
 		os.mkdir("jpg")
 
+	#Remove not csv files
 	for filename in filenames:
 		os.path.isdir(filename)
 		if (filename.split(".")[-1] != "csv"):
 			filenames.remove(filename)
 
 	filenames = sorted(filenames)
-
 	means = {}
-
+	
 	for filename in filenames:
 		file_mean = {}
 		print('Processing : ' + filename)
-		_clean(filename)
 		ds = pd.read_csv(filename)
 		for col in plot_columns.keys():
+			print('Processing : ' + filename + ", Col : " + col)
 			#extract the selected column
 			x_data = ds[col]
-			#plot data fitting a gaussian
 			mean,std=stats.norm.fit(x_data)
+			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
+			#x_data = ds[ds[col] < (mean + std)]
+			#x_data = ds[ds[col] > (mean - std)]
+
 			file_mean[col] = mean
-			if not plot_columns[col]['jpg']:
-				continue
-			plt.hist(x_data, bins=200, density=True)
-			xmin, xmax = plt.xlim()
-			x = np.linspace(xmin, xmax, 100)
-			y = stats.norm.pdf(x, mean, std)
-			plt.plot(x, y)
-			plt.savefig("jpg/" + str(col)+ "_" + filename.split('.')[0] + ".jpg")
-			plt.close()
+			
+			if plot_columns[col]['jpg']:	
+				plt.hist(x_data, bins=20, density=True)
+				#xmin, xmax = plt.xlim()
+				#x = np.linspace(xmin, xmax, 100)
+				#y = stats.norm.pdf(x, mean, std)
+				#plt.plot(x, y)
+				plt.savefig("jpg/" + str(col)+ "_" + filename.split('.')[0] + ".jpg")
+				plt.close()
+			
 		means[filename] = file_mean
+	os.chdir(prev)
 	return means
 
 def _compute_speedup(t,tp,nt,psize):
-	logging.info("-"*30)
+	speedup = t/tp
+	efficiency = t/(tp*float(nt))
 	if tp == 0:
 		logging.info("Speedup P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
 		logging.info("Efficiency P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
-	logging.info("Speedup P = " + str(nt) +  " & Problem Size = " + psize + " -> " + str(t/tp))
-	logging.info("Efficiency P = " + str(nt) +  " & Problem Size = " + psize + " -> " + str(t/(tp*float(nt))))
-	logging.info("-"*30)
+	return speedup,efficiency
 
-def extraction(folder="measure/", cols={'elapsed':{'jpg':True,'speedup':True},'user':{'jpg':False,'speedup':False},'sys':{'jpg':False,'speedup':False}}, threads=[0,1,2,4,8]):
+def _make_table(header,rows,print_table=False,save=True,name=""):
+	if save and not name:
+		raise Exception("No filename to save file")
+	x = PrettyTable()
+	x.field_names = header
+	x.add_rows(rows)
+	if save:
+		_save_table(x,name)
+	if print_table:
+		print(x)
+	return x
+
+def _save_table(table,filename):
+	with open(filename,"w") as table_file:
+		table.set_style(MARKDOWN)
+		data = table.get_string()
+		table_file.write(data)
+
+def _plot_from_table(header,rows,save=True,name="",show_plot=False):
+	if save and not name:
+		raise Exception("No filename to save file")
+
+	x = [0]
+	y = [0]
+	speedup_pos = header.index("Speedup")
+	thread_pos = header.index("Threads")
+	for row in rows[1:]:
+		x.append(row[thread_pos])
+		y.append(row[speedup_pos])
+
+	x_th = np.linspace(0, 4.8, 5)
+	plt.style.use('seaborn-whitegrid')
+	plt.autoscale(enable=True, axis='x', tight=True)
+	plt.autoscale(enable=True, axis='y', tight=True)		
+	plt.plot(x,y,'r',label='Measured')
+	plt.plot(x_th,x_th + 0,'b',label='Ideal')
+	plt.legend()
+	plt.xlabel("Processors")
+	plt.ylabel("Speedup")
+	if show_plot:
+		plt.show()
+	if save:
+		plt.savefig(name)
+	plt.close()
+
+def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
+	print("Initializing logger")
 	logging.basicConfig(filename='extraction.log' ,level=logging.INFO, format='%(asctime)s %(message)s')
-	means = _extract(folder,cols)
-	logging.info("Problem size grows going towards the end of the file.\n All of the data was computed using square matrices")
-	logging.info("Means : %s", means)
-	#per calcolare lo speedup devo dividere il tempo elapsed sequenziale per il tempo parallelo elapsed
-	nt_index = 0
-	for filename_key in means:
-		for col in cols:
-			if not cols[col]['speedup']:
-				continue
-			if "NTH-0" in  filename_key:
-				seq = means[filename_key][col]
+	print("Listing folder for problem size")
+	folders =  [f for f in os.listdir(root) if os.path.isdir(os.path.join(root,f))]
+	print(f"Found folders : {folders}")
+
+	for folder in folders:
+		print(f"Folder : {folder}")
+		joined_path = os.path.join(root,folder)
+		means = _extract(joined_path,cols)
+		header = {'values':['Version','Threads','User','Sys','Elapsed','Speedup','Efficiency']}
+		cells = {'values':[]}
+		nt = -1
+		for filename_key in means:
+			cell = []
 			splitted_filename=filename_key.split("-")
-			nt = splitted_filename[3]
-			psize = splitted_filename[1]
-			_compute_speedup(seq,means[filename_key][col],nt,psize)
+			if "NTH-0" in filename_key:
+				seq = means[filename_key]['elapsed']
+				nt = 1
+				cell.append('Serial')
+				cell.append(nt)
+			else:
+				nt = splitted_filename[3]
+				cell.append('Parallel')
+				cell.append(nt)
 
+			for col in cols:
+				cell.append(means[filename_key][col])
+				if cols[col]['speedup']:
+					psize = splitted_filename[1]
+					speedup,efficiency = _compute_speedup(seq,means[filename_key][col],nt,psize)
+					cell.append(speedup)
+					cell.append(efficiency)
+			cells['values'].append(cell)
+		
+		splitted_folder = folder.split("-")
+		size = splitted_folder[1]
+		opt = splitted_folder[2]
+		table_filename = joined_path + "/psize-" + size + "-" + str(opt) + "-table.md"
+		plot_filename = joined_path + "/speedup-" + str(size) + "-" + str(opt) +  ".jpg"
 
-
+		table = _make_table(header['values'],cells['values'],name=table_filename)
+		_plot_from_table(header["values"],cells["values"],name=plot_filename)
 
 if __name__ == "__main__":
 	extraction()
