@@ -1,3 +1,4 @@
+#!/bin/bash
 # 
 # Copyright (C) 2021 - All Rights Reserved 
 #
@@ -18,28 +19,29 @@
 #
 
 TIME_STAMP=$(date +%s)
-NMEASURES=500
+NMEASURES=150
 
-ARRAY_ROWS=(5000 10000)
-ARRAY_COLUMNS=(2000 8000)
+ARRAY_RC=(5000 8000 10000)
 ARRAY_THS=(0 1 2 4 8)
+TIMEFORMAT='%3U;%3E;%3S;%P'
+ARRAY_OPT=(1 2 3)
 
 trap "exit" INT
-mkdir -p measure/ 2> /dev/null 
 
 for ths in "${ARRAY_THS[@]}"; do
-	for size_r in "${ARRAY_ROWS[@]}"; do
-		for size_c in "${ARRAY_COLUMNS[@]}";do
-			OUT_FILE=measure/SIZE-$size_r\x$size_c-NTH-$ths-$TIME_STAMP.csv
-			echo $OUT_FILE
-			echo "row,columns,threads,user,elapsed,sys,pCPU" >$OUT_FILE
+	for size in "${ARRAY_RC[@]}"; do
+		for opt in "${ARRAY_OPT[@]}"; do
+			OUT_FILE=measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths-O$opt-$TIME_STAMP.csv
+			mkdir -p $(dirname $OUT_FILE) 2> /dev/null
+			echo $(basename $OUT_FILE)
+			echo "row,columns,threads,init,dotprod,user,elapsed,sys,pCPU" >$OUT_FILE
 			for ((i = 0 ; i < $NMEASURES	; i++)); do
-				if [[ $ths -ne 0 ]]; then 
-					/usr/bin/time -f "$size_r,$size_c,$ths,%U,%e,%S,%P" -o $OUT_FILE --append ../../build/CommonAssignment1/program $size_r $size_c $ths
+				if [[ $ths -ne 0 ]]; then
+					(time ../../build/CommonAssignment1/program_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 				else
-					/usr/bin/time -f "$size_r,$size_c,$ths,%U,%e,%S,%P" -o $OUT_FILE --append ../../build/CommonAssignment1/program_seq $size_r $size_c $ths
+					(time ../../build/CommonAssignment1/program_seq_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 				fi
-				printf "\r> %d/%d %3.1d%% " $i $NMEASURES $(expr \( $i \* 100 \) / $NMEASURES)
+				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			done
 			printf "\n"

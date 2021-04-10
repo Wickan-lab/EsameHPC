@@ -48,10 +48,10 @@ int main(int argc, char const *argv[])
 	dot_product(a, b, result, rows, columns, threads);
 	ENDTIME(2, time_dot);
 
-	printf("%f,%f\n", time_init, time_dot);
+    printf("%d;%d;%d;%f;%f\n", rows, columns, threads, time_init, time_dot);
 
 	free(a);
-	free(b);
+    free(b);
 	free(result);
 
 	return 0;

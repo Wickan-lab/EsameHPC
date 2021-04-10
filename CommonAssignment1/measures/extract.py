@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import logging
 from scipy import stats
+import seaborn as sns
 from prettytable import PrettyTable
 from prettytable import MARKDOWN
 
@@ -79,10 +80,8 @@ def _extract(path_to_folder,plot_columns):
 		os.mkdir("jpg")
 
 	#Remove not csv files
-	for filename in filenames:
-		os.path.isdir(filename)
-		if (filename.split(".")[-1] != "csv"):
-			filenames.remove(filename)
+	filenames = [f for f in os.listdir('.') if f.endswith(".csv") ]
+	print(filenames)
 
 	filenames = sorted(filenames)
 	means = {}
@@ -97,17 +96,12 @@ def _extract(path_to_folder,plot_columns):
 			x_data = ds[col]
 			mean,std=stats.norm.fit(x_data)
 			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
-			#x_data = ds[ds[col] < (mean + std)]
-			#x_data = ds[ds[col] > (mean - std)]
-
+			x_data = ds[(ds[col] < (mean + std)) & (ds[col] > (mean - std))][col]
+			mean,std=stats.norm.fit(x_data)
 			file_mean[col] = mean
 			
-			if plot_columns[col]['jpg']:	
-				plt.hist(x_data, bins=20, density=True)
-				#xmin, xmax = plt.xlim()
-				#x = np.linspace(xmin, xmax, 100)
-				#y = stats.norm.pdf(x, mean, std)
-				#plt.plot(x, y)
+			if plot_columns[col]['jpg']:
+				sns.histplot(x_data, kde=True)
 				plt.savefig("jpg/" + str(col)+ "_" + filename.split('.')[0] + ".jpg")
 				plt.close()
 			
