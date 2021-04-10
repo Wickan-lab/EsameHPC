@@ -33,7 +33,7 @@ config = {
 
 				'jpg':False,
 				'speedup':False
-				
+
 			},
 			'dotprod':{
 
@@ -180,7 +180,7 @@ def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
 		print(f"Folder : {folder}")
 		joined_path = os.path.join(root,folder)
 		means = _extract(joined_path,cols)
-		header = {'values':['Version','Threads','User','Sys','Elapsed','Speedup','Efficiency']}
+		header = {'values':['Version','Threads','Init','Dotprod','User','Sys','Elapsed','Speedup','Efficiency']}
 		cells = {'values':[]}
 		nt = -1
 		for filename_key in means:
