@@ -23,7 +23,6 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import pandas as pd
 import logging
-import plotly.graph_objects as go
 from scipy import stats
 from prettytable import PrettyTable
 from prettytable import MARKDOWN
