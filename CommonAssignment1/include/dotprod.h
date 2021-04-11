@@ -38,6 +38,7 @@
   x = ((double)(end_time_42_##id - start_time_42_##id)) / CLOCKS_PER_SEC
 
 void init_structures(double **, double **, double **, int, int, int);
+void init_structures_upgr(double **, double **, double **, int, int, int);
 void dot_product(double *, double *, double *, int, int, int);
 void dot_product_upgr(double *, double *, double *, int, int, int);
 
