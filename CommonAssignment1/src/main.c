@@ -28,7 +28,8 @@
 int main(int argc, char const *argv[])
 {
 
-	double *a, *b, *result, time_dot = 0.0, time_init = 0.0;
+	ELEMENT_TYPE *a, *b, *result;
+	double time_dot = 0.0, time_init = 0.0;
 	int rows, columns, threads;	
 
 	if(argc < 4){

@@ -26,12 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define FLOAT sizeof(float)
-#define DOUBLE sizeof(double)
-#define INT sizeof(int)
-
-typedef void (* decorableDot)(double *, double *, double *, int, int, int);
-typedef void (* decorableInit)(double **, double **, double **, int, int, int);
+typedef void (* decorableDot)(ELEMENT_TYPE *, ELEMENT_TYPE *, ELEMENT_TYPE *, int, int, int);
+typedef void (* decorableInit)(ELEMENT_TYPE **, ELEMENT_TYPE **, ELEMENT_TYPE **, int, int, int);
 
 
 /**
@@ -44,7 +40,7 @@ typedef void (* decorableInit)(double **, double **, double **, int, int, int);
  * @param threads  number of threads.
  * @param init     decorated function init_structures.
  */
-void test_init_structure(double **a, double **b, double **result, int rows, int columns, int threads, decorableInit init){
+void test_init_structure(ELEMENT_TYPE **a, ELEMENT_TYPE **b, ELEMENT_TYPE **result, int rows, int columns, int threads, decorableInit init){
 	init(a, b, result, rows, columns, threads);
 
 	int i = 0;
@@ -52,17 +48,9 @@ void test_init_structure(double **a, double **b, double **result, int rows, int 
 	FILE *fp;
 	fp = fopen("test_dims.txt","w");
 
-	assert((rows*columns*DOUBLE) == fwrite(*a,DOUBLE, rows*columns*DOUBLE,fp));
-	assert((columns*DOUBLE) == fwrite(*b,DOUBLE, columns*DOUBLE,fp));
-	assert((rows*DOUBLE) == fwrite(*result,DOUBLE, rows*DOUBLE,fp));
-
-	assert((rows*columns*FLOAT) == fwrite(*a,FLOAT, rows*columns*FLOAT,fp));
-	assert((columns*FLOAT) == fwrite(*b,FLOAT, columns*FLOAT,fp));
-	assert((rows*FLOAT) == fwrite(*result,FLOAT, rows*FLOAT,fp));
-
-	assert((rows*columns*INT) == fwrite(*a,INT, rows*columns*INT,fp));
-	assert((columns*INT) == fwrite(*b,INT, columns*INT,fp));
-	assert((rows*INT) == fwrite(*result,INT, rows*INT,fp));
+	assert((rows*columns*sizeof(ELEMENT_TYPE)) == fwrite(*a,sizeof(ELEMENT_TYPE), rows*columns*sizeof(ELEMENT_TYPE),fp));
+	assert((columns*sizeof(ELEMENT_TYPE)) == fwrite(*b,sizeof(ELEMENT_TYPE), columns*sizeof(ELEMENT_TYPE),fp));
+	assert((rows*sizeof(ELEMENT_TYPE)) == fwrite(*result,sizeof(ELEMENT_TYPE), rows*sizeof(ELEMENT_TYPE),fp));
 
 	fclose(fp);
 
@@ -80,11 +68,10 @@ void test_init_structure(double **a, double **b, double **result, int rows, int 
  * @param threads    number of threads.
  * @param dot        decorated dot product function.
  */
-void test_dot_product(double*expec,int size, double *a, double *b, double *result, int rows, int columns, int threads, decorableDot dot){ //double*a,double*b,int size, 
+void test_dot_product(ELEMENT_TYPE*expec,int size, ELEMENT_TYPE *a, ELEMENT_TYPE *b, ELEMENT_TYPE *result, int rows, int columns, int threads, decorableDot dot){ //double*a,double*b,int size, 
 	dot(a,b,result,rows,columns,threads);
 
 	for (int i = 0; i < size; i++){
-		printf("%f %f\n",expec[i],(result)[i]);
 		assert(expec[i] == (result)[i]);
 	}
 }
@@ -92,36 +79,36 @@ void test_dot_product(double*expec,int size, double *a, double *b, double *resul
 
 int main(int argc, char const *argv[])
 {
-	double *a, *b, *result;
+	ELEMENT_TYPE *a, *b, *result;
 	int threads = 4;
 	int columns = 10;
 	int rows = 10;
 
 	test_init_structure(&a, &b, &result, rows, columns, threads, init_structures);
 
-	double a1[rows*columns];
-	double a2[rows*columns];
-	double a3[rows*columns];
-	double a5[rows*columns];
+	ELEMENT_TYPE a1[rows*columns];
+	ELEMENT_TYPE a2[rows*columns];
+	ELEMENT_TYPE a3[rows*columns];
+	ELEMENT_TYPE a5[rows*columns];
 
-	double b1[columns];
-	double b2[columns];
-	double b3[columns];
-	double b4[columns];
-	double b5[columns];
+	ELEMENT_TYPE b1[columns];
+	ELEMENT_TYPE b2[columns];
+	ELEMENT_TYPE b3[columns];
+	ELEMENT_TYPE b4[columns];
+	ELEMENT_TYPE b5[columns];
 
-	double expected_result1[] = {0,0,0,0,0,0,0,0,0,0};
-	double expected_result2[] = {385,385,385,385,385,385,385,385,385,385};
-	double expected_result3[] = {1,2,3,4,5,6,7,8,9,10};
-	double expected_result4[] = {20,40,60,80,100,120,140,160,180,200};
-	double expected_result5[] = {12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348};
+	ELEMENT_TYPE expected_result1[] = {0,0,0,0,0,0,0,0,0,0};
+	ELEMENT_TYPE expected_result2[] = {385,385,385,385,385,385,385,385,385,385};
+	ELEMENT_TYPE expected_result3[] = {1,2,3,4,5,6,7,8,9,10};
+	ELEMENT_TYPE expected_result4[] = {20,40,60,80,100,120,140,160,180,200};
+	ELEMENT_TYPE expected_result5[] = {12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348,12348};
 
 	for(int i=0; i<(rows);i++){
 		for(int j = 0; j < columns; j++){
-			a1[i*columns + j] = (double)(i + 1);
-			a2[i*columns + j] = (double)(j + 1);
+			a1[i*columns + j] = (ELEMENT_TYPE)(i + 1);
+			a2[i*columns + j] = (ELEMENT_TYPE)(j + 1);
 			if(i == j)
-				a3[i*columns + j] = (double)(i + 1);
+				a3[i*columns + j] = (ELEMENT_TYPE)(i + 1);
 			else
 				a3[i*columns + j] = 0.0;
 		}
@@ -129,7 +116,7 @@ int main(int argc, char const *argv[])
 
 	for(int k = 0; k < columns; k++){
 		b1[k] = 0.0;
-		b2[k] = (double)(k + 1);
+		b2[k] = (ELEMENT_TYPE)(k + 1);
 		b3[k] = 1.0;
 		b4[k] = 2.0;
 	}
