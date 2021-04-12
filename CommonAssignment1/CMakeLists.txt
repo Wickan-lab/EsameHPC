@@ -63,7 +63,7 @@ target_compile_features(program_seq_O1 PRIVATE c_std_11)
 target_compile_features(program_seq_O2 PRIVATE c_std_11)
 target_compile_features(program_seq_O3 PRIVATE c_std_11)
 
-option(ELEMENT_TYPE "Type of the elements in matrices and array." double)
+set(ELEMENT_TYPE double CACHE STRING "Type of the elements in matrices and arrays.")
 target_compile_definitions(program_O1 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
 target_compile_definitions(program_O2 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
 target_compile_definitions(program_O3 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
