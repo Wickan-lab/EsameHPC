@@ -37,8 +37,8 @@
   end_time_42_##id = clock(); \
   x = ((double)(end_time_42_##id - start_time_42_##id)) / CLOCKS_PER_SEC
 
-void init_structures(double **, double **, double **, int, int, int);
-void dot_product(double *, double *, double *, int, int, int);
-void dot_product_upgr(double *, double *, double *, int, int, int);
+void init_structures(ELEMENT_TYPE **, ELEMENT_TYPE **, ELEMENT_TYPE **, int, int, int);
+void dot_product(ELEMENT_TYPE *, ELEMENT_TYPE *, ELEMENT_TYPE *, int, int, int);
+void dot_product_upgr(ELEMENT_TYPE *, ELEMENT_TYPE *, ELEMENT_TYPE *, int, int, int);
 
 #endif

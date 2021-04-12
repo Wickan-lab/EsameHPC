@@ -41,19 +41,19 @@
  * @param columns  number of columns.
  * @param threads  number of threads.
  */
-void init_structures(double **a, double **b, double **result, int rows, int columns, int threads){
+void init_structures(ELEMENT_TYPE **a, ELEMENT_TYPE **b, ELEMENT_TYPE **result, int rows, int columns, int threads){
 
-	double *tmp_a, *tmp_b, *tmp_result;
+	ELEMENT_TYPE *tmp_a, *tmp_b, *tmp_result;
 
-	tmp_a = (double *)malloc((rows * columns) * sizeof(double));
+	tmp_a = (ELEMENT_TYPE *)malloc((rows * columns) * sizeof(ELEMENT_TYPE));
 	if (tmp_a == NULL)
 		perror("Memory Allocation - a");
 
-   	tmp_b = (double *)malloc(columns * sizeof(double));
+   	tmp_b = (ELEMENT_TYPE *)malloc(columns * sizeof(ELEMENT_TYPE));
    	if (tmp_b == NULL)
 		perror("Memory Allocation - b");
 
-	tmp_result = (double *)malloc(rows * sizeof(double));
+	tmp_result = (ELEMENT_TYPE *)malloc(rows * sizeof(ELEMENT_TYPE));
 	if (tmp_result == NULL)
 		perror("Memory Allocation - result");
 
@@ -66,7 +66,7 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
 		#pragma omp for
 			for (int i = 0; i < rows; ++i)
 				for (int j = 0; j < columns; ++j)
-					tmp_a[i*columns + j] = (double)(i + 1);
+					tmp_a[i*columns + j] = (ELEMENT_TYPE)(i + 1);
 	}
 
 	*a = tmp_a;
@@ -83,10 +83,10 @@ void init_structures(double **a, double **b, double **result, int rows, int colu
  * @param columns    number of columns.
  * @param threads    number of threads.
  */
-void dot_product(double *a, double *b, double *result, int rows, int columns, int threads){
+void dot_product(ELEMENT_TYPE *a, ELEMENT_TYPE *b, ELEMENT_TYPE *result, int rows, int columns, int threads){
 
 	int i, j;
-	double dot;
+	ELEMENT_TYPE dot;
 
 	#pragma omp parallel for default(none) shared(a, b, result, rows, columns) private (i, j, dot) num_threads(threads)
 		for(i = 0; i < rows; ++i){
@@ -106,10 +106,10 @@ void dot_product(double *a, double *b, double *result, int rows, int columns, in
  * @param columns     number of columns.
  * @param threads    number of threads.
  */
-void dot_product_upgr(double *a, double *b, double *result, int rows, int columns, int threads){
+void dot_product_upgr(ELEMENT_TYPE *a, ELEMENT_TYPE *b, ELEMENT_TYPE *result, int rows, int columns, int threads){
 
 	int i, j;
-	double dot;
+	ELEMENT_TYPE dot;
 
 	#pragma omp parallel for default(none) shared(a, b, result, rows, columns, threads) private (i, j, dot) num_threads(threads)
 		for(i = 0; i < rows; ++i){

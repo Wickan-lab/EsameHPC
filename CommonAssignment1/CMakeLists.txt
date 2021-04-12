@@ -20,7 +20,7 @@
 #[[ 
 	Define the version of cmake necessary for executing this 
  ]]
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.9)
 project(CommonAssignment1
 	DESCRIPTION "First common assignment of the HPC course"
 	VERSION 0.1
@@ -63,8 +63,17 @@ target_compile_features(program_seq_O1 PRIVATE c_std_11)
 target_compile_features(program_seq_O2 PRIVATE c_std_11)
 target_compile_features(program_seq_O3 PRIVATE c_std_11)
 
+option(ELEMENT_TYPE "Type of the elements in matrices and array." double)
+target_compile_definitions(program_O1 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
+target_compile_definitions(program_O2 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
+target_compile_definitions(program_O3 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
+target_compile_definitions(program_seq_O1 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
+target_compile_definitions(program_seq_O2 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
+target_compile_definitions(program_seq_O3 PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
+
 add_executable(dotprod_test test/test.c src/dotprod.c)
 target_include_directories(dotprod_test PRIVATE include)
+target_compile_definitions(dotprod_test PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
 
 add_test(NAME dotprod_test
 	COMMAND dotprod_test )
