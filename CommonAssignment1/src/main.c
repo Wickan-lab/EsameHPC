@@ -41,14 +41,14 @@ int main(int argc, char const *argv[])
 	threads = atoi(argv[3]);
 
 	STARTTIME(1);
-	init_structures_upgr(&a, &b, &result, rows, columns, threads);
+	init_structures(&a, &b, &result, rows, columns, threads);
 	ENDTIME(1, time_init);
 
 	STARTTIME(2);
-	dot_product(a, b, result, rows, columns, threads);
+	dot_product_upgr(a, b, result, rows, columns, threads);
 	ENDTIME(2, time_dot);
 
-    	printf("%d;%d;%d;%f;%f\n", rows, columns, threads, time_init, time_dot);
+    printf("%d;%d;%d;%f;%f\n", rows, columns, threads, time_init, time_dot);
 
 	free(a);
 	free(b);

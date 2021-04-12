@@ -173,7 +173,7 @@ void dot_product_upgr(double *a, double *b, double *result, int rows, int column
 	#pragma omp parallel for default(none) shared(a, b, result, rows, columns, threads) private (i, j, dot) num_threads(threads)
 		for(i = 0; i < rows; ++i){
 			dot = 0.0;
-			for (j = 0; j < columns; j+=2){
+			for (j = 0; j < columns - 2; j+=2){
 				dot += (a[i*columns + j]*b[j] + a[i*columns + (j+1)]*b[j+1]);
 			}
 			result[i] = dot;
