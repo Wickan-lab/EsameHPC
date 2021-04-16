@@ -29,6 +29,7 @@ from prettytable import PrettyTable
 from prettytable import MARKDOWN
 import re
 
+
 config = {
 			'init':{
 
@@ -148,12 +149,16 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 		x.append(row[thread_pos])
 		y.append(row[speedup_pos])
 
-	x_th = np.linspace(0, 4.8, 5)
+	x_th = np.array(x)
+	fig, ax = plt.subplots(figsize=(12, 8))
+	ax.plot(x_th, y, 'ro-', label='Experimental')
+	ax.plot(x_th, x_th, color='blue', label='Ideal')
+	#same as y_th, bisection
 	plt.style.use('seaborn-whitegrid')
+
 	plt.autoscale(enable=True, axis='x', tight=True)
-	plt.autoscale(enable=True, axis='y', tight=True)		
-	plt.plot(x,y,'r',label='Measured')
-	plt.plot(x_th,x_th + 0,'b',label='Ideal')
+	plt.autoscale(enable=True, axis='y', tight=True)	
+
 	plt.legend()
 	plt.xlabel("Processors")
 	plt.ylabel("Speedup")
@@ -162,6 +167,10 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	if save:
 		plt.savefig(name)
 	plt.close()
+
+
+def _add_points(y,threads=[0,1,2,4,8]):
+	new_y = []
 
 def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
 	print("Initializing logger")
