@@ -19,31 +19,41 @@
 #
 
 TIME_STAMP=$(date +%s)
-NMEASURES=200
+NMEASURES=20
 
 ARRAY_RC=(5000 8000 10000 20000)
-ARRAY_THS=(0 1 2 4 8 16 32)
+ARRAY_THS=(1 2 4 8 16 32)
 TIMEFORMAT='%3U;%3E;%3S;%P'
-ARRAY_OPT=(0 1 2 3)
+ARRAY_OPT=(1 2 3)
 
 trap "exit" INT
 
-for ths in "${ARRAY_THS[@]}"; do
-	for size in "${ARRAY_RC[@]}"; do
+for size in "${ARRAY_RC[@]}"; do
+	OUT_SEQ=measure/SIZE-$size/SIZE-$size-NTH-0-O0-$TIME_STAMP.csv
+	mkdir -p $(dirname $OUT_SEQ) 2> /dev/null
+	
+	echo $(basename $OUT_SEQ)
+	echo "row,columns,threads,init,dotprod,user,elapsed,sys,pCPU" >$OUT_SEQ
+	for ((i = 0 ; i < $NMEASURES	; i++)); do
+		(time ../../build/CommonAssignment1/program_seq_O0 $size $size 0 )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_SEQ
+			printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+			printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+	done
+	printf "\n"
+
+	for ths in "${ARRAY_THS[@]}"; do
 		for opt in "${ARRAY_OPT[@]}"; do
 			OUT_FILE=measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths-O$opt-$TIME_STAMP.csv
 			mkdir -p $(dirname $OUT_FILE) 2> /dev/null
+			ln -srf $OUT_SEQ $(dirname $OUT_FILE)/$(basename $OUT_SEQ)
 			echo $(basename $OUT_FILE)
 			echo "row,columns,threads,init,dotprod,user,elapsed,sys,pCPU" >$OUT_FILE
 			for ((i = 0 ; i < $NMEASURES	; i++)); do
-				if [[ $ths -ne 0 ]]; then
-					(time ../../build/CommonAssignment1/program_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
-				else
-					(time ../../build/CommonAssignment1/program_seq_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
-				fi
+				(time ../../build/CommonAssignment1/program_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			done
+
 			printf "\n"
 		done
 	done

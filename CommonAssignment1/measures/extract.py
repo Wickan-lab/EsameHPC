@@ -27,6 +27,7 @@ from scipy import stats
 import seaborn as sns
 from prettytable import PrettyTable
 from prettytable import MARKDOWN
+import re
 
 config = {
 			'init':{
@@ -166,7 +167,7 @@ def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
 	print("Initializing logger")
 	logging.basicConfig(filename='extraction.log' ,level=logging.INFO, format='%(asctime)s %(message)s')
 	print("Listing folder for problem size")
-	folders =  [f for f in os.listdir(root) if os.path.isdir(os.path.join(root,f))]
+	folders =  [f for f in os.listdir(root) if (os.path.isdir(os.path.join(root,f)) and re.match("SIZE-[0-9]+-O[0-9]",f))]
 	print(f"Found folders : {folders}")
 
 	for folder in folders:
