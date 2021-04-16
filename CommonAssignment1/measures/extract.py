@@ -189,13 +189,13 @@ def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
 		for filename_key in means:
 			cell = []
 			splitted_filename=filename_key.split("-")
-			if "NTH-0" in filename_key:
+			if "NTH-00" in filename_key:
 				seq = means[filename_key]['elapsed']
 				nt = 1
 				cell.append('Serial')
 				cell.append(nt)
 			else:
-				nt = splitted_filename[3]
+				nt = int(splitted_filename[3])
 				cell.append('Parallel')
 				cell.append(nt)
 

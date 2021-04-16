@@ -29,7 +29,7 @@ ARRAY_OPT=(1 2 3)
 trap "exit" INT
 
 for size in "${ARRAY_RC[@]}"; do
-	OUT_SEQ=measure/SIZE-$size/SIZE-$size-NTH-0-O0-$TIME_STAMP.csv
+	OUT_SEQ=measure/SIZE-$size/SIZE-$size-NTH-00-O0-$TIME_STAMP.csv
 	mkdir -p $(dirname $OUT_SEQ) 2> /dev/null
 	
 	echo $(basename $OUT_SEQ)
@@ -43,7 +43,8 @@ for size in "${ARRAY_RC[@]}"; do
 
 	for ths in "${ARRAY_THS[@]}"; do
 		for opt in "${ARRAY_OPT[@]}"; do
-			OUT_FILE=measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths-O$opt-$TIME_STAMP.csv
+			ths_str=$(printf "%02d" $ths)
+			OUT_FILE=measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths_str-O$opt-$TIME_STAMP.csv
 			mkdir -p $(dirname $OUT_FILE) 2> /dev/null
 			ln -srf $OUT_SEQ $(dirname $OUT_FILE)/$(basename $OUT_SEQ)
 			echo $(basename $OUT_FILE)
