@@ -1463,3 +1463,5 @@ Dynamic Schedule with chunk size
 2021-04-16 12:55:39,655 Using categorical units to plot a list of strings that are all parsable as floats or dates. If these strings should be plotted as numbers, cast to the appropriate data type before plotting.
 2021-04-16 17:34:13,809 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
 2021-04-16 17:34:13,810 NumExpr defaulting to 8 threads.
+2021-04-17 14:13:14,170 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-17 14:13:14,170 NumExpr defaulting to 8 threads.
