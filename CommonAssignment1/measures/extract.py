@@ -168,10 +168,6 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 		plt.savefig(name)
 	plt.close()
 
-
-def _add_points(y,threads=[0,1,2,4,8]):
-	new_y = []
-
 def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
 	print("Initializing logger")
 	logging.basicConfig(filename='extraction.log' ,level=logging.INFO, format='%(asctime)s %(message)s')
