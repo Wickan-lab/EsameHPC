@@ -22,7 +22,6 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 import pandas as pd
-import logging
 from scipy import stats
 import seaborn as sns
 from prettytable import PrettyTable
@@ -62,15 +61,6 @@ config = {
 
 				}
 		}
-
-def _clean(filename):
-	with open(filename,"r+") as f:
-		d = f.readlines()
-		f.seek(0)
-		for i in d:
-			if not ("Command" in i): # TODO : use regex instead, and print in log something to signal it
-				f.write(i)
-		f.truncate()
 
 def _extract(path_to_folder,plot_columns):
 	prev = os.getcwd()
@@ -114,9 +104,6 @@ def _extract(path_to_folder,plot_columns):
 def _compute_speedup(t,tp,nt,psize):
 	speedup = t/tp
 	efficiency = t/(tp*float(nt))
-	if tp == 0:
-		logging.info("Speedup P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
-		logging.info("Efficiency P = " + str(nt) + " & Problem Size = " + psize + "-> Divide By Zero")
 	return speedup,efficiency
 
 def _make_table(header,rows,print_table=False,save=True,name=""):
@@ -168,9 +155,7 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 		plt.savefig(name)
 	plt.close()
 
-def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
-	print("Initializing logger")
-	logging.basicConfig(filename='extraction.log' ,level=logging.INFO, format='%(asctime)s %(message)s')
+def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/"), cols=config, threads=[0,1,2,4,8]):
 	print("Listing folder for problem size")
 	folders =  [f for f in os.listdir(root) if (os.path.isdir(os.path.join(root,f)) and re.match("SIZE-[0-9]+-O[0-9]",f))]
 	print(f"Found folders : {folders}")
