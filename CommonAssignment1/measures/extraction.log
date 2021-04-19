@@ -1465,3 +1465,15 @@ Dynamic Schedule with chunk size
 2021-04-16 17:34:13,810 NumExpr defaulting to 8 threads.
 2021-04-17 14:13:14,170 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
 2021-04-17 14:13:14,170 NumExpr defaulting to 8 threads.
+2021-04-19 17:28:29,642 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-19 17:28:29,642 NumExpr defaulting to 8 threads.
+2021-04-19 17:30:43,958 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-19 17:30:43,959 NumExpr defaulting to 8 threads.
+2021-04-19 17:46:07,486 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-19 17:46:07,486 NumExpr defaulting to 8 threads.
+2021-04-19 17:46:50,944 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-19 17:46:50,944 NumExpr defaulting to 8 threads.
+2021-04-19 18:02:24,577 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-19 18:02:24,577 NumExpr defaulting to 8 threads.
+2021-04-19 18:04:19,675 Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2021-04-19 18:04:19,676 NumExpr defaulting to 8 threads.

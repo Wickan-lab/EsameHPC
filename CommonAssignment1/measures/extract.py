@@ -27,6 +27,7 @@ from scipy import stats
 import seaborn as sns
 from prettytable import PrettyTable
 from prettytable import MARKDOWN
+from prettytable import MSWORD_FRIENDLY
 import re
 
 
@@ -82,7 +83,7 @@ def _extract(path_to_folder,plot_columns):
 		os.mkdir("jpg")
 
 	#Remove not csv files
-	filenames = [f for f in os.listdir('.') if f.endswith(".csv") ]
+	filenames = [f for f in os.listdir('.') if f.endswith(".csv") and re.match("SIZE-[0-9]+-NTH-[0-9]{2}-O[0-9]-?[0-9]*",f) ]
 	print(filenames)
 
 	filenames = sorted(filenames)
@@ -133,7 +134,8 @@ def _make_table(header,rows,print_table=False,save=True,name=""):
 
 def _save_table(table,filename):
 	with open(filename,"w") as table_file:
-		table.set_style(MARKDOWN)
+		#table.set_style(MARKDOWN)
+		table.set_style(MSWORD_FRIENDLY)
 		data = table.get_string()
 		table_file.write(data)
 
@@ -207,7 +209,7 @@ def extraction(root="measure/", cols=config, threads=[0,1,2,4,8]):
 		splitted_folder = folder.split("-")
 		size = splitted_folder[1]
 		opt = splitted_folder[2]
-		table_filename = joined_path + "/psize-" + size + "-" + str(opt) + "-table.md"
+		table_filename = joined_path + "/psize-" + size + "-" + str(opt) + "-table.csv"
 		plot_filename = joined_path + "/speedup-" + str(size) + "-" + str(opt) +  ".jpg"
 
 		table = _make_table(header['values'],cells['values'],name=table_filename)
