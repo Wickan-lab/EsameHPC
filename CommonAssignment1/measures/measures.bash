@@ -28,6 +28,8 @@ ARRAY_OPT=(0 1 2 3)
 
 trap "exit" INT
 
+SCRIPTPATH=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
+
 if [[ $1 == "-p" ]]; then
 	for size in "${ARRAY_RC[@]}"; do
 		for opt in "${ARRAY_OPT[@]}"; do
@@ -35,10 +37,10 @@ if [[ $1 == "-p" ]]; then
 			if [[ $opt -eq 0 ]]; then
 				continue;
 			else
-				OUT_FILE=measure/SIZE-$size-O$opt/SIZE-$size-NTH-00-O$opt.csv
+				OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-O$opt/SIZE-$size-NTH-00-O$opt.csv
 			fi
-			OUT_LINK=measure/SIZE-$size-O$opt/SIZE-$size-NTH-00-O0.csv
-			OUT_FILE_LINK=measure/SIZE-$size/SIZE-$size-NTH-00-O0.csv
+			OUT_LINK=$SCRIPTPATH/measure/SIZE-$size-O$opt/SIZE-$size-NTH-00-O0.csv
+			OUT_FILE_LINK=$SCRIPTPATH/measure/SIZE-$size/SIZE-$size-NTH-00-O0.csv
 
 			if [[ -f "$OUT_FILE.old" ]]; then
 				rm $OUT_LINK
@@ -56,9 +58,9 @@ else
 				ths_str=$(printf "%02d" $ths)
 				
 				if [[ $opt -eq 0 ]]; then
-					OUT_FILE=measure/SIZE-$size/SIZE-$size-NTH-$ths_str-O$opt.csv
+					OUT_FILE=$SCRIPTPATH/measure/SIZE-$size/SIZE-$size-NTH-$ths_str-O$opt.csv
 				else
-					OUT_FILE=measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths_str-O$opt.csv
+					OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths_str-O$opt.csv
 				fi
 	
 				if [[ $opt -eq 0 && $ths -ne 0 ]]; then
@@ -72,11 +74,11 @@ else
 				
 				for ((i = 0 ; i < $NMEASURES	; i++)); do
 					if [[ $ths -eq 0 ]]; then
-						(time ../../build/CommonAssignment1/program_seq_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
+						(time $1/program_seq_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 						printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 						printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 					else
-						(time ../../build/CommonAssignment1/program_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
+						(time $1/program_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 						printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 						printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 					fi
