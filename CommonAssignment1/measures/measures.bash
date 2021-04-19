@@ -66,7 +66,6 @@ else
 				fi
 			
 				mkdir -p $(dirname $OUT_FILE) 2> /dev/null
-				#ln -srf $OUT_SEQ $(dirname $OUT_FILE)/$(basename $OUT_SEQ)
 				
 				echo $(basename $OUT_FILE)
 				echo "row,columns,threads,init,dotprod,user,elapsed,sys,pCPU" >$OUT_FILE
@@ -82,7 +81,6 @@ else
 						printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 					fi
 				done
-
 				printf "\n"
 			done
 		done
