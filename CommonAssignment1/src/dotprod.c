@@ -1,4 +1,13 @@
 /* 
+ * Course: High Performance Computing 2020/2021
+ * 
+ * Lecturer: Francesco Moscato
+ *
+ * Group:
+ * Capitani	Giuseppe	0622701085	g.capitani@studenti.unisa.it               
+ * Falanga	Armando	0622701140  a.falanga13@studenti.unisa.it 
+ * Terrone	Luigi		0622701071  l.terrone2@studenti.unisa.it
+ *
  * Copyright (C) 2021 - All Rights Reserved 
  *
  * This file is part of CommonAssignment1.
