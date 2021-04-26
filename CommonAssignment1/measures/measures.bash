@@ -2,7 +2,7 @@
 # 
 # Course: High Performance Computing 2020/2021
 # 
-# Lecturer: Francesco Moscato
+# Lecturer: Francesco Moscato	fmoscato@unisa.it
 #
 # Group:
 # Capitani	Giuseppe	0622701085	g.capitani@studenti.unisa.it               
