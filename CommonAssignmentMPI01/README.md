@@ -1,10 +1,10 @@
 Parallelize and Evaluate Performances of "Matrix dot Matrix" Algorithm , by using MPI.
 
-Matrix multiplication to use is the "raw - column" multiplication, where elements or result matrix is obtained by scalar multiplication of one raw of the first Matrix for one raw of the second Matrix
+Matrix multiplication ("row - column" multiplication), where elements or result matrix is obtained by scalar multiplication of one row of the first Matrix for one column of the second Matrix
 
 
 
-Use  MPI DataTypes to model raw and column types
+Use MPI DataTypes to model row and column types
 
 Evaluate performances when reading files with different MPI I/O approaches
 
