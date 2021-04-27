@@ -14,11 +14,13 @@
  */
 int main ( int argc, char *argv[] )
 {
-	MPI_Init(&argc,&argv);
+	
+	int rank, size;
 
-	// Get process rank
-	int rank = 0;
+	// Get process rank and size
+	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+	MPI_Comm_size(MPI_COMM_WORLD,&size);
 
 	// Parse parameters
 	if(argc != 5){
@@ -52,23 +54,29 @@ int main ( int argc, char *argv[] )
 	MPI_Type_contiguous(n_columns_A,MPI_DOUBLE,&dt_row_a);
 	MPI_Type_commit(&dt_row_a);
 
+	// Column datatype for B matrix
+	MPI_Datatype dt_column_b;
+#if VERSION != 5
+	MPI_Type_vector(n_rows_B, 1, n_columns_B, MPI_DOUBLE, &dt_column_b);
+#else
+	MPI_Type_vector(n_columns_B, 1, n_rows_B, MPI_DOUBLE, &dt_column_b);
+#endif
+	MPI_Type_commit(&dt_column_b);
+
 	// Process with rank 0 initializes the matrixes
 	if(rank == 0){
 		double *a,*b;
 		init(&a,&b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
 
-		MPI_Datatype dt_column_b;
-		MPI_Type_vector(n_rows_B,1,n_columns_B,MPI_DOUBLE,&dt_column_b);
-		MPI_Type_commit(&dt_column_b);
-
+		MPI_File_write(fh_a, a, n_rows_A, dt_row_a, MPI_STATUS_IGNORE);
 		// And writes them on file
-		MPI_File_write(fh_a, a, n_rows_A, dt_row_a,MPI_STATUS_IGNORE);
-		for(int i = 0; i < n_columns_B; i++){
-			MPI_File_write(fh_b,b+i,1,dt_column_b,MPI_STATUS_IGNORE);
-		}
-		
-		MPI_Type_free(&dt_column_b);
-		
+#if VERSION == 5
+		MPI_File_write(fh_b, b, n_rows_B * n_columns_B, MPI_DOUBLE, MPI_STATUS_IGNORE);
+#else
+		for(int i = 0; i < n_columns_B; i++)
+			MPI_File_write(fh_b ,b+i, 1, dt_column_b, MPI_STATUS_IGNORE);
+#endif
+
 		// Process with rank 0 will read the file
 		// after
 		MPI_File_seek(fh_a,0,MPI_SEEK_SET);
@@ -77,8 +85,7 @@ int main ( int argc, char *argv[] )
 	}
 
 	// Calculate chunk size for each process
-	int size = 0;
-	MPI_Comm_size(MPI_COMM_WORLD,&size);
+
 	int chunk_size_A_rows = n_rows_A / size;
 	if(rank == (size-1)){
 		chunk_size_A_rows = n_rows_A - rank * chunk_size_A_rows ; 
@@ -99,15 +106,48 @@ int main ( int argc, char *argv[] )
 #elif VERSION == 3
 	int displacement = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
 	MPI_File_set_view(fh_a, displacement, MPI_DOUBLE, MPI_DOUBLE, "native", MPI_INFO_NULL);
-	MPI_File_read_all(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
+	MPI_File_read_all(fh_a, a, chunk_size_A_rows * n_columns_A, MPI_DOUBLE, MPI_STATUS_IGNORE);
+#elif VERSION == 4
+	int displacement = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
+	MPI_File_set_view(fh_a, displacement, MPI_BYTE, dt_row_a, "native", MPI_INFO_NULL);
+	MPI_File_read(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
+#elif VERSION == 5
+	int displacement_row = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
+	MPI_File_set_view(fh_a, displacement_row, MPI_BYTE, dt_row_a, "native", MPI_INFO_NULL);
+	MPI_File_read(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
+
+	for (int i = 0; i < n_rows_B; ++i)
+		MPI_File_read(fh_b, b + i, 1, dt_column_b, MPI_STATUS_IGNORE);		
+
+	/*for (int i = 0; i < chunk_size_A_rows; ++i)
+	{
+		for (int j = 0; j < n_columns_A; ++j)
+		{
+			printf("%.2f ", a[i*n_columns_A + j]);
+		}
+		printf("\n --- \n");
+	}
+
+	printf("------- Start B rank %d-------\n", rank);
+	for (int i = 0; i < n_columns_B; ++i)
+		{
+			for (int j = 0; j < n_rows_B; ++j)
+			{
+				printf("%.2f ", b[i*n_rows_B + j]);
+			}
+			printf("\n");
+		}
+	printf("------- END B rank %d-------\n", rank);
+	*/
 #endif
 
-	// Read matrix B
-	MPI_Type_free(&dt_row_a);
-	MPI_File_read(fh_b,b,n_rows_B*n_columns_B,MPI_DOUBLE,MPI_STATUS_IGNORE);
+
+#if VERSION != 5
+	MPI_File_read(fh_b, b, n_rows_B*n_columns_B, MPI_DOUBLE, MPI_STATUS_IGNORE);
+#endif
 
 	double *c = (double*) malloc(sizeof(double) * chunk_size_A_rows * n_columns_B);
-	matrix_dot_matrix(a,b,c,chunk_size_A_rows,n_columns_A,n_rows_B,n_columns_B);
+	matrix_dot_matrix(a, b, c, chunk_size_A_rows, n_columns_A, n_rows_B, n_columns_B);
 
 	MPI_File fh_c;
 	MPI_File_delete(FILE_RES, MPI_INFO_NULL);
@@ -134,6 +174,9 @@ int main ( int argc, char *argv[] )
 	MPI_File_close(&fh_c);
 	MPI_File_close(&fh_a);
 	MPI_File_close(&fh_b);
+	MPI_Type_free(&dt_row_a);
+	MPI_Type_free(&dt_column_b);
 	MPI_Finalize();
+
 	exit(EXIT_SUCCESS);
 }				/* ----------  end of function main  ---------- */
