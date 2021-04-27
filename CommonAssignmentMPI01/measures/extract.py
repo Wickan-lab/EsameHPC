@@ -40,36 +40,37 @@ import re
 
 
 config = {
-			'init':{
+			'seqKey': "NP-00",
+			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}-O[0-3]-?[0-9]*",
+			'folderRegex':"SIZE-[0-9]+-O[0-9]",
+			"cols":{
+				'read':{
 
-				'jpg':False,
-				'speedup':False
-
-			},
-			'dotprod':{
-
-				'jpg':False,
-				'speedup':False
-
-			},
-			'user':{
-
-				'jpg':False,
-				'speedup':False
+					'jpg':False,
+					'computeSpeedup':False
 
 				},
-			'sys':{
+				'prod_write':{
 
-				'jpg':False,
-				'speedup':False
+					'jpg':False,
+					'computeSpeedup':False
 
 				},
-			'elapsed':{
+				'elapsed':{
 
-				'jpg':True,
-				'speedup':True
+					'jpg':True,
+					'computeSpeedup':True
 
 				}
+			},
+
+			"table":{
+				"header": ['Version','Processes','ReadFromFile','MatrixDot&WriteToFile','Elapsed','Speedup','Efficiency'],
+			},
+			"plot":{
+				"x_from_table":"Processes",
+				"y_from_table":"Speedup",
+			},
 		}
 
 def _extract(path_to_folder,plot_columns):
@@ -82,7 +83,8 @@ def _extract(path_to_folder,plot_columns):
 		os.mkdir("jpg")
 
 	#Remove not csv files
-	filenames = [f for f in os.listdir('.') if f.endswith(".csv") and re.match("SIZE-[0-9]+-NTH-[0-9]{2}-O[0-9]-?[0-9]*",f) ]
+	#"SIZE-[0-9]+-NTH-[0-9]{2}-O[0-9]-?[0-9]*"
+	filenames = [f for f in os.listdir('.') if f.endswith(".csv") and re.match(config["filenameRegex"],f) ]
 	print(filenames)
 
 	filenames = sorted(filenames)
@@ -141,8 +143,14 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 
 	x = [0]
 	y = [0]
-	speedup_pos = header.index("Speedup")
-	thread_pos = header.index("Threads")
+	try:
+		x_from_table = config["plot"]["x_from_table"]
+		y_from_table = config["plot"]["y_from_table"]
+		speedup_pos = config["table"]["header"].index(y_from_table) #header.index("Speedup")
+		thread_pos = config["table"]["header"].index(x_from_table) #header.index("Threads")
+	except Exception as e:
+		print("config table or plot error")
+
 	for row in rows[1:]:
 		x.append(row[thread_pos])
 		y.append(row[speedup_pos])
@@ -158,30 +166,30 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	plt.autoscale(enable=True, axis='y', tight=True)	
 
 	plt.legend()
-	plt.xlabel("Processors")
-	plt.ylabel("Speedup")
+	plt.xlabel(x_from_table)
+	plt.ylabel(y_from_table)
 	if show_plot:
 		plt.show()
 	if save:
 		plt.savefig(name)
 	plt.close()
 
-def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/"), cols=config, threads=[0,1,2,4,8]):
+def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"measure/"), cols=config["cols"], threads=[0,1,2,4,8]):
 	print("Listing folder for problem size")
-	folders =  [f for f in os.listdir(root) if (os.path.isdir(os.path.join(root,f)) and re.match("SIZE-[0-9]+-O[0-9]",f))]
+	folders =  [f for f in os.listdir(root) if (os.path.isdir(os.path.join(root,f)) and re.match(config['folderRegex'],f))]
 	print(f"Found folders : {folders}")
 
 	for folder in folders:
 		print(f"Folder : {folder}")
 		joined_path = os.path.join(root,folder)
 		means = _extract(joined_path,cols)
-		header = {'values':['Version','Threads','Init','Dotprod','User','Sys','Elapsed','Speedup','Efficiency']}
+		header = {'values':config["table"]["header"]}
 		cells = {'values':[]}
 		nt = -1
 		for filename_key in means:
 			cell = []
-			splitted_filename=filename_key.split("-")
-			if "NTH-00" in filename_key:
+			splitted_filename = filename_key.split("-")
+			if config["seqKey"] in filename_key:
 				seq = means[filename_key]['elapsed']
 				nt = 1
 				cell.append('Serial')
@@ -193,7 +201,7 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 
 			for col in cols:
 				cell.append(means[filename_key][col])
-				if cols[col]['speedup']:
+				if cols[col]['computeSpeedup']:
 					psize = splitted_filename[1]
 					speedup,efficiency = _compute_speedup(seq,means[filename_key][col],nt,psize)
 					cell.append(speedup)
