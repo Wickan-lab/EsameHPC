@@ -12,12 +12,9 @@
  *  Description:  
  * =====================================================================================
  */
-int main ( int argc, char *argv[] )
-{
-	
-	int rank, size;
-
+int main ( int argc, char *argv[] ){
 	// Get process rank and size
+	int rank, size;
 	MPI_Init(&argc,&argv);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
@@ -25,7 +22,8 @@ int main ( int argc, char *argv[] )
 	// Parse parameters
 	if(argc != 5){
 		if(rank == 0) 
-			fprintf(stderr,"Usage:\n\t%s [n_rows_A] [n_columns_A] [n_rows_B] [n_columns_B]\n",argv[0]);
+			fprintf(stderr,"Usage:\n\t%s [n_rows_A] [n_columns_A] [n_rows_B] [n_columns_B]\n",\
+					argv[0]);
 		MPI_Finalize();
 		exit(EXIT_FAILURE);
 	}
@@ -56,10 +54,10 @@ int main ( int argc, char *argv[] )
 
 	// Column datatype for B matrix
 	MPI_Datatype dt_column_b;
-#if VERSION != 5
-	MPI_Type_vector(n_rows_B, 1, n_columns_B, MPI_DOUBLE, &dt_column_b);
-#else
+#if VERSION == 5
 	MPI_Type_vector(n_columns_B, 1, n_rows_B, MPI_DOUBLE, &dt_column_b);
+#else
+	MPI_Type_vector(n_rows_B, 1, n_columns_B, MPI_DOUBLE, &dt_column_b);
 #endif
 	MPI_Type_commit(&dt_column_b);
 
@@ -69,6 +67,7 @@ int main ( int argc, char *argv[] )
 		init(&a,&b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
 
 		MPI_File_write(fh_a, a, n_rows_A, dt_row_a, MPI_STATUS_IGNORE);
+	
 		// And writes them on file
 #if VERSION == 5
 		MPI_File_write(fh_b, b, n_rows_B * n_columns_B, MPI_DOUBLE, MPI_STATUS_IGNORE);
@@ -77,12 +76,15 @@ int main ( int argc, char *argv[] )
 			MPI_File_write(fh_b ,b+i, 1, dt_column_b, MPI_STATUS_IGNORE);
 #endif
 
-		// Process with rank 0 will read the file
-		// after
+		// Process with rank 0 will read the file after
 		MPI_File_seek(fh_a,0,MPI_SEEK_SET);
 		MPI_File_seek(fh_b,0,MPI_SEEK_SET);
-
 	}
+
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	// --------------- MATRICES READ ---------------
+	double read_start_time = MPI_Wtime();
 
 	// Calculate chunk size for each process
 
@@ -98,47 +100,29 @@ int main ( int argc, char *argv[] )
 	//		Multiple versions of reading matrix A
 #if VERSION == 1
 	MPI_File_read_ordered(fh_a,a,chunk_size_A_rows ,dt_row_a,MPI_STATUS_IGNORE);
+
 #elif VERSION == 2
 	int displacement = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
-	MPI_Barrier(MPI_COMM_WORLD);
 	MPI_File_seek(fh_a, displacement, MPI_SEEK_SET);
 	MPI_File_read_all(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
+
 #elif VERSION == 3
 	int displacement = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
 	MPI_File_set_view(fh_a, displacement, MPI_DOUBLE, MPI_DOUBLE, "native", MPI_INFO_NULL);
 	MPI_File_read_all(fh_a, a, chunk_size_A_rows * n_columns_A, MPI_DOUBLE, MPI_STATUS_IGNORE);
+
 #elif VERSION == 4
 	int displacement = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
 	MPI_File_set_view(fh_a, displacement, MPI_BYTE, dt_row_a, "native", MPI_INFO_NULL);
 	MPI_File_read(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
+
 #elif VERSION == 5
 	int displacement_row = rank * (n_rows_A / size) * n_columns_A * sizeof(double);
 	MPI_File_set_view(fh_a, displacement_row, MPI_BYTE, dt_row_a, "native", MPI_INFO_NULL);
 	MPI_File_read(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
-
 	for (int i = 0; i < n_rows_B; ++i)
 		MPI_File_read(fh_b, b + i, 1, dt_column_b, MPI_STATUS_IGNORE);		
 
-	/*for (int i = 0; i < chunk_size_A_rows; ++i)
-	{
-		for (int j = 0; j < n_columns_A; ++j)
-		{
-			printf("%.2f ", a[i*n_columns_A + j]);
-		}
-		printf("\n --- \n");
-	}
-
-	printf("------- Start B rank %d-------\n", rank);
-	for (int i = 0; i < n_columns_B; ++i)
-		{
-			for (int j = 0; j < n_rows_B; ++j)
-			{
-				printf("%.2f ", b[i*n_rows_B + j]);
-			}
-			printf("\n");
-		}
-	printf("------- END B rank %d-------\n", rank);
-	*/
 #endif
 
 
@@ -146,18 +130,40 @@ int main ( int argc, char *argv[] )
 	MPI_File_read(fh_b, b, n_rows_B*n_columns_B, MPI_DOUBLE, MPI_STATUS_IGNORE);
 #endif
 
+	double read_end_time = MPI_Wtime();
+	// ----------------------------------------
+
+	// --------------- DOT PROD ---------------
+	double dot_prod_start_time = MPI_Wtime();
+
 	double *c = (double*) malloc(sizeof(double) * chunk_size_A_rows * n_columns_B);
 	matrix_dot_matrix(a, b, c, chunk_size_A_rows, n_columns_A, n_rows_B, n_columns_B);
 
+
 	MPI_File fh_c;
 	MPI_File_delete(FILE_RES, MPI_INFO_NULL);
-	MPI_File_open(MPI_COMM_WORLD, FILE_RES, MPI_MODE_CREATE | MPI_MODE_RDWR,MPI_INFO_NULL, &fh_c);
-	MPI_File_write_ordered(fh_c, c, chunk_size_A_rows * n_columns_B, MPI_DOUBLE,MPI_STATUS_IGNORE);
+	MPI_File_open(MPI_COMM_WORLD, FILE_RES, MPI_MODE_CREATE | \
+			MPI_MODE_RDWR,MPI_INFO_NULL, &fh_c);
+	MPI_File_write_ordered(fh_c, c, chunk_size_A_rows * n_columns_B, \
+			MPI_DOUBLE,MPI_STATUS_IGNORE);
+
+	double dot_prod_end_time = MPI_Wtime();
+	// ----------------------------------------
+	
+	double read_time = read_end_time - read_start_time;
+	double dot_prod_time = dot_prod_end_time - dot_prod_start_time;
+	double global_read_time, global_dot_prod_time;
+	MPI_Reduce(&read_time,&global_read_time,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+	MPI_Reduce(&dot_prod_time,&global_dot_prod_time,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
+	global_read_time /= size;
+	global_dot_prod_time /= size;
+	if(rank == 0) printf("%.3f;%.3f\n",global_read_time,global_dot_prod_time);	
 
 	free(c);
 	free(a);
 	free(b);
 
+#ifdef DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
 	if(rank == 0){
 		c = (double*) malloc(sizeof(double) * n_rows_A * n_columns_B);
@@ -170,6 +176,7 @@ int main ( int argc, char *argv[] )
 		}
 		free(c);
 	}
+#endif
 
 	MPI_File_close(&fh_c);
 	MPI_File_close(&fh_a);
@@ -179,4 +186,4 @@ int main ( int argc, char *argv[] )
 	MPI_Finalize();
 
 	exit(EXIT_SUCCESS);
-}				/* ----------  end of function main  ---------- */
+}

@@ -34,6 +34,9 @@ project(CommonAssignment2
 # Generate comile_commands.json for semantic completion in YCM
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# DEBUG flag
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+
 #enable_testing()
 
 add_executable(program src/main.c src/utils.c include/utils.h)
