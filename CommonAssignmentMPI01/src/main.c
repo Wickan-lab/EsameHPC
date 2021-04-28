@@ -157,7 +157,8 @@ int main ( int argc, char *argv[] ){
 	MPI_Reduce(&dot_prod_time,&global_dot_prod_time,1,MPI_DOUBLE,MPI_SUM,0,MPI_COMM_WORLD);
 	global_read_time /= size;
 	global_dot_prod_time /= size;
-	if(rank == 0) printf("%.3f;%.3f\n",global_read_time,global_dot_prod_time);	
+	double global_elapsed = global_read_time + global_dot_prod_time;
+	if(rank == 0) printf("%d,%d,%d,%d,%.3f,%.3f,%.3f\n",n_rows_A,n_columns_A,n_columns_B,size,global_read_time,global_dot_prod_time,global_elapsed);	
 
 	free(c);
 	free(a);

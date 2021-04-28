@@ -11,90 +11,65 @@
 #
 # Copyright (C) 2021 - All Rights Reserved 
 #
-# This file is part of CommonAssignment1.
+# This file is part of CommonAssignmentMPI01.
 #
-# CommonAssignment1 is free software: you can redistribute it and/or modify
+# CommonAssignmentMPI01 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# CommonAssignment1 is distributed in the hope that it will be useful,
+# CommonAssignmentMPI01 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with CommonAssignment1.  If not, see <http://www.gnu.org/licenses/>.
+# along with CommonAssignmentMPI01.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 TIME_STAMP=$(date +%s)
-NMEASURES=200
+NMEASURES=100
 
-ARRAY_RC=(5000 8000 10000 20000)
+ARRAY_RC=(1000 1500 2000 5000)
 ARRAY_THS=(0 1 2 4 8 16 32)
-TIMEFORMAT='%3U;%3E;%3S;%P'
-ARRAY_OPT=(0 1 2 3)
+ARRAY_VERSION=(1 2 3 4 5)
 
 trap "exit" INT
 
+# Get script path
 SCRIPTPATH=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
 
-if [[ $1 == "-p" ]]; then
-	for size in "${ARRAY_RC[@]}"; do
-		for opt in "${ARRAY_OPT[@]}"; do
-			ths_str=$(printf "%02d" $ths)
-			if [[ $opt -eq 0 ]]; then
-				continue;
-			else
-				OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-O$opt/SIZE-$size-NTH-00-O$opt.csv
-			fi
-			OUT_LINK=$SCRIPTPATH/measure/SIZE-$size-O$opt/SIZE-$size-NTH-00-O0.csv
-			OUT_FILE_LINK=$SCRIPTPATH/measure/SIZE-$size/SIZE-$size-NTH-00-O0.csv
-
-			if [[ -f "$OUT_FILE.old" ]]; then
-				rm $OUT_LINK
-				mv $OUT_FILE.old $OUT_FILE
-			else
-				ln -srf $OUT_FILE_LINK $OUT_LINK
-				mv $OUT_FILE $OUT_FILE.old
-			fi
-		done
-	done
-else
-	for size in "${ARRAY_RC[@]}"; do
+for size in "${ARRAY_RC[@]}"; do
+	for ver in "${ARRAY_VERSION[@]}"; do
 		for ths in "${ARRAY_THS[@]}"; do
-			for opt in "${ARRAY_OPT[@]}"; do
-				ths_str=$(printf "%02d" $ths)
-				
-				if [[ $opt -eq 0 ]]; then
-					OUT_FILE=$SCRIPTPATH/measure/SIZE-$size/SIZE-$size-NTH-$ths_str-O$opt.csv
-				else
-					OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-O$opt/SIZE-$size-NTH-$ths_str-O$opt.csv
-				fi
-	
-				if [[ $opt -eq 0 && $ths -ne 0 ]]; then
-					continue;
-				fi
+			ths_str=$(printf "%02d" $ths)
 			
-				mkdir -p $(dirname $OUT_FILE) 2> /dev/null
-				
-				echo $(basename $OUT_FILE)
-				echo "row,columns,threads,init,dotprod,user,elapsed,sys,pCPU" >$OUT_FILE
-				
-				for ((i = 0 ; i < $NMEASURES	; i++)); do
-					if [[ $ths -eq 0 ]]; then
-						(time $1/program_seq_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
-						printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
-						printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
-					else
-						(time $1/program_O$opt $size $size $ths )2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
-						printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
-						printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
-					fi
-				done
-				printf "\n"
+			OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-V$ver/SIZE-$size-NTH-$ths_str-V$ver.csv
+
+			mkdir -p $(dirname $OUT_FILE) 2> /dev/null
+			
+			echo $(basename $OUT_FILE)
+			if [[ $ver -gt 1 && $ths -eq 0 ]]; then
+				OLD_OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-V1/SIZE-$size-NTH-$ths_str-V1.csv
+				ln -s -T $OLD_OUT_FILE $OUT_FILE
+				echo Created symbolic link to $(basename $OLD_OUT_FILE)
+				continue
+			fi
+			echo "A_rows,A_columns,B_columns,processes,read,dotprod_write,elapsed" >$OUT_FILE
+			
+			for ((i = 0 ; i < $NMEASURES	; i++)); do
+				if [[ $ths -eq 0 ]]; then
+					$1/program_seq_O3 $size $size $size $size >> $OUT_FILE
+					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+					printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+				else
+					mpirun.mpich -np $ths $1/program_O3_V$ver $size $size $size $size >> $OUT_FILE
+					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
+					printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
+				fi
 			done
+			printf "\n"
 		done
 	done
-fi
+done
 
