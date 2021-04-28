@@ -44,13 +44,13 @@ for size in "${ARRAY_RC[@]}"; do
 		for ths in "${ARRAY_THS[@]}"; do
 			ths_str=$(printf "%02d" $ths)
 			
-			OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-V$ver/SIZE-$size-NTH-$ths_str-V$ver.csv
+			OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-V$ver/SIZE-$size-NP-$ths_str-V$ver.csv
 
 			mkdir -p $(dirname $OUT_FILE) 2> /dev/null
 			
 			echo $(basename $OUT_FILE)
 			if [[ $ver -gt 1 && $ths -eq 0 ]]; then
-				OLD_OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-V1/SIZE-$size-NTH-$ths_str-V1.csv
+				OLD_OUT_FILE=$SCRIPTPATH/measure/SIZE-$size-V1/SIZE-$size-NP-$ths_str-V1.csv
 				ln -s -T $OLD_OUT_FILE $OUT_FILE
 				echo Created symbolic link to $(basename $OLD_OUT_FILE)
 				continue
