@@ -41,6 +41,7 @@ SCRIPTPATH=$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )
 
 for size in "${ARRAY_RC[@]}"; do
 	for ver in "${ARRAY_VERSION[@]}"; do
+		$1/initMatrices $size $size $size $size $ver
 		for ths in "${ARRAY_THS[@]}"; do
 			ths_str=$(printf "%02d" $ths)
 			
