@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <mpi.h>
 #include "utils.h"
 
 #define FILE_A "matrix_a"

@@ -53,6 +53,7 @@ target_include_directories(program_O3_V3 PRIVATE include)
 target_include_directories(program_O3_V4 PRIVATE include)
 target_include_directories(program_O3_V5 PRIVATE include)
 target_include_directories(program_seq_O3 PRIVATE include)
+target_include_directories(initMatrices PRIVATE include)
 
 find_package(MPI REQUIRED)
 if(MPI_C_FOUND)

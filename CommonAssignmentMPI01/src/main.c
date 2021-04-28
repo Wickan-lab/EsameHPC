@@ -42,8 +42,6 @@ int main ( int argc, char *argv[] ){
 
 	// Open two files, one for each matrix
 	MPI_File fh_a,fh_b;
-	MPI_File_delete(FILE_A, MPI_INFO_NULL);
-	MPI_File_delete(FILE_B, MPI_INFO_NULL);
 	MPI_File_open(MPI_COMM_WORLD, FILE_A, MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh_a);
 	MPI_File_open(MPI_COMM_WORLD, FILE_B, MPI_MODE_CREATE | MPI_MODE_RDWR, MPI_INFO_NULL, &fh_b);
 
@@ -62,7 +60,7 @@ int main ( int argc, char *argv[] ){
 	MPI_Barrier(MPI_COMM_WORLD);
 
 	// --------------- MATRICES READ ---------------
-	
+
 	double read_start_time = MPI_Wtime();
 	// Calculate chunk size for each process
 
