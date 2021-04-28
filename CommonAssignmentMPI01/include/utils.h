@@ -5,4 +5,6 @@ void init(double **a, double **b, int rows_a, int columns_a, int rows_b, int col
 
 void matrix_dot_matrix(double *a, double *b, double *c, int n_rows_A, int n_columns_A,int n_rows_B, int n_columns_B);
 
+void matrix_dot_matrix_seq(double *a, double *b, double *c, int n_rows_A, int n_columns_A,int n_rows_B, int n_columns_B);
+
 #endif

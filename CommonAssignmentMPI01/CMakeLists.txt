@@ -39,22 +39,50 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 #enable_testing()
 
-add_executable(program src/main.c src/utils.c include/utils.h)
+add_executable(program_O3_V1 src/main.c src/utils.c include/utils.h)
+add_executable(program_O3_V2 src/main.c src/utils.c include/utils.h)
+add_executable(program_O3_V3 src/main.c src/utils.c include/utils.h)
+add_executable(program_O3_V4 src/main.c src/utils.c include/utils.h)
+add_executable(program_O3_V5 src/main.c src/utils.c include/utils.h)
+add_executable(program_seq_O3 src/main_seq.c src/utils.c include/utils.h)
 
-target_include_directories(program PRIVATE include)
+target_include_directories(program_O3_V1 PRIVATE include)
+target_include_directories(program_O3_V2 PRIVATE include)
+target_include_directories(program_O3_V3 PRIVATE include)
+target_include_directories(program_O3_V4 PRIVATE include)
+target_include_directories(program_O3_V5 PRIVATE include)
+target_include_directories(program_seq_O3 PRIVATE include)
 
 find_package(MPI REQUIRED)
 if(MPI_C_FOUND)
 	message(STATUS "Run: ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
-	target_link_libraries(program PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O3_V1 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O3_V2 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O3_V3 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O3_V4 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O3_V5 PUBLIC MPI::MPI_C)
 endif()
 
-target_compile_options(program PRIVATE -O0)
+target_compile_options(program_O3_V1 PRIVATE -O3)
+target_compile_options(program_O3_V2 PRIVATE -O3)
+target_compile_options(program_O3_V3 PRIVATE -O3)
+target_compile_options(program_O3_V4 PRIVATE -O3)
+target_compile_options(program_O3_V5 PRIVATE -O3)
+target_compile_options(program_seq_O3 PRIVATE -O3)
 
-target_compile_features(program PRIVATE c_std_11)
+target_compile_features(program_O3_V1 PRIVATE c_std_11)
+target_compile_features(program_O3_V2 PRIVATE c_std_11)
+target_compile_features(program_O3_V3 PRIVATE c_std_11)
+target_compile_features(program_O3_V4 PRIVATE c_std_11)
+target_compile_features(program_O3_V5 PRIVATE c_std_11)
+target_compile_features(program_seq_O3 PRIVATE c_std_11)
 
-set(VERSION 1 CACHE STRING "Read procedure used.")
-target_compile_definitions(program PRIVATE -DVERSION=${VERSION})
+target_compile_definitions(program_O3_V1 PRIVATE -DVERSION=1)
+target_compile_definitions(program_O3_V2 PRIVATE -DVERSION=2)
+target_compile_definitions(program_O3_V3 PRIVATE -DVERSION=3)
+target_compile_definitions(program_O3_V4 PRIVATE -DVERSION=4)
+target_compile_definitions(program_O3_V5 PRIVATE -DVERSION=5)
+
 # ---------------------------------------- TEST -----------------------------------------
 #add_executable(dotprod_test test/test.c src/dotprod.c)
 #target_include_directories(dotprod_test PRIVATE include)
@@ -76,19 +104,18 @@ target_compile_definitions(program PRIVATE -DVERSION=${VERSION})
 #endif()
 
 # ---------------------------------- GENERATE MEASURES ----------------------------------
-#add_custom_target(
-#	 generate_measures
-#	 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}
-#    COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
-#    DEPENDS	
-#		program_O1
-#		program_O2
-#		program_O3
-#		program_seq_O0
-#		program_seq_O1
-#		program_seq_O2
-#		program_seq_O3
-#)
+add_custom_target(
+	 generate_measures
+	 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
+    DEPENDS	
+		program_O3_V1
+		program_O3_V2
+		program_O3_V3
+		program_O3_V4
+		program_O3_V5
+		program_seq_O3
+)
 #
 #add_custom_target(
 #	 change_ref
