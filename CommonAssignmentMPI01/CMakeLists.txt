@@ -8,24 +8,24 @@
 # Falanga	Armando	0622701140  a.falanga13@studenti.unisa.it 
 # Terrone	Luigi		0622701071  l.terrone2@studenti.unisa.it
 #
-# This file is part of CommonAssignment2.
+# This file is part of CommonAssignmentMPI01.
 #
-# CommonAssignment2 is free software: you can redistribute it and/or modify
+# CommonAssignmentMPI01 is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# CommonAssignment2 is distributed in the hope that it will be useful,
+# CommonAssignmentMPI01 is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with CommonAssignment2.  If not, see <http://www.gnu.org/licenses/>.
+# along with CommonAssignmentMPI01.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 cmake_minimum_required(VERSION 3.9)
-project(CommonAssignment2
+project(CommonAssignmentMPI01
 	DESCRIPTION "Matrix dot Vector implementation with MPICH"
 	VERSION 0.1
 	LANGUAGES C
@@ -113,6 +113,7 @@ add_custom_target(
 	 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
     DEPENDS	
+		initMatrices
 		program_O3_V1
 		program_O3_V2
 		program_O3_V3
