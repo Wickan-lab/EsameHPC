@@ -41,8 +41,8 @@ import re
 
 config = {
 			'seqKey': "NP-00",
-			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}-O[0-3]-?[0-9]*",
-			'folderRegex':"SIZE-[0-9]+-O[0-9]",
+			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}-V[0-5]-?[0-9]*",
+			'folderRegex':"SIZE-[0-9]+-V[0-5]",
 			"cols":{
 				'read':{
 
@@ -71,6 +71,7 @@ config = {
 				"x_from_table":"Processes",
 				"y_from_table":"Speedup",
 			},
+			"calcComplExpr":""
 		}
 
 def _extract(path_to_folder,plot_columns):

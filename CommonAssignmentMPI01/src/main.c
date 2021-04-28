@@ -1,4 +1,4 @@
-#include	<stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
 #include "utils.h"
@@ -54,35 +54,12 @@ int main ( int argc, char *argv[] )
 	MPI_Type_contiguous(n_columns_A,MPI_DOUBLE,&dt_row_a);
 	MPI_Type_commit(&dt_row_a);
 
+#if VERSION == 5
 	// Column datatype for B matrix
 	MPI_Datatype dt_column_b;
-#if VERSION != 5
-	MPI_Type_vector(n_rows_B, 1, n_columns_B, MPI_DOUBLE, &dt_column_b);
-#else
 	MPI_Type_vector(n_columns_B, 1, n_rows_B, MPI_DOUBLE, &dt_column_b);
-#endif
 	MPI_Type_commit(&dt_column_b);
-
-	// Process with rank 0 initializes the matrixes
-	if(rank == 0){
-		double *a,*b;
-		init(&a,&b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
-
-		MPI_File_write(fh_a, a, n_rows_A, dt_row_a, MPI_STATUS_IGNORE);
-		// And writes them on file
-#if VERSION == 5
-		MPI_File_write(fh_b, b, n_rows_B * n_columns_B, MPI_DOUBLE, MPI_STATUS_IGNORE);
-#else
-		for(int i = 0; i < n_columns_B; i++)
-			MPI_File_write(fh_b ,b+i, 1, dt_column_b, MPI_STATUS_IGNORE);
 #endif
-
-		// Process with rank 0 will read the file
-		// after
-		MPI_File_seek(fh_a,0,MPI_SEEK_SET);
-		MPI_File_seek(fh_b,0,MPI_SEEK_SET);
-
-	}
 
 	// Calculate chunk size for each process
 
@@ -175,7 +152,9 @@ int main ( int argc, char *argv[] )
 	MPI_File_close(&fh_a);
 	MPI_File_close(&fh_b);
 	MPI_Type_free(&dt_row_a);
+#if VERSION == 5
 	MPI_Type_free(&dt_column_b);
+#endif
 	MPI_Finalize();
 
 	exit(EXIT_SUCCESS);
