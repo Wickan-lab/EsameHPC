@@ -11,6 +11,7 @@ int main(int argc, char**argv){
 		fprintf(stderr,"Usage:\n\t%s [n_rows_A] [n_columns_A] [n_rows_B] [n_columns_B] [VERSION]\n",argv[0]);
 		exit(EXIT_FAILURE);
 	}	
+	
 	int n_rows_A    = atoi(argv[1]);
 	int n_columns_A = atoi(argv[2]);
 	int n_rows_B    = atoi(argv[3]);
