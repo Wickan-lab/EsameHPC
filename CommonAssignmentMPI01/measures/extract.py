@@ -47,19 +47,22 @@ config = {
 				'read':{
 
 					'jpg':False,
-					'computeSpeedup':False
+					'computeSpeedup':False,
+					"skipForFile" : 'SIZE-[0-9]+-NP-00-V[0-5]-?[0-9]*'
 
 				},
-				'prod_write':{
+				'dotprod_write':{
 
 					'jpg':False,
-					'computeSpeedup':False
+					'computeSpeedup':False,
+					
 
 				},
 				'elapsed':{
 
 					'jpg':True,
-					'computeSpeedup':True
+					'computeSpeedup':True,
+					
 
 				}
 			},
@@ -97,6 +100,10 @@ def _extract(path_to_folder,plot_columns):
 		ds = pd.read_csv(filename)
 		for col in plot_columns.keys():
 			print('Processing : ' + filename + ", Col : " + col)
+			if 'skipForFile' in plot_columns[col] and re.match(plot_columns[col]['skipForFile'], filename):
+				print('SKIPPED : ' + filename + ", Col : " + col)
+				file_mean[col] = 0
+				continue
 			#extract the selected column
 			x_data = ds[col]
 			mean,std=stats.norm.fit(x_data)
