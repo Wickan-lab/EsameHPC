@@ -56,7 +56,7 @@ for size in "${ARRAY_RC[@]}"; do
 				echo Created symbolic link to $(basename $OLD_OUT_FILE)
 				continue
 			fi
-			echo "A_rows,A_columns,B_columns,processes,read,dotprod_write,elapsed" >$OUT_FILE
+			echo "A_rows,A_columns,B_columns,processes,read,dotprod,write,elapsed" >$OUT_FILE
 			
 			for ((i = 0 ; i < $NMEASURES	; i++)); do
 				if [[ $ths -eq 0 ]]; then
