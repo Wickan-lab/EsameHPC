@@ -43,10 +43,6 @@ int main(int argc, char**argv){
 		}		
 	}
 
-	
-
-
-
 	fclose(file_b);
 	fclose(file_a);
 	exit(EXIT_SUCCESS);
