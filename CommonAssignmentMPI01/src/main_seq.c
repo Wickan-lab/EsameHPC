@@ -30,11 +30,12 @@ int main ( int argc, char *argv[] ){
 	double *a,*b;
 	init(&a,&b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
 
+	double *c = (double*) malloc(sizeof(double) * n_rows_A * n_columns_B);
+
 	struct tms dotprod_start_times;
 	clock_t dotprod_start_etime;
 	dotprod_start_etime = times(&dotprod_start_times);
 
-	double *c = (double*) malloc(sizeof(double) * n_rows_A * n_columns_B);
 	matrix_dot_matrix_seq(a, b, c, n_rows_A, n_columns_A, n_rows_B, n_columns_B);
 
 	struct tms dotprod_end_times;
@@ -59,7 +60,7 @@ int main ( int argc, char *argv[] ){
 
 	double dotprod_elapsed = (dotprod_end_etime - dotprod_start_etime) / (double) clktck;
 	double elapsed = dotprod_elapsed;
-	printf("%d,%d,%d,%d,%.3f,%.3f,%.3f\n",n_rows_A,n_columns_A,n_columns_B,0,0.0,dotprod_elapsed,elapsed);	
+	printf("%d,%d,%d,%d,%.3f,%.3f,%.3f,%.3f\n",n_rows_A,n_columns_A,n_columns_B,0,0.0,dotprod_elapsed,0.0,elapsed);	
 
 	free(a);
 	free(b);
