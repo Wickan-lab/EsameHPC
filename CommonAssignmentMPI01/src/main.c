@@ -8,7 +8,7 @@
 #define FILE_RES "matrix_res"
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  main
+ *  Name:  main
  *  Description:  
  * =====================================================================================
  */
@@ -70,10 +70,15 @@ int main ( int argc, char *argv[] ){
 	}
 
 	double *a = (double*) malloc(sizeof(double) * chunk_size_A_rows * n_columns_A);
+
+#if VERSION == 6
+	double *b = (double*) malloc(sizeof(double) * n_rows_B);
+#else
 	double *b = (double*) malloc(sizeof(double) * n_rows_B * n_columns_B);
+#endif
 
 	// Read matrices in a contiguous fashion
-	//		Multiple versions of reading matrix A
+	// Multiple versions of reading matrix A
 #if VERSION == 1
 	MPI_File_read_ordered(fh_a,a,chunk_size_A_rows ,dt_row_a,MPI_STATUS_IGNORE);
 
@@ -97,7 +102,12 @@ int main ( int argc, char *argv[] ){
 	MPI_File_set_view(fh_a, displacement_row, MPI_BYTE, dt_row_a, "native", MPI_INFO_NULL);
 	MPI_File_read(fh_a, a, chunk_size_A_rows, dt_row_a, MPI_STATUS_IGNORE);
 	for (int i = 0; i < n_rows_B; ++i)
-		MPI_File_read(fh_b, b + i, 1, dt_column_b, MPI_STATUS_IGNORE);		
+		MPI_File_read(fh_b, b + i, 1, dt_column_b, MPI_STATUS_IGNORE);
+#elif VERSION == 6
+	
+	MPI_Datatype dt_transpose_b;
+	MPI_Type_contiguous(n_rows_B, MPI_DOUBLE, &dt_transpose_b);
+	MPI_Type_commit(&dt_transpose_b);
 
 #endif
 
@@ -112,6 +122,37 @@ int main ( int argc, char *argv[] ){
 	// --------------- DOT PROD ---------------
 	double dot_prod_start_time = MPI_Wtime();
 
+#if VERSION == 6
+	
+	double *c = (double*) malloc(sizeof(double) * chunk_size_A_rows * n_columns_B);
+	MPI_File fh_c;
+	MPI_File_delete(FILE_RES, MPI_INFO_NULL);
+	MPI_File_open(MPI_COMM_WORLD, FILE_RES, MPI_MODE_CREATE | MPI_MODE_RDWR,MPI_INFO_NULL, &fh_c);
+
+	int disp_one_row_double = n_columns_B * sizeof(double);
+	int disp_by_rank =  disp_one_row_double * rank;
+
+	MPI_File_set_view(fh_c, n_columns_B * sizeof(double) * chunk_size_A_rows * rank, MPI_DOUBLE, MPI_DOUBLE, "native", MPI_INFO_NULL);
+
+	for (int ncol = 0; ncol < n_columns_B; ncol++){
+		
+		//MPI_File_seek(fh_c, ncol * n_columns_B, MPI_SEEK_SET);
+
+		//matrix B in file is read by rows, since it transposed
+		MPI_File_read(fh_b, b, 1, dt_transpose_b, MPI_STATUS_IGNORE);
+
+		matrix_dot_matrix(a, b, c, chunk_size_A_rows, n_columns_A, n_rows_B, 1);
+
+		MPI_File_write(fh_c, c, chunk_size_A_rows * n_columns_B, MPI_DOUBLE,MPI_STATUS_IGNORE);
+	}
+	//MPI_File_write_ordered(fh_c, c, chunk_size_A_rows * n_columns_B, MPI_DOUBLE,MPI_STATUS_IGNORE);
+	for (int y = 0; y < chunk_size_A_rows; y++){
+		c[chunk_size_A_rows * rank + y][ncol]
+
+		//n_rows_c
+		(chunk_size_A_rows * rank + y) * n_columns_B + ncol
+	}
+#else
 	double *c = (double*) malloc(sizeof(double) * chunk_size_A_rows * n_columns_B);
 	matrix_dot_matrix(a, b, c, chunk_size_A_rows, n_columns_A, n_rows_B, n_columns_B);
 
@@ -121,7 +162,8 @@ int main ( int argc, char *argv[] ){
 	MPI_File_open(MPI_COMM_WORLD, FILE_RES, MPI_MODE_CREATE | \
 			MPI_MODE_RDWR,MPI_INFO_NULL, &fh_c);
 	MPI_File_write_ordered(fh_c, c, chunk_size_A_rows * n_columns_B, \
-			MPI_DOUBLE,MPI_STATUS_IGNORE);
+
+#endif
 
 	double dot_prod_end_time = MPI_Wtime();
 	// ----------------------------------------
