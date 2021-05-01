@@ -147,6 +147,7 @@ int main ( int argc, char *argv[] ){
 			//ha chunk + grande
 		}
 	}
+	double dot_prod_end_time = MPI_Wtime();
 
 	MPI_Type_free(&dt_transpose_b);
 #else
