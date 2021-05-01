@@ -45,7 +45,8 @@ add_executable(program_O3_V3 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V4 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V5 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V6 src/main.c src/utils.c include/utils.h)
-add_executable(program_seq_O3 src/main_seq.c src/utils.c include/utils.h)
+#add_executable(program_seq_O3 src/main_seq.c src/utils.c include/utils.h)
+add_executable(program_seq_O0 src/main_seq.c src/utils.c include/utils.h)
 add_executable(program_test_O3 src/main_test.c src/utils.c include/utils.h)
 add_executable(initMatrices src/initMatrices.c src/utils.c include/utils.h)
 
@@ -55,7 +56,7 @@ target_include_directories(program_O3_V3 PRIVATE include)
 target_include_directories(program_O3_V4 PRIVATE include)
 target_include_directories(program_O3_V5 PRIVATE include)
 target_include_directories(program_O3_V6 PRIVATE include)
-target_include_directories(program_seq_O3 PRIVATE include)
+target_include_directories(program_seq_O0 PRIVATE include)
 target_include_directories(program_test_O3 PRIVATE include)
 target_include_directories(initMatrices PRIVATE include)
 
@@ -77,7 +78,7 @@ target_compile_options(program_O3_V3 PRIVATE -O3)
 target_compile_options(program_O3_V4 PRIVATE -O3)
 target_compile_options(program_O3_V5 PRIVATE -O3)
 target_compile_options(program_O3_V6 PRIVATE -O3)
-target_compile_options(program_seq_O3 PRIVATE -O3)
+#target_compile_options(program_seq_O3 PRIVATE -O3)
 target_compile_options(program_test_O3 PRIVATE -O3)
 target_compile_options(initMatrices PRIVATE -O3)
 
@@ -87,7 +88,8 @@ target_compile_features(program_O3_V3 PRIVATE c_std_11)
 target_compile_features(program_O3_V4 PRIVATE c_std_11)
 target_compile_features(program_O3_V5 PRIVATE c_std_11)
 target_compile_features(program_O3_V6 PRIVATE c_std_11)
-target_compile_features(program_seq_O3 PRIVATE c_std_11)
+#target_compile_features(program_seq_O3 PRIVATE c_std_11)
+target_compile_features(program_seq_O0 PRIVATE c_std_11)
 target_compile_features(program_test_O3 PRIVATE c_std_11)
 target_compile_features(initMatrices PRIVATE c_std_11)
 
@@ -131,7 +133,7 @@ add_custom_target(
 		program_O3_V4
 		program_O3_V5
 		program_O3_V6
-		program_seq_O3
+		program_seq_O0
 )
 #
 #add_custom_target(

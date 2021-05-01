@@ -31,7 +31,7 @@ TIME_STAMP=$(date +%s)
 NMEASURES=15
 
 ARRAY_RC=(500 1000 1250 1500)
-ARRAY_THS=(0 1 2 4 8 16)
+ARRAY_THS=(0)
 ARRAY_VERSION=(1 2 3 4 5 6)
 
 trap "exit" INT
@@ -60,7 +60,7 @@ for size in "${ARRAY_RC[@]}"; do
 			
 			for ((i = 0 ; i < $NMEASURES	; i++)); do
 				if [[ $ths -eq 0 ]]; then
-					$1/program_seq_O3 $size $size $size $size >> $OUT_FILE
+					$1/program_seq_O0 $size $size $size $size >> $OUT_FILE
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 					printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 				else

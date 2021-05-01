@@ -48,7 +48,7 @@ config = {
 
 					'jpg':False,
 					'computeSpeedup':False,
-					"skipForFile" : 'SIZE-[0-9]+-NP-00-V[0-5]-?[0-9]*'
+					#"skipForFile" : 'SIZE-[0-9]+-NP-00-V[0-5]-?[0-9]*'
 
 				},
 				'dotprod':{
@@ -61,7 +61,7 @@ config = {
 
 					'jpg':False,
 					'computeSpeedup':False,
-					"skipForFile" : 'SIZE-[0-9]+-(NP-00-V[0-5]|NP-[0-9]+-V6)-?[0-9]*' #skip for sequential and for V6 files
+					"skipForFile" : 'SIZE-[0-9]+-NP-[0-9]+-V6-?[0-9]*' #skip for V6 files
 
 				},
 				'elapsed':{

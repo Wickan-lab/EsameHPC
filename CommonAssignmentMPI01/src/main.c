@@ -121,6 +121,8 @@ int main ( int argc, char *argv[] ){
 
 	// --------------- DOT PROD ---------------
 
+	
+
 #if VERSION == 6
 	
 	double *c = (double*) malloc(sizeof(double) * chunk_size_A_rows);
@@ -145,13 +147,12 @@ int main ( int argc, char *argv[] ){
 			//ha chunk + grande
 		}
 	}
-	double dot_prod_end_time = MPI_Wtime();
 
 	MPI_Type_free(&dt_transpose_b);
 #else
 	double *c = (double*) malloc(sizeof(double) * chunk_size_A_rows * n_columns_B);
 
-	double dot_prod_start_time = MPI_Wtime();
+	double dot_prod_start_time = MPI_Wtime();	
 	matrix_dot_matrix(a, b, c, chunk_size_A_rows, n_columns_A, n_rows_B, n_columns_B);
 	double dot_prod_end_time = MPI_Wtime();
 
@@ -170,17 +171,20 @@ int main ( int argc, char *argv[] ){
 	
 	double read_time = read_end_time - read_start_time;
 	double dot_prod_time = dot_prod_end_time - dot_prod_start_time;
+
 #if VERSION == 6
 	double write_time = 0;
 #else
 	double write_time = write_end_time - write_start_time;
 #endif
+
 	double global_read_time, global_dot_prod_time, global_write_time;
 	MPI_Reduce(&read_time,&global_read_time,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
 	MPI_Reduce(&dot_prod_time,&global_dot_prod_time,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
 	MPI_Reduce(&write_time,&global_write_time,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
+
 	double global_elapsed = global_read_time + global_dot_prod_time + global_write_time;
-	if(rank == 0) printf("%d,%d,%d,%d,%.3f,%.3f,%.3f,%.3f\n",n_rows_A,n_columns_A,n_columns_B,size,global_read_time,global_dot_prod_time,global_write_time,global_elapsed);	
+	if(rank == 0) printf("%d,%d,%d,%d,%.3f,%.3f,%.3f,%.3f\n",n_rows_A, n_columns_A, n_columns_B, size, global_read_time, global_dot_prod_time, global_write_time, global_elapsed);	
 
 	free(c);
 	free(a);
