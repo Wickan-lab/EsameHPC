@@ -4,6 +4,7 @@
 
 #define FILE_A "matrix_a"
 #define FILE_B "matrix_b"
+#define SEQ_B "sequential_b"
 
 int main(int argc, char**argv){
 	
@@ -24,11 +25,15 @@ int main(int argc, char**argv){
 	//TVB LT
 	FILE*file_a;
 	FILE*file_b;
+	FILE*file_seq_b;
 
 	file_b = fopen(FILE_B,"w");
 	file_a = fopen(FILE_A,"w");
+	file_seq_b = fopen(SEQ_B,"w");
 
 	fwrite(a,sizeof(double),n_rows_A*n_columns_A,file_a);
+	//for sequential program
+	fwrite(b,sizeof(double),n_rows_B*n_columns_B,file_seq_b);
 
 	if (version == 5){
 		fwrite(b,sizeof(double),n_rows_B*n_columns_B,file_b);
@@ -45,5 +50,6 @@ int main(int argc, char**argv){
 
 	fclose(file_b);
 	fclose(file_a);
+	fclose(file_seq_b);
 	exit(EXIT_SUCCESS);
 }

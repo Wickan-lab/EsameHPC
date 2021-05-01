@@ -1,9 +1,12 @@
-#include	<stdlib.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/times.h>
 #include "utils.h"
 
+#define FILE_A "matrix_a"
+#define FILE_B "sequential_b"
+#define FILE_RES "matrix_res"
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
@@ -28,7 +31,34 @@ int main ( int argc, char *argv[] ){
 	}
 
 	double *a,*b;
-	init(&a,&b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
+
+	a = (double *)malloc((n_rows_A * n_columns_A) * sizeof(double));
+	if (a == NULL)
+		perror("Memory Allocation - A");
+	
+	b = (double *)malloc((n_rows_B * n_columns_B) * sizeof(double));
+	if (b == NULL)
+		perror("Memory Allocation - B");
+
+	struct tms read_start_times;
+	clock_t read_start_etime;
+	read_start_etime = times(&read_start_times);
+	
+	FILE* file_a;
+	FILE* file_b;
+
+	file_b = fopen(FILE_B,"r");
+	file_a = fopen(FILE_A,"r");
+
+	int read_b = fread(b,sizeof(double),n_rows_B*n_columns_B,file_b);
+	int read_a = fread(a,sizeof(double),n_rows_A*n_columns_A,file_a);
+
+	fclose(file_a);
+	fclose(file_b);
+
+	struct tms read_end_times;
+	clock_t read_end_etime;
+	read_end_etime = times(&read_end_times);
 
 	double *c = (double*) malloc(sizeof(double) * n_rows_A * n_columns_B);
 
@@ -41,6 +71,19 @@ int main ( int argc, char *argv[] ){
 	struct tms dotprod_end_times;
 	clock_t dotprod_end_etime;
 	dotprod_end_etime = times(&dotprod_end_times);
+
+
+	struct tms write_start_times;
+	clock_t write_start_etime;
+	write_start_etime = times(&write_start_times);
+
+	FILE*file_c = fopen(FILE_RES,"w");
+	fwrite(c,sizeof(double),n_rows_A*n_columns_B,file_c);
+	fclose(file_c);
+
+	struct tms write_end_times;
+	clock_t write_end_etime;
+	write_end_etime = times(&write_end_times);
 
 #ifdef DEBUG
 	for(int i = 0; i < n_rows_A; i++){
@@ -59,8 +102,10 @@ int main ( int argc, char *argv[] ){
 	}
 
 	double dotprod_elapsed = (dotprod_end_etime - dotprod_start_etime) / (double) clktck;
-	double elapsed = dotprod_elapsed;
-	printf("%d,%d,%d,%d,%.3f,%.3f,%.3f,%.3f\n",n_rows_A,n_columns_A,n_columns_B,0,0.0,dotprod_elapsed,0.0,elapsed);	
+	double read_elapsed = (read_end_etime - read_start_etime) / (double) clktck;
+	double write_elapsed = (write_end_etime - write_start_etime) / (double) clktck;
+	double elapsed = dotprod_elapsed + read_elapsed + write_elapsed;
+	printf("%d,%d,%d,%d,%.3f,%.3f,%.3f,%.3f\n",n_rows_A,n_columns_A,n_columns_B,0,read_elapsed,dotprod_elapsed,write_elapsed,elapsed);	
 
 	free(a);
 	free(b);

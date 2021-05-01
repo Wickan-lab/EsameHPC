@@ -38,7 +38,7 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-
+#processes,read,dotprod,write,elapsed
 config = {
 			'seqKey': "NP-00",
 			'filenameRegex': "SIZE-[0-9]+-NP-[0-9]{2}-V[0-6]-?[0-9]*",
@@ -51,11 +51,17 @@ config = {
 					"skipForFile" : 'SIZE-[0-9]+-NP-00-V[0-5]-?[0-9]*'
 
 				},
-				'dotprod_write':{
+				'dotprod':{
 
 					'jpg':False,
 					'computeSpeedup':False,
-					
+
+				},
+				'write':{
+
+					'jpg':False,
+					'computeSpeedup':False,
+					"skipForFile" : 'SIZE-[0-9]+-(NP-00-V[0-5]|NP-[0-9]+-V6)-?[0-9]*' #skip for sequential and for V6 files
 
 				},
 				'elapsed':{
@@ -68,7 +74,7 @@ config = {
 			},
 
 			"table":{
-				"header": ['Version','Processes','ReadFromFile','MatrixDot&WriteToFile','Elapsed','Speedup','Efficiency'],
+				"header": ['Version','Processes','ReadFromFile','MatrixDot','WriteToFile','Elapsed','Speedup','Efficiency'],
 			},
 			"plot":{
 				"x_from_table":"Processes",
