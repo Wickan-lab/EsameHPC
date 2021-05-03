@@ -1,2 +1,0 @@
-| Version | Processes |     ReadFromFile     |     MatrixDot     |     WriteToFile     |      Elapsed      | Speedup | Efficiency |
-|  Serial |     1     | 0.038000000000000006 | 5.187333333333332 | 0.09466666666666669 | 5.319999999999999 |   1.0   |    1.0     |
