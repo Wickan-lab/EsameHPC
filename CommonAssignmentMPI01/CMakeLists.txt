@@ -39,66 +39,66 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 #enable_testing()
 
-add_executable(program_O3_V1 src/main.c src/utils.c include/utils.h)
-add_executable(program_O3_V2 src/main.c src/utils.c include/utils.h)
-add_executable(program_O3_V3 src/main.c src/utils.c include/utils.h)
-add_executable(program_O3_V4 src/main.c src/utils.c include/utils.h)
-add_executable(program_O3_V5 src/main.c src/utils.c include/utils.h)
-add_executable(program_O3_V6 src/main.c src/utils.c include/utils.h)
+add_executable(program_O0_V1 src/main.c src/utils.c include/utils.h)
+add_executable(program_O0_V2 src/main.c src/utils.c include/utils.h)
+add_executable(program_O0_V3 src/main.c src/utils.c include/utils.h)
+add_executable(program_O0_V4 src/main.c src/utils.c include/utils.h)
+add_executable(program_O0_V5 src/main.c src/utils.c include/utils.h)
+add_executable(program_O0_V6 src/main.c src/utils.c include/utils.h)
 #add_executable(program_seq_O3 src/main_seq.c src/utils.c include/utils.h)
 add_executable(program_seq_O0 src/main_seq.c src/utils.c include/utils.h)
-add_executable(program_test_O3 src/main_test.c src/utils.c include/utils.h)
+add_executable(program_test_O0 src/main_test.c src/utils.c include/utils.h)
 add_executable(initMatrices src/initMatrices.c src/utils.c include/utils.h)
 
-target_include_directories(program_O3_V1 PRIVATE include)
-target_include_directories(program_O3_V2 PRIVATE include)
-target_include_directories(program_O3_V3 PRIVATE include)
-target_include_directories(program_O3_V4 PRIVATE include)
-target_include_directories(program_O3_V5 PRIVATE include)
-target_include_directories(program_O3_V6 PRIVATE include)
+target_include_directories(program_O0_V1 PRIVATE include)
+target_include_directories(program_O0_V2 PRIVATE include)
+target_include_directories(program_O0_V3 PRIVATE include)
+target_include_directories(program_O0_V4 PRIVATE include)
+target_include_directories(program_O0_V5 PRIVATE include)
+target_include_directories(program_O0_V6 PRIVATE include)
 target_include_directories(program_seq_O0 PRIVATE include)
-target_include_directories(program_test_O3 PRIVATE include)
+target_include_directories(program_test_O0 PRIVATE include)
 target_include_directories(initMatrices PRIVATE include)
 
 find_package(MPI REQUIRED)
 if(MPI_C_FOUND)
 	message(STATUS "Run: ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
-	target_link_libraries(program_O3_V1 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_O3_V2 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_O3_V3 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_O3_V4 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_O3_V5 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_O3_V6 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_test_O3 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O0_V1 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O0_V2 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O0_V3 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O0_V4 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O0_V5 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_O0_V6 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_test_O0 PUBLIC MPI::MPI_C)
 endif()
 
-target_compile_options(program_O3_V1 PRIVATE -O3)
-target_compile_options(program_O3_V2 PRIVATE -O3)
-target_compile_options(program_O3_V3 PRIVATE -O3)
-target_compile_options(program_O3_V4 PRIVATE -O3)
-target_compile_options(program_O3_V5 PRIVATE -O3)
-target_compile_options(program_O3_V6 PRIVATE -O3)
+target_compile_options(program_O0_V1 PRIVATE -O0)
+target_compile_options(program_O0_V2 PRIVATE -O0)
+target_compile_options(program_O0_V3 PRIVATE -O0)
+target_compile_options(program_O0_V4 PRIVATE -O0)
+target_compile_options(program_O0_V5 PRIVATE -O0)
+target_compile_options(program_O0_V6 PRIVATE -O0)
 #target_compile_options(program_seq_O3 PRIVATE -O3)
-target_compile_options(program_test_O3 PRIVATE -O3)
+target_compile_options(program_test_O0 PRIVATE -O0)
 target_compile_options(initMatrices PRIVATE -O3)
 
-target_compile_features(program_O3_V1 PRIVATE c_std_11)
-target_compile_features(program_O3_V2 PRIVATE c_std_11)
-target_compile_features(program_O3_V3 PRIVATE c_std_11)
-target_compile_features(program_O3_V4 PRIVATE c_std_11)
-target_compile_features(program_O3_V5 PRIVATE c_std_11)
-target_compile_features(program_O3_V6 PRIVATE c_std_11)
+target_compile_features(program_O0_V1 PRIVATE c_std_11)
+target_compile_features(program_O0_V2 PRIVATE c_std_11)
+target_compile_features(program_O0_V3 PRIVATE c_std_11)
+target_compile_features(program_O0_V4 PRIVATE c_std_11)
+target_compile_features(program_O0_V5 PRIVATE c_std_11)
+target_compile_features(program_O0_V6 PRIVATE c_std_11)
 #target_compile_features(program_seq_O3 PRIVATE c_std_11)
 target_compile_features(program_seq_O0 PRIVATE c_std_11)
-target_compile_features(program_test_O3 PRIVATE c_std_11)
+target_compile_features(program_test_O0 PRIVATE c_std_11)
 target_compile_features(initMatrices PRIVATE c_std_11)
 
-target_compile_definitions(program_O3_V1 PRIVATE -DVERSION=1)
-target_compile_definitions(program_O3_V2 PRIVATE -DVERSION=2)
-target_compile_definitions(program_O3_V3 PRIVATE -DVERSION=3)
-target_compile_definitions(program_O3_V4 PRIVATE -DVERSION=4)
-target_compile_definitions(program_O3_V5 PRIVATE -DVERSION=5)
-target_compile_definitions(program_O3_V6 PRIVATE -DVERSION=6)
+target_compile_definitions(program_O0_V1 PRIVATE -DVERSION=1)
+target_compile_definitions(program_O0_V2 PRIVATE -DVERSION=2)
+target_compile_definitions(program_O0_V3 PRIVATE -DVERSION=3)
+target_compile_definitions(program_O0_V4 PRIVATE -DVERSION=4)
+target_compile_definitions(program_O0_V5 PRIVATE -DVERSION=5)
+target_compile_definitions(program_O0_V6 PRIVATE -DVERSION=6)
 
 # ---------------------------------------- TEST -----------------------------------------
 #add_executable(dotprod_test test/test.c src/dotprod.c)
@@ -127,12 +127,12 @@ add_custom_target(
     COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
     DEPENDS	
 		initMatrices
-		program_O3_V1
-		program_O3_V2
-		program_O3_V3
-		program_O3_V4
-		program_O3_V5
-		program_O3_V6
+		program_O0_V1
+		program_O0_V2
+		program_O0_V3
+		program_O0_V4
+		program_O0_V5
+		program_O0_V6
 		program_seq_O0
 )
 #

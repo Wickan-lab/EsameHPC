@@ -30,9 +30,9 @@
 TIME_STAMP=$(date +%s)
 NMEASURES=15
 
-ARRAY_RC=(1000 2000 5000)
+ARRAY_RC=(1000)
 ARRAY_THS=(0 1 2 4 8 16)
-ARRAY_VERSION=(2 5 6)
+ARRAY_VERSION=(1)
 
 trap "exit" INT
 
@@ -64,7 +64,7 @@ for size in "${ARRAY_RC[@]}"; do
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 					printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 				else
-					mpirun.mpich -np $ths $1/program_O3_V$ver $size $size $size $size >> $OUT_FILE
+					mpirun.mpich -np $ths $1/program_O0_V$ver $size $size $size $size >> $OUT_FILE
 					printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 					printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 				fi
