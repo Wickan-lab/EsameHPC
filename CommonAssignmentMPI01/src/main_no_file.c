@@ -1,61 +1,41 @@
+/* 
+ * Course: High Performance Computing 2020/2021 
+ * 
+ * Lecturer: Francesco Moscato	fmoscato@unisa.it 
+ *
+ * Group: 
+ * Capitani	Giuseppe	0622701085	g.capitani@studenti.unisa.it 
+ * Falanga	Armando	0622701140  a.falanga13@studenti.unisa.it 
+ * Terrone	Luigi		0622701071  l.terrone2@studenti.unisa.it 
+ *
+ * Copyright (C) 2021 - All Rights Reserved 
+ *
+ * This file is part of CommonAssignmentMPI01. 
+ *
+ * CommonAssignmentMPI01 is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
+ *
+ * CommonAssignmentMPI01 is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * GNU General Public License for more details. 
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with CommonAssignmentMPI01.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <mpi.h>
+#include "utils.h"
 
 #define COUNT_TAG (1)
 #define ROW_TAG (2)
 #define B_TAG (3)
 #define C_TAG (4)
-
-void init(double *a, double *b, int rows_a, int columns_a, int rows_b, int columns_b){
-
-	for (int i = 0; i < rows_a; ++i)
-		for (int j = 0; j < columns_a; ++j)
-			a[i*columns_a + j] = (double)(i + 1);
-
-	for (int i = 0; i < rows_b; ++i)
-		for (int j = 0; j < columns_b; ++j)
-			b[i*columns_b + j] = (double)((i + 1) * 2);
-}
-
-void matrix_dot_matrix(double *a, double *b, double *c, int rows_a, int columns_a,int rows_b, int columns_b){
-	double sum;
-
-	for(int i = 0; i < rows_a; i++){
-		for(int j = 0; j < rows_b; j++){
-			sum = 0.0;
-			for(int k = 0; k < columns_b; k++){
-				 sum += a[i*columns_a + k] * b[k*columns_b + j];
-			}
-			c[i*columns_b + j] = sum;
-		}
-	}
-}
-
-void print_matrices(double *a, double *b, double *c, int rows_a, int columns_a, int rows_b, int columns_b){
-
-	printf("Matrix A = \n");
-	for (int i = 0; i < rows_a; ++i){
-		for (int j = 0; j < columns_a; ++j)
-			printf("%.2f ", a[i*columns_a + j]);
-		printf("\n");
-	}
-
-	printf("\nMatrix B = \n");
-	for (int i = 0; i < rows_b; ++i){
-		for (int j = 0; j < columns_b; ++j)
-			printf("%.2f ", b[i*columns_b + j]);
-		printf("\n");
-	}
-
-	printf("\nMatrix C = \n");
-	for (int i = 0; i < rows_a; ++i){
-		for (int j = 0; j < columns_b; ++j)
-			printf("%.2f ", c[i*columns_b + j]);
-		printf("\n");
-	}
-} 
 
 int main(int argc, char **argv) {
 
@@ -136,7 +116,9 @@ int main(int argc, char **argv) {
 			MPI_Recv(&c[i*chunk*columns_b], count, row_type, i, C_TAG, MPI_COMM_WORLD, &status);
 		}
 
-		//print_matrices(a, b, c, rows_a, columns_a, rows_b, columns_b);
+#ifdef DEBUG
+		print_matrices(a, b, c, rows_a, columns_a, rows_b, columns_b);
+#endif
 	}
 	else if (rank > 0){
 
@@ -165,7 +147,7 @@ int main(int argc, char **argv) {
 	MPI_Reduce(&local_dot_prod_time, &global_dot_prod_time, 1, MPI_DOUBLE,MPI_MAX, 0, MPI_COMM_WORLD);
 
 	if (rank == 0)
-		printf("%d,%d,%d,%d,%.3f\n",rows_a, columns_a, columns_b, size, global_dot_prod_time);
+		printf("%d,%d,%d,%d,%.3f,%.3f,%.3f,%.3f\n",rows_a, columns_a, columns_b, size,0.0, global_dot_prod_time,0.0,global_dot_prod_time);
 
 	free(a);
 	free(b);

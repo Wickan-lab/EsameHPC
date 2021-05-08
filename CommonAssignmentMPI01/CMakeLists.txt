@@ -45,7 +45,7 @@ add_executable(program_O0_V3 src/main.c src/utils.c include/utils.h)
 add_executable(program_O0_V4 src/main.c src/utils.c include/utils.h)
 add_executable(program_O0_V5 src/main.c src/utils.c include/utils.h)
 add_executable(program_O0_V6 src/main.c src/utils.c include/utils.h)
-#add_executable(program_seq_O3 src/main_seq.c src/utils.c include/utils.h)
+add_executable(program_no_file_O0 src/main_no_file.c src/utils.c include/utils.h)
 add_executable(program_seq_O0 src/main_seq.c src/utils.c include/utils.h)
 add_executable(program_test_O0 src/main_test.c src/utils.c include/utils.h)
 add_executable(initMatrices src/initMatrices.c src/utils.c include/utils.h)
@@ -56,6 +56,7 @@ target_include_directories(program_O0_V3 PRIVATE include)
 target_include_directories(program_O0_V4 PRIVATE include)
 target_include_directories(program_O0_V5 PRIVATE include)
 target_include_directories(program_O0_V6 PRIVATE include)
+target_include_directories(program_no_file_O0 PRIVATE include)
 target_include_directories(program_seq_O0 PRIVATE include)
 target_include_directories(program_test_O0 PRIVATE include)
 target_include_directories(initMatrices PRIVATE include)
@@ -69,6 +70,7 @@ if(MPI_C_FOUND)
 	target_link_libraries(program_O0_V4 PUBLIC MPI::MPI_C)
 	target_link_libraries(program_O0_V5 PUBLIC MPI::MPI_C)
 	target_link_libraries(program_O0_V6 PUBLIC MPI::MPI_C)
+	target_link_libraries(program_no_file_O0 PUBLIC MPI::MPI_C)
 	target_link_libraries(program_test_O0 PUBLIC MPI::MPI_C)
 endif()
 
@@ -78,7 +80,7 @@ target_compile_options(program_O0_V3 PRIVATE -O0)
 target_compile_options(program_O0_V4 PRIVATE -O0)
 target_compile_options(program_O0_V5 PRIVATE -O0)
 target_compile_options(program_O0_V6 PRIVATE -O0)
-#target_compile_options(program_seq_O3 PRIVATE -O3)
+target_compile_options(program_no_file_O0 PRIVATE -O0)
 target_compile_options(program_test_O0 PRIVATE -O0)
 target_compile_options(initMatrices PRIVATE -O3)
 
@@ -88,7 +90,7 @@ target_compile_features(program_O0_V3 PRIVATE c_std_11)
 target_compile_features(program_O0_V4 PRIVATE c_std_11)
 target_compile_features(program_O0_V5 PRIVATE c_std_11)
 target_compile_features(program_O0_V6 PRIVATE c_std_11)
-#target_compile_features(program_seq_O3 PRIVATE c_std_11)
+target_compile_features(program_no_file_O0 PRIVATE c_std_11)
 target_compile_features(program_seq_O0 PRIVATE c_std_11)
 target_compile_features(program_test_O0 PRIVATE c_std_11)
 target_compile_features(initMatrices PRIVATE c_std_11)
@@ -109,16 +111,16 @@ target_compile_definitions(program_O0_V6 PRIVATE -DVERSION=6)
 #	COMMAND dotprod_test )
 
 # ------------------------------------ DOCUMENTATION ------------------------------------
-#find_package(Doxygen
-#             REQUIRED dot)
-#
-#if(DOXYGEN_FOUND)
-#	set(DOXYGEN_GENERATE_XML YES)
-#	doxygen_add_docs(
-#		docs
-#		./src/dotprod.c ./include/dotprod.h ./test/test.c 
-#		)
-#endif()
+find_package(Doxygen
+             REQUIRED dot)
+
+if(DOXYGEN_FOUND)
+	set(DOXYGEN_GENERATE_XML YES)
+	doxygen_add_docs(
+		docs
+		./src/utils.c ./include/utils.h 
+		)
+endif()
 
 # ---------------------------------- GENERATE MEASURES ----------------------------------
 add_custom_target(

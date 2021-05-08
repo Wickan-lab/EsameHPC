@@ -1,3 +1,31 @@
+/* 
+ * Course: High Performance Computing 2020/2021 
+ * 
+ * Lecturer: Francesco Moscato	fmoscato@unisa.it 
+ *
+ * Group: 
+ * Capitani	Giuseppe	0622701085	g.capitani@studenti.unisa.it 
+ * Falanga	Armando	0622701140  a.falanga13@studenti.unisa.it 
+ * Terrone	Luigi		0622701071  l.terrone2@studenti.unisa.it 
+ *
+ * Copyright (C) 2021 - All Rights Reserved 
+ *
+ * This file is part of CommonAssignmentMPI01. 
+ *
+ * CommonAssignmentMPI01 is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
+ *
+ * CommonAssignmentMPI01 is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+ * GNU General Public License for more details. 
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with CommonAssignmentMPI01.  If not, see <http://www.gnu.org/licenses/>. 
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "utils.h"
@@ -20,36 +48,35 @@ int main(int argc, char**argv){
 	int version = atoi(argv[5]);
 	double *a,*b;
 
-	init(&a,&b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
+	a = (double *)malloc((n_rows_A * n_columns_A) * sizeof(double));
+	if (a == NULL)
+		perror("Memory Allocation - A");
+	
+	b = (double *)malloc((n_rows_B * n_columns_B) * sizeof(double));
+	if (b == NULL)
+		perror("Memory Allocation - B");
 
-	//TVB LT
+	init(a,b,n_rows_A,n_columns_A,n_rows_B,n_columns_B);
+
 	FILE*file_a;
 	FILE*file_b;
-	FILE*file_seq_b;
 
 	file_b = fopen(FILE_B,"w");
 	file_a = fopen(FILE_A,"w");
-	file_seq_b = fopen(SEQ_B,"w");
 
 	fwrite(a,sizeof(double),n_rows_A*n_columns_A,file_a);
-	//for sequential program
-	fwrite(b,sizeof(double),n_rows_B*n_columns_B,file_seq_b);
 
 	if (version == 5){
 		fwrite(b,sizeof(double),n_rows_B*n_columns_B,file_b);
-
 	}else{
-
 		for (int i = 0; i < n_columns_B; i++){
 			for(int j = 0; j < n_rows_B; j++){
 				fwrite(b + j*n_columns_B + i,sizeof(double),1,file_b);
 			}
-		//Il numero dell'universo line:42	
 		}		
 	}
 
 	fclose(file_b);
 	fclose(file_a);
-	fclose(file_seq_b);
 	exit(EXIT_SUCCESS);
 }
