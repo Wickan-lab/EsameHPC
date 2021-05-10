@@ -37,7 +37,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # DEBUG flag
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
-#enable_testing()
+enable_testing()
 
 add_executable(program_O3_V1 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V2 src/main.c src/utils.c include/utils.h)
@@ -103,12 +103,11 @@ target_compile_definitions(program_O3_V5 PRIVATE -DVERSION=5)
 target_compile_definitions(program_O3_V6 PRIVATE -DVERSION=6)
 
 # ---------------------------------------- TEST -----------------------------------------
-#add_executable(dotprod_test test/test.c src/dotprod.c)
-#target_include_directories(dotprod_test PRIVATE include)
-#target_compile_definitions(dotprod_test PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
-#
-#add_test(NAME dotprod_test
-#	COMMAND dotprod_test )
+add_executable(mm_test test/test.c src/utils.c)
+target_include_directories(mm_test PRIVATE include)
+
+add_test(NAME mm_test
+	COMMAND mm_test )
 
 # ------------------------------------ DOCUMENTATION ------------------------------------
 find_package(Doxygen
