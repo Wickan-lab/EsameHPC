@@ -106,5 +106,9 @@ int main(int argc, char *argv[])
 	printf("Initialized test matrix B\n");
 
 	test_matrix_multiplication(expected_result1, rows_A*columns_B, a1, b1, result,rows_A, columns_A, rows_B, columns_B, matrix_dot_matrix);
+	test_matrix_multiplication(expected_result2, rows_A*columns_B, a2, b2, result,rows_A, columns_A, rows_B, columns_B, matrix_dot_matrix);
+	test_matrix_multiplication(expected_result3, rows_A*columns_B, a3, b3, result,rows_A, columns_A, rows_B, columns_B, matrix_dot_matrix);
+
+	printf("Tested mm ... Done");
 	exit(EXIT_SUCCESS);
 }
