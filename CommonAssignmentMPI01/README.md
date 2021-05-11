@@ -1,32 +1,24 @@
-Parallelize and Evaluate Performances of "Matrix dot Matrix" Algorithm , by using MPI.
+# CommonAssignmentMPI1
 
-Matrix multiplication ("row - column" multiplication), where elements or result matrix is obtained by scalar multiplication of one row of the first Matrix for one column of the second Matrix
+## Dependencies
 
+* CMake 3.9+
+* MPICH
+* Python3
+* Pipenv
 
+## How to run
 
-Use MPI DataTypes to model row and column types
+1. Create a build directory and launch cmake
 
-Evaluate performances when reading files with different MPI I/O approaches
+   ```batch
+   mkdir build
+   cd build
+   cmake -DCMAKE_BUILD_TYPE=Release ..
+   ```
 
-Provide (different if you need) solutions to the problem of parallelize "Matrix dot Matrix" Algorithm.
+2. Generate executables with `make`
+3. To generate measures (TAKE A LOT OF TIME! Our measures are already included so you should skip this step) run `make generate_measures`
+4. To extract mean times and speedup curves from them run `make extract_measures`
 
-Your report has to include:
-
-- A description of the problem
-- A description of your experimental setup
-	- The HW you use (CPUs type, Ram, Virtual machines configuration (if any), colab setup (if any) etc. )
-	- The SW you use (Operating system version and main configuration like dimension of Swap files/partition, libraries version, compiler versions, etc. )
-	- Any time you describe a result: compiler configuration and options, workload description, environment variables etc.)
-- Performances, Speedup, Efficiency and other considerations
-	- Describe and Motivate your results
-	- Describe different solutions
-	- Describe and motivate your optimal configuration
-- A Description of the test cases
-- your APIs description (if any)
-- Description on how to setup a system to reproduce (automatically) your results (of course on a different system)
-- If you use Colab, include the notebook as attachment (do not copy the notebook in the pdf ...)
-
-
-Provide the source code (makefile, folders etc.) to test and reproduce your results as described in the general section of Final Projects Assignments 
-
-Do not forget to follow the base rules about license agreements
+Results can be found in the `measures/measure` directory, divided by problem size and the gcc optimization option used.

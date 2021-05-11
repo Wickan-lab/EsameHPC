@@ -45,9 +45,7 @@ add_executable(program_O3_V3 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V4 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V5 src/main.c src/utils.c include/utils.h)
 add_executable(program_O3_V6 src/main.c src/utils.c include/utils.h)
-add_executable(program_no_file_O3 src/main_no_file.c src/utils.c include/utils.h)
 add_executable(program_seq_O3 src/main_seq.c src/utils.c include/utils.h)
-add_executable(program_test_O3 src/main_test.c src/utils.c include/utils.h)
 add_executable(initMatrices src/initMatrices.c src/utils.c include/utils.h)
 
 target_include_directories(program_O3_V1 PRIVATE include)
@@ -56,9 +54,7 @@ target_include_directories(program_O3_V3 PRIVATE include)
 target_include_directories(program_O3_V4 PRIVATE include)
 target_include_directories(program_O3_V5 PRIVATE include)
 target_include_directories(program_O3_V6 PRIVATE include)
-target_include_directories(program_no_file_O3 PRIVATE include)
 target_include_directories(program_seq_O3 PRIVATE include)
-target_include_directories(program_test_O3 PRIVATE include)
 target_include_directories(initMatrices PRIVATE include)
 
 find_package(MPI REQUIRED)
@@ -70,8 +66,6 @@ if(MPI_C_FOUND)
 	target_link_libraries(program_O3_V4 PUBLIC MPI::MPI_C)
 	target_link_libraries(program_O3_V5 PUBLIC MPI::MPI_C)
 	target_link_libraries(program_O3_V6 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_no_file_O3 PUBLIC MPI::MPI_C)
-	target_link_libraries(program_test_O3 PUBLIC MPI::MPI_C)
 endif()
 
 target_compile_options(program_O3_V1 PRIVATE -O3)
@@ -80,8 +74,6 @@ target_compile_options(program_O3_V3 PRIVATE -O3)
 target_compile_options(program_O3_V4 PRIVATE -O3)
 target_compile_options(program_O3_V5 PRIVATE -O3)
 target_compile_options(program_O3_V6 PRIVATE -O3)
-target_compile_options(program_no_file_O3 PRIVATE -O3)
-target_compile_options(program_test_O3 PRIVATE -O3)
 target_compile_options(initMatrices PRIVATE -O3)
 
 target_compile_features(program_O3_V1 PRIVATE c_std_11)
@@ -90,9 +82,7 @@ target_compile_features(program_O3_V3 PRIVATE c_std_11)
 target_compile_features(program_O3_V4 PRIVATE c_std_11)
 target_compile_features(program_O3_V5 PRIVATE c_std_11)
 target_compile_features(program_O3_V6 PRIVATE c_std_11)
-target_compile_features(program_no_file_O3 PRIVATE c_std_11)
 target_compile_features(program_seq_O3 PRIVATE c_std_11)
-target_compile_features(program_test_O3 PRIVATE c_std_11)
 target_compile_features(initMatrices PRIVATE c_std_11)
 
 target_compile_definitions(program_O3_V1 PRIVATE -DVERSION=1)
@@ -136,13 +126,7 @@ add_custom_target(
 		program_O3_V6
 		program_seq_O3
 )
-#
-#add_custom_target(
-#	 change_ref
-#	 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash -p
-#	 COMMENT "Change graph ref [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash -p]"
-#	)
-#
+
 # --------------------------------- MEASURES EXTRACTION ---------------------------------
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 find_program(PipEnv pipenv REQUIRED)
