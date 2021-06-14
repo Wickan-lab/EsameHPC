@@ -3,16 +3,86 @@
 #include <stdint.h>
 #include <time.h>
 
-#define UP 0
-#define DOWN 1
-
 typedef struct 
 {	
 	int cluster_number;   /* Cluster to which the point belongs */
 	float x, y; 	      /* Coordinate x and y of the point    */
 	float distance; 	  /* Distance from test point           */
 } Point;
+
+/* Function to merge the two haves arr[l..m]
+ and arr[m+1..r] of array arr[] */
+void merge(Point arr[], int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 =  r - m;
  
+    /* create temp arrays */
+    Point L[n1], R[n2];
+ 
+    /* Copy data to temp arrays L[] and R[] */
+    for (i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for (j = 0; j < n2; j++)
+        R[j] = arr[m + 1+ j];
+ 
+    /* Merge the temp arrays back into arr[l..r]*/
+    i = 0;
+    j = 0;
+    k = l;
+    while (i < n1 && j < n2)
+    {
+        if (L[i].distance <= R[j].distance)
+        {
+            arr[k] = L[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+ 
+    /* Copy the remaining elements
+    of L[], if there are any */
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+ 
+    /* Copy the remaining elements
+    of R[], if there are any */
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+ 
+/* l is for left index and r is
+ right index of the sub-array
+  of arr to be sorted */
+void mergeSort(Point arr[], int l, int r)
+{
+   if (l < r)
+   {
+      // Same as (l+r)/2 but avoids
+      // overflow for large l & h
+      int m = l+(r-l)/2;
+      mergeSort(arr, l, m);
+      mergeSort(arr, m+1, r);
+      merge(arr, l, m, r);
+   }
+}
+ 
+
 float Q_rsqrt(float number)
 {  
 	const float x2 = number * 0.5F;
@@ -36,10 +106,6 @@ float euclidean_distance(Point a, Point b){
 	return 1/Q_rsqrt(sum);
 }
 
-int distance_comparison(Point a, Point b){
-	return (a.distance >= b.distance) ? 1 : 0; 
-}
-
 void generate_points(Point *dataset, int n){
 	for (int i = 0; i < n; ++i)
 	{	
@@ -51,63 +117,20 @@ void generate_points(Point *dataset, int n){
 	}
 }
  
-void merge_up(Point *arr, int n) {
-	int step = n/2, i, j, k;
-	Point temp;
-	
-	while (step > 0) {
-		for (i=0; i < n; i+=step*2) {
-			for (j=i, k=0; k < step; j++,k++) {
-				if (arr[j].distance > arr[j+step].distance ) {
-					// swap
-					temp = arr[j];
-					arr[j]=arr[j+step];
-					arr[j+step]=temp;
-				}
-			}
-		}
-		step /= 2;
-	}
-}
-
-void merge_down(Point *arr, int n) {
-	int step=n/2,i,j,k;
-	Point temp;
-	
-	while (step > 0) {
-		for (i=0; i < n; i+=step*2) {
-			for (j = i ,k = 0; k < step; j++, k++) {
-				if (arr[j].distance  < arr[j+step].distance ) {
-					// swap
-					temp = arr[j];
-					arr[j]=arr[j+step];
-					arr[j+step]=temp;
-				}
-			}	
-		}
-		step /= 2;
-	}
-}
-
+ 
 int classify_point(Point *dataset, Point test_point, int k, int n){
 	int counter_cluster_0 = 0, counter_cluster_1 = 0;
-	float arr[n];
+
 	for (int i = 0; i < n; ++i)
 	{
 		dataset[i].distance = euclidean_distance(dataset[i], test_point);
 	}
 
-	for (int s = 2; s <= n; s *= 2) {
-		for (int i = 0; i < n;) {
-			merge_up((dataset + i), s);
-			merge_down((dataset + i + s), s);
-			i += s*2;
-        }
-  	}
+	mergeSort(dataset, 0, n - 1);
 
 	for (int i = 0; i < n; ++i)
 	{
-		printf("indice %d - cluster number %d - distance %f \n", i, dataset[i].cluster_number, dataset[i].distance);
+		printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
 	}
 	
 	for (int i = 0; i < k; ++i)
