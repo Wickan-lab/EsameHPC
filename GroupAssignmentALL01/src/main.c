@@ -53,11 +53,12 @@ void generate_points(Point *dataset, int n){
  
 void merge_up(Point *arr, int n) {
 	int step = n/2, i, j, k;
+	int old_step = n;
 	Point temp;
 	
 	while (step > 0) {
-		for (i=0; i < n; i+=step*2) {
-			for (j=i, k=0; k < step; j++,k++) {
+		for (i=0; i < n; i+=old_step) {
+			for(j = i ; j < i+step ; j++){
 				if (arr[j].distance > arr[j+step].distance ) {
 					// swap
 					temp = arr[j];
@@ -66,18 +67,20 @@ void merge_up(Point *arr, int n) {
 				}
 			}
 		}
+		old_step = step;
 		step /= 2;
 	}
 }
 
 void merge_down(Point *arr, int n) {
 	int step=n/2,i,j,k;
+	int old_step = n;
 	Point temp;
 	
 	while (step > 0) {
-		for (i=0; i < n; i+=step*2) {
-			for (j = i ,k = 0; k < step; j++, k++) {
-				if (arr[j].distance  < arr[j+step].distance ) {
+		for (i=0; i < n; i+=old_step) {
+			for(j = i ; j < i+step ; j++){
+				if (arr[j].distance < arr[j+step].distance ) {
 					// swap
 					temp = arr[j];
 					arr[j]=arr[j+step];
@@ -85,6 +88,7 @@ void merge_down(Point *arr, int n) {
 				}
 			}	
 		}
+		old_step = step;
 		step /= 2;
 	}
 }
@@ -97,13 +101,13 @@ int classify_point(Point *dataset, Point test_point, int k, int n){
 		dataset[i].distance = euclidean_distance(dataset[i], test_point);
 	}
 
-	for (int s = 2; s <= n; s *= 2) {
-		for (int i = 0; i < n;) {
+	for (int s = 2; s < n; s *= 2) {
+		for (int i = 0; i < n ; i += s*2) {
 			merge_up((dataset + i), s);
 			merge_down((dataset + i + s), s);
-			i += s*2;
-        }
+      }
   	}
+	merge_up(dataset, n);
 
 	for (int i = 0; i < n; ++i)
 	{
@@ -141,7 +145,7 @@ int main(int argc, char const *argv[])
 	test_point.x = x;
 	test_point.y = y;
 	
-	srand(time(NULL)); 
+	srand((unsigned int)time(NULL)); 
 
 	generate_points(dataset, n);
 
@@ -149,5 +153,5 @@ int main(int argc, char const *argv[])
 
 	printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
