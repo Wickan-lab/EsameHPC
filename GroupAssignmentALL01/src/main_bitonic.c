@@ -117,9 +117,6 @@ void generate_points(Point *dataset, int n){
 	}
 }
  
-<<<<<<< HEAD:GroupAssignmentALL01/src/main.c
- 
-=======
 void merge_up(Point *arr, int n) {
 	int step = n/2, i, j, k;
 	int old_step = n;
@@ -162,7 +159,6 @@ void merge_down(Point *arr, int n) {
 	}
 }
 
->>>>>>> 3af8936df49e752c95db1e5421126fa787a2aec0:GroupAssignmentALL01/src/main_bitonic.c
 int classify_point(Point *dataset, Point test_point, int k, int n){
 	int counter_cluster_0 = 0, counter_cluster_1 = 0;
 
@@ -171,17 +167,7 @@ int classify_point(Point *dataset, Point test_point, int k, int n){
 		dataset[i].distance = euclidean_distance(dataset[i], test_point);
 	}
 
-<<<<<<< HEAD:GroupAssignmentALL01/src/main.c
 	mergeSort(dataset, 0, n - 1);
-=======
-	for (int s = 2; s < n; s *= 2) {
-		for (int i = 0; i < n ; i += s*2) {
-			merge_up((dataset + i), s);
-			merge_down((dataset + i + s), s);
-      }
-  	}
-	merge_up(dataset, n);
->>>>>>> 3af8936df49e752c95db1e5421126fa787a2aec0:GroupAssignmentALL01/src/main_bitonic.c
 
 	for (int i = 0; i < n; ++i)
 	{

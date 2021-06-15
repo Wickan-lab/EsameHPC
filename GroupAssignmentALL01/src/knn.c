@@ -54,14 +54,16 @@ void merge(Point arr[], int l, int m, int r)
     Point L[n1], R[n2];
  
     /* Copy data to temp arrays L[] and R[] */
-    #pragma omp parallel for
+	 #pragma omp parallel default(shared) private(i,j)
+	 {
+    #pragma omp for nowait
 	    for (i = 0; i < n1; i++)
 	        L[i] = arr[l + i];
 
-    #pragma omp parallel for
+    #pragma omp for
 	    for (j = 0; j < n2; j++)
 	        R[j] = arr[m + 1+ j];
- 
+	 }
     /* Merge the temp arrays back into arr[l..r]*/
     i = 0;
     j = 0;
