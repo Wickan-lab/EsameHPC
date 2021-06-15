@@ -61,5 +61,7 @@ float Q_rsqrt(float number);
 float euclidean_distance(Point a, Point b);
 void generate_points(Point *dataset, int n, int num_threads);
 int classify_point(Point *dataset, Point test_point, int k, int n, int num_threads);
-
+void Swap(Point *a, Point *b);
+int Partition(Point data[], int left, int right);
+void QuickSortIterative(Point data[], int count);
 #endif
