@@ -165,7 +165,7 @@ void generate_points(Point *dataset, int n, int num_threads){
 	}
 }
  
-int classify_point(){
+int classify_point(Point *dataset, Point test_point, int k, int n, int num_threads){
     int counter_cluster_0 = 0, counter_cluster_1 = 0;
     #pragma omp parallel num_threads(num_threads)
     {   
@@ -356,6 +356,7 @@ void k_selection_sort(Point*arr, int N, int k){
         swap(arr,i,min_pos);
 
     }
+}
 
 
 void Swap(Point *a, Point *b)
