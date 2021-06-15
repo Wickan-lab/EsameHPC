@@ -165,7 +165,37 @@ void generate_points(Point *dataset, int n, int num_threads){
 	}
 }
  
- 
+int classify_point(){
+    int counter_cluster_0 = 0, counter_cluster_1 = 0;
+    #pragma omp parallel num_threads(num_threads)
+    {   
+        #pragma omp for
+        for (int i = 0; i < n; ++i)
+        {
+            dataset[i].distance = euclidean_distance(dataset[i], test_point);
+        }
+
+        #pragma omp single
+        QuickSortIterative(dataset, n);
+        
+        
+        #pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
+            for (int i = 0; i < k; ++i)
+            {
+                if (dataset[i].cluster_number == 0)
+                    counter_cluster_0 += 1;
+                else
+                    counter_cluster_1 += 1;
+            }
+    }
+    //for (int i = 0; i < n; ++i)
+    //{
+    //  printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
+    //}
+    
+    return (counter_cluster_1 >= counter_cluster_0) ? 1 : 0; 
+}
+
 int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads, char* sorting){
 	int counter_cluster_0 = 0, counter_cluster_1 = 0;
     void (*sort)(Point*, ...);
@@ -201,7 +231,28 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
             	}
         
     }
-	
+
+	#pragma omp parallel num_threads(num_threads)
+	{ 	
+		#pragma omp for
+		for (int i = 0; i < n; ++i)
+		{
+			dataset[i].distance = euclidean_distance(dataset[i], test_point);
+		}
+
+		#pragma omp single
+		QuickSortIterative(dataset, n);
+		
+		
+		#pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
+			for (int i = 0; i < k; ++i)
+			{
+				if (dataset[i].cluster_number == 0)
+					counter_cluster_0 += 1;
+				else
+					counter_cluster_1 += 1;
+			}
+	}
 
 	//for (int i = 0; i < n; ++i)
 	//{
@@ -305,4 +356,64 @@ void k_selection_sort(Point*arr, int N, int k){
         swap(arr,i,min_pos);
 
     }
+
+
+void Swap(Point *a, Point *b)
+{
+	Point temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+int Partition(Point data[], int left, int right)
+{
+	Point x = data[right];
+	int i = (left - 1);
+
+	#pragma omp parallel for 
+	for (int j = left; j <= right - 1; ++j)
+	{
+		if (data[j].distance <= x.distance)
+		{
+			++i;
+			Swap(&data[i], &data[j]);
+		}
+	}
+
+	Swap(&data[i + 1], &data[right]);
+
+	return (i + 1);
+}
+
+void QuickSortIterative(Point data[], int count) {
+	int startIndex = 0;
+	int endIndex = count - 1;
+	int top = -1;
+	int* stack = (int*)malloc(sizeof(int) * count);
+
+	stack[++top] = startIndex;
+	stack[++top] = endIndex;
+
+	while (top >= 0)
+	{
+		endIndex = stack[top--];
+		startIndex = stack[top--];
+
+		int p = Partition(data, startIndex, endIndex);
+
+		if (p - 1 > startIndex)
+		{
+			stack[++top] = startIndex;
+			stack[++top] = p - 1;
+		}
+
+		if (p + 1 < endIndex)
+		{
+			stack[++top] = p + 1;
+			stack[++top] = endIndex;
+		}
+	}
+
+	free(stack);
+
 }

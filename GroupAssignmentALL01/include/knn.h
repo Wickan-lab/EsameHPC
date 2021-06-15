@@ -68,4 +68,9 @@ void k_selection_sort(Point*arr, int N, int k);
 void facade_k_selection_sort(Point*arr, ...);
 void facade_bubble_sort(Point*arr, ...);
 void facade_mergeSort(Point*arr, ...);
+int classify_point(Point *dataset, Point test_point, int k, int n, int num_threads);
+void Swap(Point *a, Point *b);
+int Partition(Point data[], int left, int right);
+void QuickSortIterative(Point data[], int count);
+
 #endif

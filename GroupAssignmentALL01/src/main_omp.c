@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
 	test_point.y = y;
 
 	srand(time(NULL)); 
-
+	
 	STARTTIME(1);
 	generate_points(dataset, n, num_threads);
 	ENDTIME(1, time_generate);
