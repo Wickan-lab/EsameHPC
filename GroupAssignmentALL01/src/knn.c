@@ -166,7 +166,7 @@ void generate_points(Point *dataset, int n, int num_threads){
 }
  
  
-int classify_point(Point *dataset, Point test_point, int k, int n, int num_threads, char* sorting){
+int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads, char* sorting){
 	int counter_cluster_0 = 0, counter_cluster_1 = 0;
     void (*sort)(Point*, ...);
 	#pragma omp parallel num_threads(num_threads)
