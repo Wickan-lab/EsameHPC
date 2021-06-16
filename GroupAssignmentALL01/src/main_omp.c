@@ -66,7 +66,7 @@ int main(int argc, char const *argv[])
 	ENDTIME(1, time_generate);
 
 	STARTTIME(2);
-	test_point.cluster_number = classify_point(dataset, test_point, k, n, num_threads);
+	test_point.cluster_number = classify_point_no_conflict(dataset, test_point, k, n, num_threads, FACADE);
 	ENDTIME(2, time_classify);
 
 	printf("%d;%d;%f;%f\n", n, num_threads, time_generate, time_classify);

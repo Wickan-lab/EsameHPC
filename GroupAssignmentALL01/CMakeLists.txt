@@ -26,7 +26,7 @@
 
 cmake_minimum_required(VERSION 3.9)
 project(GroupAssignmentALL01
-	DESCRIPTION "Matrix dot Vector implementation with OpenMP"
+	DESCRIPTION "K Nearest Niggas implementation in OpenMP, MPI, CUDA"
 	VERSION 0.1
 	LANGUAGES C
 	)
@@ -34,21 +34,35 @@ project(GroupAssignmentALL01
 enable_testing()
 
 add_executable(program_seq src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_omp src/main_omp.c src/knn.c include/knn.h)
+add_executable(program_omp_selection src/main_omp.c src/knn.c include/knn.h)
+add_executable(program_omp_merge src/main_omp.c src/knn.c include/knn.h)
+add_executable(program_omp_quick src/main_omp.c src/knn.c include/knn.h)
 
 target_include_directories(program_seq PRIVATE include)
-target_include_directories(program_omp PRIVATE include)
-target_include_directories(program_omp PRIVATE /usr/lib/gcc/x86_64-linux-gnu/4.8/include/)
+target_include_directories(program_omp_selection PRIVATE include)
+target_include_directories(program_omp_merge	PRIVATE include)
+target_include_directories(program_omp_quick PRIVATE include)
 
 find_package(OpenMP REQUIRED)
 if(OpenMP_C_FOUND)
-		  target_link_libraries(program_omp PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_selection PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_merge PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_quick PRIVATE OpenMP::OpenMP_C)
 endif()
 
-target_compile_options(program_omp PRIVATE -O3)
+target_compile_options(program_omp_selection PRIVATE -O3)
+target_compile_options(program_omp_merge PRIVATE -O3)
+target_compile_options(program_omp_quick PRIVATE -O3)
 
 target_compile_features(program_seq PRIVATE c_std_11)
-target_compile_features(program_omp PRIVATE c_std_11)
+target_compile_features(program_omp_selection PRIVATE c_std_11)
+target_compile_features(program_omp_merge PRIVATE c_std_11)
+target_compile_features(program_omp_quick PRIVATE c_std_11)
+
+target_compile_definitions(program_seq PRIVATE -DFACADE=facade_k_selection_sort)
+target_compile_definitions(program_omp_selection PRIVATE -DFACADE=facade_k_selection_sort)
+target_compile_definitions(program_omp_merge PRIVATE -DFACADE=facade_mergeSort)
+target_compile_definitions(program_omp_quick PRIVATE -DFACADE=facade_quicksort)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

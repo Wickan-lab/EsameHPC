@@ -166,54 +166,11 @@ void generate_points(Point *dataset, int n, int num_threads){
 		dataset[i] = new_point;
 	}
 }
- 
-int classify_point(Point *dataset, Point test_point, int k, int n, int num_threads){
-    int counter_cluster_0 = 0, counter_cluster_1 = 0;
-    #pragma omp parallel num_threads(num_threads)
-    {   
-        #pragma omp for
-        for (int i = 0; i < n; ++i)
-        {
-            dataset[i].distance = euclidean_distance(dataset[i], test_point);
-        }
 
-        #pragma omp single
-        QuickSortIterative(dataset, n);
-        
-        
-        #pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
-            for (int i = 0; i < k; ++i)
-            {
-                if (dataset[i].cluster_number == 0)
-                    counter_cluster_0 += 1;
-                else
-                    counter_cluster_1 += 1;
-            }
-    }
-    //for (int i = 0; i < n; ++i)
-    //{
-    //  printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
-    //}
-    
-    return (counter_cluster_1 >= counter_cluster_0) ? 1 : 0; 
-}
-
-int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads, char* sorting){
+int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads, void (*sort)(Point*,...)){
 	int counter_cluster_0 = 0, counter_cluster_1 = 0;
-    void (*sort)(Point*, ...);
 	#pragma omp parallel num_threads(num_threads)
     {
-        if(strcmp(sorting,"bubble")==0){
-            sort = &facade_bubble_sort;
-        }
-        else if (strcmp(sorting,"selection")==0)
-        {
-            sort = &facade_k_selection_sort;
-        }else
-        {
-            sort = &facade_mergeSort;
-        }
-
     	#pragma omp for
     		for (int i = 0; i < n; ++i)
     		{
@@ -264,45 +221,13 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
 	return (counter_cluster_1 >= counter_cluster_0) ? 1 : 0; 
 }
 
-int classify_point_bubble(Point *dataset, Point test_point, int k, int n, int num_threads){
-    int counter_cluster_0 = 0, counter_cluster_1 = 0;
-    
-    #pragma omp parallel for num_threads(num_threads)
-        for (int i = 0; i < n; ++i)
-        {
-            dataset[i].distance = euclidean_distance(dataset[i], test_point);
-        }
-
-    #pragma omp parallel num_threads(num_threads)
-    {
-        
-        bubble_sort(dataset,n);
-    }
-    
-    #pragma omp parallel for reduction(+:counter_cluster_0, counter_cluster_1) num_threads(num_threads)
-        for (int i = 0; i < k; ++i)
-        {
-            if (dataset[i].cluster_number == 0)
-                counter_cluster_0 += 1;
-            else
-                counter_cluster_1 += 1;
-        }
-    
-
-    //for (int i = 0; i < n; ++i)
-    //{
-    //    printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
-    //}
-    
-    return (counter_cluster_1 >= counter_cluster_0) ? 1 : 0; 
-}
-
 void swap(Point*arr, int i, int j){
     Point temp;
     temp = arr[i];
     arr[i] = arr[j];
     arr[j] = temp;
 }
+
 void bubble_sort(Point*arr,int N){
     #pragma omp for
     for(int i = 0; i < N - 1; i++){
@@ -313,6 +238,7 @@ void bubble_sort(Point*arr,int N){
         }
     }
 }
+
 void facade_mergeSort(Point*arr, ...){
     va_list list;
     va_start(list, arr); 
@@ -321,6 +247,7 @@ void facade_mergeSort(Point*arr, ...){
     int end = va_arg(list, int);
     mergeSort(arr, start, end);
 }
+
 void facade_bubble_sort(Point*arr, ...){
     va_list list;
     va_start(list, arr); 
@@ -330,6 +257,7 @@ void facade_bubble_sort(Point*arr, ...){
     int N = va_arg(list, int);
     bubble_sort(arr,N);
 }
+
 void facade_k_selection_sort(Point*arr, ...){
     va_list list;
     va_start(list, arr); 
@@ -342,6 +270,19 @@ void facade_k_selection_sort(Point*arr, ...){
     //get k
     k_selection_sort(arr, n, k);
 }
+
+void facade_quicksort(Point *arr, ...){
+   va_list list;
+   va_start(list,arr);
+
+   int start = va_arg(list, int);//start
+   int end = va_arg(list, int);//end
+   int k = va_arg(list, int);
+   int n = va_arg(list, int);
+
+	QuickSortIterative(arr,n);
+}
+
 void k_selection_sort(Point*arr, int N, int k){
     
     int min_pos;
@@ -359,7 +300,6 @@ void k_selection_sort(Point*arr, int N, int k){
 
     }
 }
-
 
 void Swap(Point *a, Point *b)
 {
