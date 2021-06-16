@@ -71,8 +71,10 @@ void facade_k_selection_sort(Point*arr, ...);
 void facade_bubble_sort(Point*arr, ...);
 void facade_mergeSort(Point*arr, ...);
 void facade_quicksort(Point*arr,...);
+void facade_bitonicSort(Point*arr,...);
 void Swap(Point *a, Point *b);
 int Partition(Point data[], int left, int right);
 void QuickSortIterative(Point data[], int count);
+void bitonicSequenceGenerator(int startIndex, int lastIndex, Point*ar,int num_threads); // Generate a bitonic sequence from a random order
 
 #endif

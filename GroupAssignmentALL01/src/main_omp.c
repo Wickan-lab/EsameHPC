@@ -58,19 +58,21 @@ int main(int argc, char const *argv[])
 
 	test_point.x = x;
 	test_point.y = y;
-
-	srand(time(NULL)); 
 	
 	STARTTIME(1);
 	generate_points(dataset, n, num_threads);
 	ENDTIME(1, time_generate);
-
+#ifdef DEBUG
+	printf("Points generated\n");
+#endif
 	STARTTIME(2);
 	test_point.cluster_number = classify_point_no_conflict(dataset, test_point, k, n, num_threads, FACADE);
 	ENDTIME(2, time_classify);
 
 	printf("%d;%d;%f;%f\n", n, num_threads, time_generate, time_classify);
-	//printf("Point belongs to cluster: %d\n", test_point.cluster_number);
+#ifdef DEBUG
+	printf("Point belongs to cluster: %d\n", test_point.cluster_number);
+#endif
 
-	return 0;
+	exit(EXIT_SUCCESS);
 }

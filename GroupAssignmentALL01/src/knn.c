@@ -73,6 +73,8 @@ void generate_points(Point *dataset, int n, int num_threads){
 	
 	int i;
 	Point new_point;
+	
+	srand(time(NULL)); 
 
 	#pragma omp parallel for default(none) shared(dataset, n) private (i, new_point) num_threads(num_threads)
 	for (i = 0; i < n; ++i)
@@ -98,45 +100,28 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
     }
 
 	
+#ifdef DEBUG
+	 printf("Start sorting\n");
+#endif
     sort(dataset, 0, n - 1, k, n, num_threads);
-        
-    
 
 	#pragma omp parallel num_threads(num_threads)
 	{ 	
         #pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
         for (int i = 0; i < k; ++i)
-            {
-                if (dataset[i].cluster_number == 0)
-                    counter_cluster_0 += 1;
-                else
-                    counter_cluster_1 += 1;
-            }
-
-		#pragma omp for
-		for (int i = 0; i < n; ++i)
-		{
-			dataset[i].distance = euclidean_distance(dataset[i], test_point);
-		}
-
-		#pragma omp single
-		QuickSortIterative(dataset, n);
-		
-		
-		#pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
-			for (int i = 0; i < k; ++i)
 			{
-				if (dataset[i].cluster_number == 0)
-					counter_cluster_0 += 1;
-				else
-					counter_cluster_1 += 1;
-			}
+            if (dataset[i].cluster_number == 0)
+               counter_cluster_0 += 1;
+            else
+               counter_cluster_1 += 1;
+         }
 	}
-
-	//for (int i = 0; i < n; ++i)
-	//{
-	//	printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
-	//}
+#ifdef DEBUG
+	for (int i = 0; i < n; ++i)
+	{
+		printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
+	}
+#endif
 	
 	return (counter_cluster_1 >= counter_cluster_0) ? 1 : 0; 
 }
@@ -196,7 +181,7 @@ void facade_bitonicSort(Point* arr, ...){
     int n = va_arg(list, int);
     int num_threads = va_arg(list, int);
     va_end(list);
-    BitonicSort(arr, n, num_threads);
+	 bitonicSequenceGenerator(start,end,arr,num_threads); 
 }
 
 void facade_quicksort(Point *arr, ...){
@@ -207,6 +192,7 @@ void facade_quicksort(Point *arr, ...){
    int end = va_arg(list, int);//end
    int k = va_arg(list, int);
    int n = va_arg(list, int);
+   va_end(list);
 
 	QuickSortIterative(arr,n);
 }
@@ -390,28 +376,110 @@ void QuickSortIterative(Point data[], int count) {
 }
 
 
+void ascendingSwap(int index1, int index2, Point *ar) // Swap two values such that they appear in ascending order in the array
+{
+    if (ar[index2].distance < ar[index1].distance)
+    {
+        Point temp = ar[index2];
+        ar[index2] = ar[index1];
+        ar[index1] = temp;
+    }
+}
+
+void decendingSwap(int index1, int index2, Point *ar) // Swap two values such that they appear in decending order in the array
+{
+    if (ar[index1].distance < ar[index2].distance)
+    {
+        Point temp = ar[index2];
+        ar[index2] = ar[index1];
+        ar[index1] = temp;
+    }
+}
+
+void bitonicSortFromBitonicSequence(int startIndex, int lastIndex, int dir, Point *ar) // Form a increaseing or decreasing array when a bitonic input is given to the function
+{
+    if (dir == 1)
+    {
+        int counter = 0; // Counter to keep track of already swapped elements ,, parallelising this area results in poor performance due to overhead ,,need to fix
+        int noOfElements = lastIndex - startIndex + 1;
+        for (int j = noOfElements / 2; j > 0; j = j / 2)
+        {
+            counter = 0;
+            for (int i = startIndex; i + j <= lastIndex; i++)
+            {
+                if (counter < j)
+                {
+                    ascendingSwap(i, i + j, ar);
+                    counter++;
+                }
+                else
+                {
+                    counter = 0;
+                    i = i + j - 1;
+                }
+            }
+        }
+    }
+    else // Descending sort
+    {
+        int counter = 0;
+        int noOfElements = lastIndex - startIndex + 1;
+        for (int j = noOfElements / 2; j > 0; j = j / 2)
+        {
+            counter = 0;
+            for (int i = startIndex; i <= (lastIndex - j); i++)
+            {
+                if (counter < j)
+                {
+                    decendingSwap(i, i + j, ar);
+                    counter++;
+                }
+                else
+                {
+                    counter = 0;
+                    i = i + j - 1;
+                }
+            }
+        }
+    }
+}
+void bitonicSequenceGenerator(int startIndex, int lastIndex, Point*ar,int num_threads) // Generate a bitonic sequence from a random order
+{
+    int noOfElements = lastIndex - startIndex + 1;
+    for (int j = 2; j <= noOfElements; j = j * 2)
+    {
+        #pragma omp parallel for num_threads(num_threads)//parallel implementation results in most performance gains here
+        for (int i = 0; i < noOfElements; i = i + j)
+        {
+            if (((i / j) % 2) == 0)
+            {
+                bitonicSortFromBitonicSequence(i, i + j - 1, 1, ar);
+            }
+            else
+            {
+                bitonicSortFromBitonicSequence(i, i + j - 1, 0, ar);
+            }
+        }
+    }
+}
 
 /*    https://courses.cs.duke.edu//fall08/cps196.1/Pthreads/bitonic.c    */
 void BitonicSort(Point* arr, int N, int num_threads) {
 
-  int i,j,k,k_old;
-  #pragma omp parallel num_threads(num_threads)
-  {
-      #pragma omp for
-      for (k=2; k<=N; k+=k_old) {
-        for (j=k>>1; j>0; j=j>>1) {
+  int i,j,k;
+      for (k=2; k<=N; k = k*2) {
+        for (j=k>>1; j>0; j = j / 2) {
+			#pragma omp parallel for
           for (i=0; i<N; i++) {
-        int ij=i^j;
-        if ((ij)>i) {
-          if ((i&k)==0 && arr[i].distance > arr[ij].distance) 
-              swap(arr,i,ij);
-          if ((i&k)!=0 && arr[i].distance < arr[ij].distance)
-              swap(arr,i,ij);
-        }
+					int ij=i^j;
+        			if ((ij)>i) {
+        			  if ((i&k)==0 && arr[i].distance > arr[ij].distance) 
+        			      swap(arr,i,ij);
+        			  if ((i&k)!=0 && arr[i].distance < arr[ij].distance)
+        			      swap(arr,i,ij);
+        			}
           }
         }
-        k_old = k;
       }
-  }
 
 }
