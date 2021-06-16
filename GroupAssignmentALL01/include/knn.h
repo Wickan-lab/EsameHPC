@@ -55,21 +55,22 @@ typedef struct
 } Point;
 
 
-void merge(Point arr[], int l, int m, int r);
-void mergeSort(Point arr[], int l, int r);
 float Q_rsqrt(float number);
 float euclidean_distance(Point a, Point b);
 void generate_points(Point *dataset, int n, int num_threads);
 int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads,void (*sort)(Point*,...));
-int classify_point_bubble(Point *dataset, Point test_point, int k, int n, int num_threads);
-void bubble_sort(Point*arr,int N);
 void swap(Point*arr, int i, int j);
-void k_selection_sort(Point*arr, int N, int k);
+
+void merge(Point* arr, int l, int m, int r);
+void mergeSort(Point* arr, int l, int r, int num_threads);
+void bubble_sort(Point*arr,int N, int num_threads);
+void k_selection_sort(Point*arr, int N, int k, int num_threads);
+void BitonicSort(Point*arr, int n, int num_threads);
+
 void facade_k_selection_sort(Point*arr, ...);
 void facade_bubble_sort(Point*arr, ...);
 void facade_mergeSort(Point*arr, ...);
 void facade_quicksort(Point*arr,...);
-int classify_point(Point *dataset, Point test_point, int k, int n, int num_threads);
 void Swap(Point *a, Point *b);
 int Partition(Point data[], int left, int right);
 void QuickSortIterative(Point data[], int count);

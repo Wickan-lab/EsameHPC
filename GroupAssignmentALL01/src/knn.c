@@ -45,89 +45,6 @@
 	#define get_thread_num() 0
 #endif
 
-/* Function to merge the two haves arr[l..m]
- and arr[m+1..r] of array arr[] */
-void merge(Point arr[], int l, int m, int r)
-{
-    int i, j, k;
-    int n1 = m - l + 1;
-    int n2 =  r - m;
- 
-    /* create temp arrays */
-    Point L[n1], R[n2];
- 
-    /* Copy data to temp arrays L[] and R[] */
-	 #pragma omp parallel default(shared) private(i,j)
-	 {
-    #pragma omp for nowait
-	    for (i = 0; i < n1; i++)
-	        L[i] = arr[l + i];
-
-    #pragma omp for
-	    for (j = 0; j < n2; j++)
-	        R[j] = arr[m + 1+ j];
-	 }
-    /* Merge the temp arrays back into arr[l..r]*/
-    i = 0;
-    j = 0;
-    k = l;
-    while (i < n1 && j < n2)
-    {
-        if (L[i].distance <= R[j].distance)
-        {
-            arr[k] = L[i];
-            i++;
-        }
-        else
-        {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
-    }
- 
-    /* Copy the remaining elements
-    of L[], if there are any */
-    while (i < n1)
-    {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
- 
-    /* Copy the remaining elements
-    of R[], if there are any */
-    while (j < n2)
-    {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
-}
-
- 
-/* l is for left index and r is
- right index of the sub-array
-  of arr to be sorted */
-void mergeSort(Point arr[], int l, int r)
-{
-   if (l < r)
-   {
-      // Same as (l+r)/2 but avoids
-      // overflow for large l & h
-      int m = l+(r-l)/2;
-
-      #pragma omp task firstprivate (arr, l, m)
-      mergeSort(arr, l, m);
-
-      #pragma omp task firstprivate (arr, m, r)
-      mergeSort(arr, m+1, r);
-
-      #pragma omp taskwait
-      merge(arr, l, m, r);
-   }
-}
- 
 
 float Q_rsqrt(float number)
 {  
@@ -178,21 +95,24 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
     		}
 
         //pass arguments in a predefined order
-		sort(dataset, 0, n - 1, k, n);
-
-    	#pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
-        	for (int i = 0; i < k; ++i)
-            	{
-            		if (dataset[i].cluster_number == 0)
-            			counter_cluster_0 += 1;
-            		else
-            			counter_cluster_1 += 1;
-            	}
-        
     }
+
+	
+    sort(dataset, 0, n - 1, k, n, num_threads);
+        
+    
 
 	#pragma omp parallel num_threads(num_threads)
 	{ 	
+        #pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
+        for (int i = 0; i < k; ++i)
+            {
+                if (dataset[i].cluster_number == 0)
+                    counter_cluster_0 += 1;
+                else
+                    counter_cluster_1 += 1;
+            }
+
 		#pragma omp for
 		for (int i = 0; i < n; ++i)
 		{
@@ -228,24 +148,15 @@ void swap(Point*arr, int i, int j){
     arr[j] = temp;
 }
 
-void bubble_sort(Point*arr,int N){
-    #pragma omp for
-    for(int i = 0; i < N - 1; i++){
-        for(int j = i + 1; j < N; j++){
-            if(arr[i].distance > arr[j].distance){
-                swap(arr,i,j);
-            }
-        }
-    }
-}
-
 void facade_mergeSort(Point*arr, ...){
     va_list list;
     va_start(list, arr); 
     //get start and end
     int start = va_arg(list, int);
     int end = va_arg(list, int);
-    mergeSort(arr, start, end);
+    int num_threads = va_arg(list, int);
+    va_end(list);
+    mergeSort(arr, start, end, num_threads);
 }
 
 void facade_bubble_sort(Point*arr, ...){
@@ -255,7 +166,9 @@ void facade_bubble_sort(Point*arr, ...){
     int end = va_arg(list, int);
     int k = va_arg(list, int);
     int N = va_arg(list, int);
-    bubble_sort(arr,N);
+    int num_threads = va_arg(list, int);
+    va_end(list);
+    bubble_sort(arr,N, num_threads);
 }
 
 void facade_k_selection_sort(Point*arr, ...){
@@ -267,8 +180,23 @@ void facade_k_selection_sort(Point*arr, ...){
     int end = va_arg(list, int);//end
     int k = va_arg(list, int);
     int n = va_arg(list, int);
-    //get k
-    k_selection_sort(arr, n, k);
+    int num_threads = va_arg(list, int);
+    va_end(list);
+    k_selection_sort(arr, n, k, num_threads);
+    
+}
+
+void facade_bitonicSort(Point* arr, ...){
+    va_list list;
+    va_start(list, arr); 
+    
+    int start = va_arg(list, int);//start
+    int end = va_arg(list, int);//end
+    int k = va_arg(list, int);
+    int n = va_arg(list, int);
+    int num_threads = va_arg(list, int);
+    va_end(list);
+    BitonicSort(arr, n, num_threads);
 }
 
 void facade_quicksort(Point *arr, ...){
@@ -283,21 +211,122 @@ void facade_quicksort(Point *arr, ...){
 	QuickSortIterative(arr,n);
 }
 
-void k_selection_sort(Point*arr, int N, int k){
+void k_selection_sort(Point*arr, int N, int k, int num_threads){
     
     int min_pos;
     int k_count = 0;
+    #pragma omp parallel num_threads(num_threads)
+    {
+        #pragma omp for
+        for(int i = 0; i < k; i++){
+            min_pos = i;
+            for(int j = i + 1; j < N; j++){
+                //printf("min pos: %d, swap1: %f, swap2: %f, i: %d, j: %d, N: %d\n",min_pos,arr[min_pos].distance,arr[j + 1].distance,i,j,N);
+                if(fabs(arr[min_pos].distance) > fabs(arr[j].distance)){
+                    min_pos = j;
+                }
+            }
+            swap(arr,i,min_pos);
+        }
+    }
+}
+
+/* Function to merge the two haves arr[l..m]
+ and arr[m+1..r] of array arr[] */
+void merge(Point arr[], int l, int m, int r)
+{
+    int i, j, k;
+    int n1 = m - l + 1;
+    int n2 =  r - m;
+ 
+    /* create temp arrays */
+    Point L[n1], R[n2];
+ 
+    /* Copy data to temp arrays L[] and R[] */
+    #pragma omp for nowait
+        for (i = 0; i < n1; i++)
+            L[i] = arr[l + i];
+
     #pragma omp for
-    for(int i = 0; i < k; i++){
-        min_pos = i;
-        for(int j = i + 1; j < N; j++){
-            //printf("min pos: %d, swap1: %f, swap2: %f, i: %d, j: %d, N: %d\n",min_pos,arr[min_pos].distance,arr[j + 1].distance,i,j,N);
-            if(fabs(arr[min_pos].distance) > fabs(arr[j].distance)){
-                min_pos = j;
+        for (j = 0; j < n2; j++)
+            R[j] = arr[m + 1+ j];
+    
+    /* Merge the temp arrays back into arr[l..r]*/
+    i = 0;
+    j = 0;
+    k = l;
+    while (i < n1 && j < n2)
+    {
+        if (L[i].distance <= R[j].distance)
+        {
+            arr[k] = L[i];
+            i++;
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+ 
+    /* Copy the remaining elements
+    of L[], if there are any */
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+    }
+ 
+    /* Copy the remaining elements
+    of R[], if there are any */
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
+ 
+/* l is for left index and r is
+ right index of the sub-array
+  of arr to be sorted */
+void mergeSort(Point arr[], int l, int r, int num_threads)
+{
+
+    #pragma omp parallel num_threads(num_threads)
+    {
+        if (l < r)
+        {
+          // Same as (l+r)/2 but avoids
+          // overflow for large l & h
+          int m = l+(r-l)/2;
+
+          #pragma omp task firstprivate (arr, l, m)
+          mergeSort(arr, l, m, num_threads);
+
+          #pragma omp task firstprivate (arr, m, r)
+          mergeSort(arr, m+1, r, num_threads);
+
+          #pragma omp taskwait
+          merge(arr, l, m, r);
+        }
+    }   
+}
+
+void bubble_sort(Point*arr,int N, int num_threads){
+    #pragma omp parallel num_threads(num_threads)
+    {
+        #pragma omp for
+        for(int i = 0; i < N - 1; i++){
+            for(int j = i + 1; j < N; j++){
+                if(arr[i].distance > arr[j].distance){
+                    swap(arr,i,j);
+                }
             }
         }
-        swap(arr,i,min_pos);
-
     }
 }
 
@@ -358,4 +387,31 @@ void QuickSortIterative(Point data[], int count) {
 	}
 
 	free(stack);
+}
+
+
+
+/*    https://courses.cs.duke.edu//fall08/cps196.1/Pthreads/bitonic.c    */
+void BitonicSort(Point* arr, int N, int num_threads) {
+
+  int i,j,k,k_old;
+  #pragma omp parallel num_threads(num_threads)
+  {
+      #pragma omp for
+      for (k=2; k<=N; k+=k_old) {
+        for (j=k>>1; j>0; j=j>>1) {
+          for (i=0; i<N; i++) {
+        int ij=i^j;
+        if ((ij)>i) {
+          if ((i&k)==0 && arr[i].distance > arr[ij].distance) 
+              swap(arr,i,ij);
+          if ((i&k)!=0 && arr[i].distance < arr[ij].distance)
+              swap(arr,i,ij);
+        }
+          }
+        }
+        k_old = k;
+      }
+  }
+
 }
