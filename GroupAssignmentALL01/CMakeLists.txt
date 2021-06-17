@@ -44,12 +44,14 @@ add_executable(program_omp_selection src/main_omp.c src/knn.c include/knn.h)
 add_executable(program_omp_merge src/main_omp.c src/knn.c include/knn.h)
 add_executable(program_omp_quick src/main_omp.c src/knn.c include/knn.h)
 add_executable(program_omp_bitonic src/main_omp.c src/knn.c include/knn.h)
+add_executable(program_omp_bubble src/main_omp.c src/knn.c include/knn.h)
 
 target_include_directories(program_seq PRIVATE include)
 target_include_directories(program_omp_selection PRIVATE include)
 target_include_directories(program_omp_merge	PRIVATE include)
 target_include_directories(program_omp_quick PRIVATE include)
 target_include_directories(program_omp_bitonic PRIVATE include)
+target_include_directories(program_omp_bubble PRIVATE include)
 
 find_package(OpenMP REQUIRED)
 if(OpenMP_C_FOUND)
@@ -57,24 +59,28 @@ if(OpenMP_C_FOUND)
 		  target_link_libraries(program_omp_merge PRIVATE OpenMP::OpenMP_C)
 		  target_link_libraries(program_omp_quick PRIVATE OpenMP::OpenMP_C)
 		  target_link_libraries(program_omp_bitonic PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_bubble PRIVATE OpenMP::OpenMP_C)
 endif()
 
 target_compile_options(program_omp_selection PRIVATE -O3)
 target_compile_options(program_omp_merge PRIVATE -O3)
 target_compile_options(program_omp_quick PRIVATE -O3)
 target_compile_options(program_omp_bitonic PRIVATE -O3)
+target_compile_options(program_omp_bubble PRIVATE -O3)
 
 target_compile_features(program_seq PRIVATE c_std_11)
 target_compile_features(program_omp_selection PRIVATE c_std_11)
 target_compile_features(program_omp_merge PRIVATE c_std_11)
 target_compile_features(program_omp_quick PRIVATE c_std_11)
 target_compile_features(program_omp_bitonic PRIVATE c_std_11)
+target_compile_features(program_omp_bubble PRIVATE c_std_11)
 
-target_compile_definitions(program_seq PRIVATE -DFACADE=facade_bitonicSort)
+target_compile_definitions(program_seq PRIVATE -DFACADE=facade_bubble_sort)
 target_compile_definitions(program_omp_selection PRIVATE -DFACADE=facade_k_selection_sort)
 target_compile_definitions(program_omp_merge PRIVATE -DFACADE=facade_mergeSort)
 target_compile_definitions(program_omp_quick PRIVATE -DFACADE=facade_quicksort)
 target_compile_definitions(program_omp_bitonic PRIVATE -DFACADE=facade_bitonicSort)
+target_compile_definitions(program_omp_bubble PRIVATE -DFACADE=facade_bubble_sort)
 
 # ---------------------------------------- TEST -----------------------------------------
 #add_executable(dotprod_test test/test.c src/dotprod.c)
@@ -85,16 +91,16 @@ target_compile_definitions(program_omp_bitonic PRIVATE -DFACADE=facade_bitonicSo
 #	COMMAND dotprod_test )
 #
 # ------------------------------------ DOCUMENTATION ------------------------------------
-find_package(Doxygen
-             REQUIRED dot)
-
-if(DOXYGEN_FOUND)
-	set(DOXYGEN_GENERATE_XML YES)
-	doxygen_add_docs(
-		docs
-		./src/dotprod.c ./include/dotprod.h ./test/test.c 
-		)
-endif()
+#find_package(Doxygen
+#             REQUIRED dot)
+#
+#if(DOXYGEN_FOUND)
+#	set(DOXYGEN_GENERATE_XML YES)
+#	doxygen_add_docs(
+#		docs
+#		./src/dotprod.c ./include/dotprod.h ./test/test.c 
+#		)
+#endif()
 
 # ---------------------------------- GENERATE MEASURES ----------------------------------
 #add_custom_target(

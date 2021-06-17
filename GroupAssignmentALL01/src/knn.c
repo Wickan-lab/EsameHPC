@@ -153,7 +153,7 @@ void facade_bubble_sort(Point*arr, ...){
     int N = va_arg(list, int);
     int num_threads = va_arg(list, int);
     va_end(list);
-    bubble_sort(arr,N, num_threads);
+    bubble_sort(arr, N, num_threads);
 }
 
 void facade_k_selection_sort(Point*arr, ...){
@@ -302,14 +302,30 @@ void mergeSort(Point arr[], int l, int r, int num_threads)
     }   
 }
 
-void bubble_sort(Point*arr,int N, int num_threads){
-    #pragma omp parallel num_threads(num_threads)
-    {
-        #pragma omp for
-        for(int i = 0; i < N - 1; i++){
-            for(int j = i + 1; j < N; j++){
-                if(arr[i].distance > arr[j].distance){
-                    swap(arr,i,j);
+void bubble_sort(Point*arr, int n, int num_threads)
+{
+    int isSorted = 0; 
+  
+    while (!isSorted) {
+        #pragma omp parallel num_threads(num_threads)
+        {
+            isSorted = 1;
+  
+            // Perform Bubble sort on odd indexed element
+            #pragma omp parallel for 
+            for (int i = 1; i <= n - 2; i = i + 2) {
+                if (arr[i].distance > arr[i + 1].distance) {
+                    Swap(&arr[i], &arr[i + 1]);
+                    isSorted = 0;
+                }
+            }
+      
+            // Perform Bubble sort on even indexed element
+            #pragma omp for 
+            for (int i = 0; i <= n - 2; i = i + 2) {
+                if (arr[i].distance > arr[i + 1].distance) {
+                    Swap(&arr[i], &arr[i + 1]);
+                    isSorted = 0;
                 }
             }
         }
