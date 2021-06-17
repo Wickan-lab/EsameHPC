@@ -70,25 +70,29 @@ float euclidean_distance(Point a, Point b){
 	return 1/Q_rsqrt(sum);
 }
 
-void generate_points(Point *dataset, int n, int num_threads){
+void generate_points(Point *dataset, int n, int num_threads, int num_clusters){
 	
 	int i;
 	Point new_point;
 	
 	srand(time(NULL)); 
 
-	#pragma omp parallel for default(none) shared(dataset, n) private (i, new_point) num_threads(num_threads)
+	#pragma omp parallel for default(none) shared(dataset, n, num_clusters) private (i, new_point) num_threads(num_threads)
 	for (i = 0; i < n; ++i)
 	{	
 		new_point.x = rand() % 300;               /*  HARDCODED  */
 		new_point.y = rand() % 300;			     /*  HARDCODED  */
-		new_point.cluster_number = rand() % 2;   /*  HARDCODED  */
+		new_point.cluster_number = rand() % num_clusters;   /*  HARDCODED  */
 		dataset[i] = new_point;
 	}
 }
 
 int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads, void (*sort)(Point*,...)){
 	int counter_cluster_0 = 0, counter_cluster_1 = 0;
+    unsigned int* clusters_array = calloc(k,sizeof(unsigned int));
+    unsigned int max_val = 0;
+    unsigned int max_pos = 0;
+
 	#pragma omp parallel num_threads(num_threads)
     {
     	#pragma omp for
@@ -106,17 +110,31 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
 #endif
     sort(dataset, 0, n - 1, k, n, num_threads);
 
-	#pragma omp parallel num_threads(num_threads)
+	#pragma omp parallel  shared(max_val, max_pos) num_threads(num_threads)
 	{ 	
-        #pragma omp for reduction(+:counter_cluster_0, counter_cluster_1)
-        for (int i = 0; i < k; ++i)
-			{
-            if (dataset[i].cluster_number == 0)
-               counter_cluster_0 += 1;
-            else
-               counter_cluster_1 += 1;
-         }
+        
+        #pragma omp critical
+        {
+            int clusters_index;
+            for(int i=0; i<k; i++) {
+                clusters_index = dataset[i].cluster_number;
+                clusters_array[clusters_index] += 1;
+            }
+        }
+
+        #pragma omp for reduction(max:max_val,max_pos)
+        for(int j = 0; j < k; j++){
+            if(max_val < clusters_array[j]){
+                max_val = clusters_array[j];
+                max_pos = j;
+            }
+            
+            //max_val = max_val > clusters_array[j] ? max_val : clusters_array[j];
+        }      
 	}
+
+
+
 #ifdef DEBUG
 	for (int i = 0; i < n; ++i)
 	{
@@ -124,7 +142,7 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
 	}
 #endif
 	
-	return (counter_cluster_1 >= counter_cluster_0) ? 1 : 0; 
+	return max_pos;
 }
 
 void swap(Point*arr, int i, int j){
@@ -182,7 +200,7 @@ void facade_bitonicSort(Point* arr, ...){
     int n = va_arg(list, int);
     int num_threads = va_arg(list, int);
     va_end(list);
-	 bitonicSequenceGenerator(start,end,arr,num_threads); 
+	bitonicSequenceGenerator(start,end,arr,num_threads); 
 }
 
 void facade_quicksort(Point *arr, ...){
@@ -480,6 +498,10 @@ void bitonicSequenceGenerator(int startIndex, int lastIndex, Point*ar,int num_th
     }
 }
 
+
+
+
+/*-----Non parallelizzabile per bene------*/
 /*    https://courses.cs.duke.edu//fall08/cps196.1/Pthreads/bitonic.c    */
 void BitonicSort(Point* arr, int N, int num_threads) {
 

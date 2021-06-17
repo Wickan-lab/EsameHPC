@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	int y = atoi(argv[3]);
 	int k = atoi(argv[4]);
 
-	Point dataset[n];
+	Point dataset[(n % size)? (n/size): n];
 	Point test_point;
 
 	test_point.x = x;
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	
 	if(rank == 0){
 		double start_time_generate = MPI_Wtime();
-		generate_points(dataset, n, 1);
+		generate_points(dataset, n, 1, 2);
 		double end_time_generate = MPI_Wtime();
 		time_generate = end_time_generate - start_time_generate;
 #ifdef DEBUG
