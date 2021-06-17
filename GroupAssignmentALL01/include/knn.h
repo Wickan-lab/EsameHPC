@@ -31,6 +31,10 @@
 
 #include <time.h>
 
+#ifdef _MPI
+	#include <mpi.h>
+#endif
+
 /** macros to get execution time: both macros have to be in the same scope
 *   define a double variable to use in ENDTIME before STARTTIME:
 *   double x;
@@ -61,7 +65,7 @@ void generate_points(Point *dataset, int n, int num_threads);
 int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads,void (*sort)(Point*,...));
 void swap(Point*arr, int i, int j);
 
-void merge(Point* arr, int l, int m, int r);
+void omp_merge(Point* arr, int l, int m, int r);
 void mergeSort(Point* arr, int l, int r, int num_threads);
 void bubble_sort(Point*arr,int N, int num_threads);
 void k_selection_sort(Point*arr, int N, int k, int num_threads);
@@ -76,5 +80,14 @@ void Swap(Point *a, Point *b);
 int Partition(Point data[], int left, int right);
 void QuickSortIterative(Point data[], int count);
 void bitonicSequenceGenerator(int startIndex, int lastIndex, Point*ar,int num_threads); // Generate a bitonic sequence from a random order
+
+// MPI functions
+#ifdef _MPI
+int mpi_merge(Point *ina, int lena, Point *inb, int lenb, Point *out);
+int MPI_Type_create_Point(MPI_Datatype *point_type);
+void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank,MPI_Comm comm);
+int MPI_classify_point(Point *dataset, Point test_point, int k, int n);
+void printstat(int rank, int iter, char *txt, Point *la, int n);
+#endif
 
 #endif

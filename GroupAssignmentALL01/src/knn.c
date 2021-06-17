@@ -38,6 +38,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 
 #ifdef _OPENMP
 	#include <omp.h>
@@ -219,7 +220,7 @@ void k_selection_sort(Point*arr, int N, int k, int num_threads){
 
 /* Function to merge the two haves arr[l..m]
  and arr[m+1..r] of array arr[] */
-void merge(Point arr[], int l, int m, int r)
+void omp_merge(Point arr[], int l, int m, int r)
 {
     int i, j, k;
     int n1 = m - l + 1;
@@ -297,7 +298,7 @@ void mergeSort(Point arr[], int l, int r, int num_threads)
           mergeSort(arr, m+1, r, num_threads);
 
           #pragma omp taskwait
-          merge(arr, l, m, r);
+          omp_merge(arr, l, m, r);
         }
     }   
 }
