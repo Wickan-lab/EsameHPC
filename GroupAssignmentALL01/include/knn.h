@@ -57,7 +57,7 @@ typedef struct
 
 float Q_rsqrt(float number);
 float euclidean_distance(Point a, Point b);
-void generate_points(Point *dataset, int n, int num_threads);
+void generate_points(Point *dataset, int n, int num_threads, int num_clusters);
 int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, int num_threads,void (*sort)(Point*,...));
 void swap(Point*arr, int i, int j);
 

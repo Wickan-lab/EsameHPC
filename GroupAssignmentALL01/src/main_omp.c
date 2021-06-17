@@ -42,8 +42,8 @@ int main(int argc, char const *argv[])
 
 	double time_generate = 0.0, time_classify = 0.0;
 
-	if(argc != 6){
-		fprintf(stderr,"Usage:\n\t%s [n : points to generate] [x: Coordinate x of the point to classify] [y: Coordinate y of the point to classify] [k] [num_threads]\n", argv[0]);
+	if(argc != 7){
+		fprintf(stderr,"Usage:\n\t%s [n : points to generate] [x: Coordinate x of the point to classify] [y: Coordinate y of the point to classify] [k] [#clusters] [num_threads]\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
@@ -51,7 +51,8 @@ int main(int argc, char const *argv[])
 	int x = atoi(argv[2]);
 	int y = atoi(argv[3]);
 	int k = atoi(argv[4]);
-	int num_threads = atoi(argv[5]);
+	int num_clusters = atoi(argv[5]);
+	int num_threads = atoi(argv[6]);
 
 	Point dataset[n];
 	Point test_point;
@@ -60,7 +61,7 @@ int main(int argc, char const *argv[])
 	test_point.y = y;
 	
 	STARTTIME(1);
-	generate_points(dataset, n, num_threads);
+	generate_points(dataset, n, num_threads, num_clusters);
 	ENDTIME(1, time_generate);
 #ifdef DEBUG
 	printf("Points generated\n");
@@ -69,7 +70,7 @@ int main(int argc, char const *argv[])
 	test_point.cluster_number = classify_point_no_conflict(dataset, test_point, k, n, num_threads, FACADE);
 	ENDTIME(2, time_classify);
 
-	printf("%d;%d;%f;%f\n", n, num_threads, time_generate, time_classify);
+	printf("%d,%d,%d,%d,%f,%f\n", n, k, num_clusters, num_threads, time_generate, time_classify);
 #ifdef DEBUG
 	printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif
