@@ -86,7 +86,7 @@ void bitonicSequenceGenerator(int startIndex, int lastIndex, Point*ar,int num_th
 int mpi_merge(Point *ina, int lena, Point *inb, int lenb, Point *out);
 int MPI_Type_create_Point(MPI_Datatype *point_type);
 void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank,MPI_Comm comm);
-int MPI_classify_point(Point *dataset, Point test_point, int k, int n);
+int MPI_classify_point(Point *dataset, Point test_point, int k, int n, int num_clusters);
 void printstat(int rank, int iter, char *txt, Point *la, int n);
 #endif
 
