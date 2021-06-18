@@ -47,7 +47,7 @@ for ((j = 0; j < "${#ARRAY_RC[@]}"; j++)); do
 	for ths in "${ARRAY_THS[@]}"; do
 		ths_str=$(printf "%02d" $ths)
 		
-		OUT_FILE=$SCRIPTPATH/measure/SIZE-${ARRAY_RC[$j]}-K${ARRAY_K_VALUES[$j]}/SIZE-${ARRAY_RC[$j]}-NP-$ths_str-K${ARRAY_K_VALUES[$j]}.csv
+		OUT_FILE=$SCRIPTPATH/measure/SIZE-${ARRAY_RC[$j]}-K${ARRAY_K_VALUES[$j]}/SIZE-${ARRAY_RC[$j]}-NTH-$ths_str-K${ARRAY_K_VALUES[$j]}.csv
 
 		mkdir -p $(dirname $OUT_FILE) 2> /dev/null
 		
@@ -58,7 +58,7 @@ for ((j = 0; j < "${#ARRAY_RC[@]}"; j++)); do
 		#	echo Created symbolic link to $(basename $OLD_OUT_FILE)
 		#	continue
 		#fi
-		echo "NPoints,K,NClusters,processes,generate, classify, user, elapsed, sys, pCPU" >$OUT_FILE
+		echo "NPoints,K,NClusters,processes,generate,classify,user,elapsed,sys,pCPU" >$OUT_FILE
 		
 		for ((i = 0 ; i < $NMEASURES; i++)); do
 			if [[ $ths -eq 0 ]]; then
