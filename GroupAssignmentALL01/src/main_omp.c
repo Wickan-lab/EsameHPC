@@ -86,7 +86,7 @@ int main(int argc, char const *argv[])
 	time_generate = g_seconds + g_microseconds * 1e-6;
    time_classify = c_seconds + c_microseconds * 1e-6;
 
-	printf("%d,%d,%d,%d,%f,%f\n", n, k, num_clusters, num_threads, time_generate, time_classify);
+	printf("%d;%d;%d;%d;%f;%f\n", n, k, num_clusters, num_threads, time_generate, time_classify);
 #ifdef DEBUG
 	printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif

@@ -58,7 +58,7 @@ for ((j = 0; j < "${#ARRAY_RC[@]}"; j++)); do
 		#	echo Created symbolic link to $(basename $OLD_OUT_FILE)
 		#	continue
 		#fi
-		echo "NPoints,K,NClusters,processes,generate, classify, elapsed" >$OUT_FILE
+		echo "NPoints,K,NClusters,processes,generate, classify, user, elapsed, sys, pCPU" >$OUT_FILE
 		
 		for ((i = 0 ; i < $NMEASURES; i++)); do
 			if [[ $ths -eq 0 ]]; then
