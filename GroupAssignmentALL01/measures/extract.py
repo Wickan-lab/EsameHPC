@@ -44,6 +44,12 @@ config = {
 			'filenameRegex': "SIZE-[0-9]+-NTH-[0-9]{2}-K[0-9]+",
 			'folderRegex':"SIZE-[0-9]+-K[0-9]+",
 			"cols":{
+				'user':{
+
+					'jpg':False,
+					'computeSpeedup':False
+
+				},
 				'generate':{
 
 					'jpg':False,
@@ -57,19 +63,6 @@ config = {
 					'computeSpeedup':False,
 
 				},
-				'user':{
-
-					'jpg':False,
-					'computeSpeedup':False
-
-				},
-				#'elapsed':{
-
-				#	'jpg':False,
-				#	'computeSpeedup':False,
-					
-
-				#},
 				'total':{
 
 					'jpg':False,
@@ -77,10 +70,17 @@ config = {
 					#"skipForFile" : 'SIZE-[0-9]+-NTH-[0-9]+-K[0-9]+'					
 
 				}
+				#'elapsed':{
+
+				#	'jpg':False,
+				#	'computeSpeedup':False,
+					
+
+				#},
 			},
 
 			"table":{
-				"header": ['Version','Processes','generatePoints','classifyPoint','user','Total','Speedup','Efficiency'],
+				"header": ['Version','Processes','user','generatePoints','classifyPoint','Total','Speedup','Efficiency'],
 			},
 			"plot":{
 				"x_from_table":"Processes",

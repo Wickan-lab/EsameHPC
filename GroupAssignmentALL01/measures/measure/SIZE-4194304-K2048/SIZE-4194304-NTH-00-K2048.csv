@@ -1,8 +1,8 @@
 NPoints,K,NClusters,processes,generate,classify,total,user,elapsed,sys,pCPU
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,120.33
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,138.43
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.000,0.000,0.000,119.07
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,119.87
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,117.57
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,125.30
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,115.74
+4194304,2048,5,0,0.021292,0.944142,0.965434,0.966,0.966,0.000,100.00
+4194304,2048,5,0,0.017401,0.950361,0.967762,0.968,0.968,0.000,99.99
+4194304,2048,5,0,0.017141,0.943763,0.960904,0.962,0.962,0.000,100.00
+4194304,2048,5,0,0.019502,0.960032,0.979534,0.980,0.980,0.000,100.00
+4194304,2048,5,0,0.017545,0.935242,0.952787,0.953,0.954,0.000,99.99
+4194304,2048,5,0,0.017079,0.961984,0.979063,0.970,0.980,0.010,99.99
+4194304,2048,5,0,0.017389,0.926677,0.944066,0.945,0.945,0.000,99.99

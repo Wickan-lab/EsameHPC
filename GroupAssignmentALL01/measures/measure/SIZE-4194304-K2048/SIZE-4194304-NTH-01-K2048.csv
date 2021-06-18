@@ -1,8 +1,8 @@
 NPoints,K,NClusters,processes,generate,classify,total,user,elapsed,sys,pCPU
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,115.97
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,115.59
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,111.94
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,115.05
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,114.87
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,111.92
-Usage:,	/home/kellanved/repos/esami/EsameHPC/GroupAssignmentALL01/build/program_omp_bitonic [n : points to generate] [k] [#clusters] [num_threads],0.001,0.000,0.000,115.61
+4194304,2048,5,1,0.016295,0.970134,0.986429,0.987,0.987,0.000,99.99
+4194304,2048,5,1,0.017005,1.101323,1.118328,1.109,1.119,0.010,100.00
+4194304,2048,5,1,0.018254,1.035503,1.053757,1.055,1.055,0.000,100.00
+4194304,2048,5,1,0.017828,0.966524,0.984352,0.975,0.985,0.010,100.00
+4194304,2048,5,1,0.017765,0.945487,0.963252,0.964,0.964,0.000,99.99
+4194304,2048,5,1,0.017440,0.950350,0.967790,0.969,0.969,0.000,100.00
+4194304,2048,5,1,0.017280,0.943364,0.960644,0.962,0.962,0.000,99.99
