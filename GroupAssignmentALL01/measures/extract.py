@@ -63,31 +63,30 @@ config = {
 					'computeSpeedup':False
 
 				},
-				'elapsed':{
-
-					'jpg':False,
-					'computeSpeedup':True,
-					
-
-				},
-				#'sys':{
+				#'elapsed':{
 
 				#	'jpg':False,
 				#	'computeSpeedup':False,
-				#	"skipForFile" : 'SIZE-[0-9]+-NTH-[0-9]+-K[0-9]+'
 					
 
-				#}
+				#},
+				'total':{
+
+					'jpg':False,
+					'computeSpeedup':True,
+					#"skipForFile" : 'SIZE-[0-9]+-NTH-[0-9]+-K[0-9]+'					
+
+				}
 			},
 
 			"table":{
-				"header": ['Version','Processes','generatePoints','classifyPoint','user','Elapsed','Speedup','Efficiency'],
+				"header": ['Version','Processes','generatePoints','classifyPoint','user','Total','Speedup','Efficiency'],
 			},
 			"plot":{
 				"x_from_table":"Processes",
 				"y_from_table":"Speedup",
 			},
-			"calcComplExpr":""
+			"executionTimeField":"total"
 		}
 
 def _extract(path_to_folder,plot_columns):
@@ -215,7 +214,8 @@ def extraction(root=os.path.join(os.path.dirname(os.path.realpath(__file__)),"me
 			cell = []
 			splitted_filename = filename_key.split("-")
 			if config["seqKey"] in filename_key:
-				seq = means[filename_key]['elapsed']
+				time_field = config["executionTimeField"]
+				seq = means[filename_key][time_field]
 				nt = 1
 				cell.append('Serial')
 				cell.append(nt)
