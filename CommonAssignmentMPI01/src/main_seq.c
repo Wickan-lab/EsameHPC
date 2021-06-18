@@ -120,7 +120,7 @@ int main ( int argc, char *argv[] ){
 	// Get clock ticks per sec
 	long clktck = 0;
 	if((clktck = sysconf(_SC_CLK_TCK)) < 0){
-		fprintf(stderr,"ERROR: filed to get slock ticks per sec\n");
+		fprintf(stderr,"ERROR: failed to get clock ticks per sec\n");
 		exit(EXIT_FAILURE);
 	}
 
