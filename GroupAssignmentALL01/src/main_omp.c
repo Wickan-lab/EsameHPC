@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <sys/time.h>
 #include "knn.h"
 
 #ifdef _OPENMP
@@ -42,33 +43,48 @@ int main(int argc, char const *argv[])
 
 	double time_generate = 0.0, time_classify = 0.0;
 
-	if(argc != 7){
-		fprintf(stderr,"Usage:\n\t%s [n : points to generate] [x: Coordinate x of the point to classify] [y: Coordinate y of the point to classify] [k] [#clusters] [num_threads]\n", argv[0]);
+	if(argc != 5){
+		fprintf(stderr,"Usage:\n\t%s [n : points to generate] [k] [#clusters] [num_threads]\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
 
 	int n = atoi(argv[1]);
-	int x = atoi(argv[2]);
-	int y = atoi(argv[3]);
-	int k = atoi(argv[4]);
-	int num_clusters = atoi(argv[5]);
-	int num_threads = atoi(argv[6]);
+	int k = atoi(argv[2]);
+	int num_clusters = atoi(argv[3]);
+	int num_threads = atoi(argv[4]);
 
 	Point dataset[n];
 	Point test_point;
 
-	test_point.x = x;
-	test_point.y = y;
+	srand(time(NULL)); 
 	
-	STARTTIME(1);
+	test_point.x = (rand() / (float)RAND_MAX) * (n*3.6);
+	test_point.y = (rand() / (float)RAND_MAX) * (n*3.6);
+
+	struct timeval generate_start_time, generate_end_time;
+   gettimeofday(&generate_start_time, NULL);
+
 	generate_points(dataset, n, num_threads, num_clusters);
-	ENDTIME(1, time_generate);
+
+	gettimeofday(&generate_end_time, NULL);
+   long g_seconds = generate_end_time.tv_sec - generate_start_time.tv_sec;
+   long g_microseconds = generate_end_time.tv_usec - generate_start_time.tv_usec;
+
 #ifdef DEBUG
 	printf("Points generated\n");
 #endif
-	STARTTIME(2);
+
+	struct timeval classify_start_time, classify_end_time;
+   gettimeofday(&classify_start_time, NULL);
+
 	test_point.cluster_number = classify_point_no_conflict(dataset, test_point, k, n, num_threads, FACADE);
-	ENDTIME(2, time_classify);
+
+	 gettimeofday(&classify_end_time, NULL);
+    long c_seconds = classify_end_time.tv_sec - classify_start_time.tv_sec;
+    long c_microseconds = classify_end_time.tv_usec - classify_start_time.tv_usec;
+
+	time_generate = g_seconds + g_microseconds * 1e-6;
+   time_classify = c_seconds + c_microseconds * 1e-6;
 
 	printf("%d,%d,%d,%d,%f,%f\n", n, k, num_clusters, num_threads, time_generate, time_classify);
 #ifdef DEBUG

@@ -75,14 +75,13 @@ void generate_points(Point *dataset, int n, int num_threads, int num_clusters){
 	int i;
 	Point new_point;
 	
-	srand(time(NULL)); 
 
 	#pragma omp parallel for default(none) shared(dataset, n, num_clusters) private (i, new_point) num_threads(num_threads)
 	for (i = 0; i < n; ++i)
 	{	
-		new_point.x = rand() % 300;               /*  HARDCODED  */
-		new_point.y = rand() % 300;			     /*  HARDCODED  */
-		new_point.cluster_number = rand() % num_clusters;   /*  HARDCODED  */
+		new_point.x = (i+3.5)*2.43;               /*  HARDCODED  */
+		new_point.y = (i+2.1)*3.6;			     /*  HARDCODED  */
+		new_point.cluster_number = ((int)((i+1.7)*5.49))%num_clusters;   /*  HARDCODED  */
 		dataset[i] = new_point;
 	}
 }
@@ -104,6 +103,13 @@ int classify_point_no_conflict(Point *dataset, Point test_point, int k, int n, i
         //pass arguments in a predefined order
     }
 
+#ifdef DEBUG
+	printf("Before sorting:\n");
+	for (int i = 0; i < n; ++i)
+	{
+		printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
+	}
+#endif
 	
 #ifdef DEBUG
 	 printf("Start sorting\n");
