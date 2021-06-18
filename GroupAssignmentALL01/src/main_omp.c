@@ -70,7 +70,7 @@ int main(int argc, char const *argv[])
 	test_point.cluster_number = classify_point_no_conflict(dataset, test_point, k, n, num_threads, FACADE);
 	ENDTIME(2, time_classify);
 
-	printf("%d,%d,%d,%d,%f,%f\n", n, k, num_clusters, num_threads, time_generate, time_classify);
+	printf("%d;%d;%d;%d;%f;%f\n", n, k, num_clusters, num_threads, time_generate, time_classify);
 #ifdef DEBUG
 	printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif
