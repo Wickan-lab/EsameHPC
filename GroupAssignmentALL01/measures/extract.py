@@ -38,7 +38,14 @@ from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
 
-#processes,read,dotprod,write,elapsed
+'''
+Nota: la colonna per il calcolo dello speedup deve essere in ordine prima dello speedup e della efficienza.
+L'ordine con sui i parametri si trovano nella sezione cols deve essere lo stesso in cui si trovano nell'header della tabella
+i.e.
+Version Processes ---cols .. speedup_col--- speedup efficiency
+
+Importante, solo una colonna per lo speedup anche se per configurazione viene prevista + di una
+'''
 config = {
 			'seqKey': "NTH-00",
 			'filenameRegex': "SIZE-[0-9]+-NTH-[0-9]{2}-K[0-9]+",
