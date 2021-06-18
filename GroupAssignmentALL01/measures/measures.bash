@@ -58,16 +58,16 @@ for ((j = 0; j < "${#ARRAY_RC[@]}"; j++)); do
 		#	echo Created symbolic link to $(basename $OLD_OUT_FILE)
 		#	continue
 		#fi
-		echo "NPoints,K,NClusters,processes,generate, classify, user, elapsed, sys, pCPU" >$OUT_FILE
+		echo "NPoints,K,NClusters,processes,generate,classify,total,user,elapsed,sys,pCPU" >$OUT_FILE
 		
 		for ((i = 0 ; i < $NMEASURES; i++)); do
 			if [[ $ths -eq 0 ]]; then
-				(time $1/program_seq ${ARRAY_RC[$j]} ${TEST_POINT[0]} ${TEST_POINT[1]} ${ARRAY_K_VALUES[$j]} ${CLUSTER_NUM[$j]} $ths)2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
+				(time $1/program_seq ${ARRAY_RC[$j]} ${ARRAY_K_VALUES[$j]} ${CLUSTER_NUM[$j]} $ths)2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			else
 				#mpirun.mpich -np $ths $1/program_O3_V$ver $size $size $size $size >> $OUT_FILE
-				(time $1/program_omp_bitonic ${ARRAY_RC[$j]} ${TEST_POINT[0]} ${TEST_POINT[1]} ${ARRAY_K_VALUES[$j]} ${CLUSTER_NUM[$j]} $ths)2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
+				(time $1/program_omp_bitonic ${ARRAY_RC[$j]} ${ARRAY_K_VALUES[$j]} ${CLUSTER_NUM[$j]} $ths)2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			fi
