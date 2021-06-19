@@ -137,18 +137,26 @@ find_package(Python3 COMPONENTS Interpreter REQUIRED)
 find_program(PipEnv pipenv REQUIRED)
 
 add_custom_target(
-	 install_pipenv
-	 COMMAND PIPENV_PIPFILE=${CMAKE_CURRENT_SOURCE_DIR}/Pipfile ${PipEnv} install --ignore-pipfile
+	install_pipenv
+	COMMAND PIPENV_PIPFILE=${CMAKE_CURRENT_SOURCE_DIR}/Pipfile ${PipEnv} install --ignore-pipfile
     COMMENT "Installing pipenv dependencies [${PipEnv} install]"
     DEPENDS	${CMAKE_CURRENT_SOURCE_DIR}/Pipfile.lock
 )
 
 add_custom_target(
-    extract_measures
-    COMMAND PIPENV_PIPFILE=${CMAKE_CURRENT_SOURCE_DIR}/Pipfile ${PipEnv} run python ${CMAKE_CURRENT_SOURCE_DIR}/measures/extract.py
-    COMMENT "Generating version header [${PipEnv} run python ${CMAKE_CURRENT_SOURCE_DIR}/measures/extract.py]"
+    extract_measures_omp
+    COMMAND PIPENV_PIPFILE=${CMAKE_CURRENT_SOURCE_DIR}/Pipfile ${PipEnv} run python ${CMAKE_CURRENT_SOURCE_DIR}/measures/omp/extract.py
+    COMMENT "Generating version header [${PipEnv} run python ${CMAKE_CURRENT_SOURCE_DIR}/measures/omp/extract.py]"
     DEPENDS	
 		install_pipenv
-		${CMAKE_CURRENT_SOURCE_DIR}/measures/extract.py
+		${CMAKE_CURRENT_SOURCE_DIR}/measures/omp/extract.py
+)
+add_custom_target(
+    extract_measures_mpi
+    COMMAND PIPENV_PIPFILE=${CMAKE_CURRENT_SOURCE_DIR}/Pipfile ${PipEnv} run python ${CMAKE_CURRENT_SOURCE_DIR}/measures/mpi/extract.py
+    COMMENT "Generating version header [${PipEnv} run python ${CMAKE_CURRENT_SOURCE_DIR}/measures/mpi/extract.py]"
+    DEPENDS	
+		install_pipenv
+		${CMAKE_CURRENT_SOURCE_DIR}/measures/mpi/extract.py
 )
 
