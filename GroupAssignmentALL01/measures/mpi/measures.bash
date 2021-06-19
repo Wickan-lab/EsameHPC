@@ -28,10 +28,10 @@
 #
 
 TIME_STAMP=$(date +%s)
-NMEASURES=10
+NMEASURES=50
 
 ARRAY_RC=(16384 65536 131072)
-ARRAY_THS=(0 1 2 4 8 16)
+ARRAY_THS=(0 1 2 4 8)
 CLUSTER_NUM=(16 16 16)
 ARRAY_K_VALUES=(128 256 512) # mi basta fare mcm dei processi che dato che sono potenze di due viene 16
 TIMEFORMAT='%3U;%3E;%3S;%P'
