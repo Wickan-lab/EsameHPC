@@ -37,6 +37,7 @@ from prettytable import PrettyTable
 from prettytable import MARKDOWN
 from prettytable import MSWORD_FRIENDLY
 import re
+from math import *
 
 '''
 Nota: la colonna per il calcolo dello speedup deve essere in ordine prima dello speedup e della efficienza.
@@ -93,8 +94,7 @@ config = {
 				"x_from_table":"Processes",
 				"y_from_table":"Speedup",
 			},
-			"executionTimeField":"total",
-			"th_complexity_program": ""
+			"executionTimeField":"total"
 		}
 
 def _extract(path_to_folder,plot_columns):
@@ -193,6 +193,7 @@ def _plot_from_table(header,rows,save=True,name="",show_plot=False):
 	for row in rows[1:]:
 		x.append(row[thread_pos])
 		y.append(row[speedup_pos])
+
 
 	x_th = np.array(x)
 	fig, ax = plt.subplots(figsize=(12, 8))
