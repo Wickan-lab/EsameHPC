@@ -93,7 +93,8 @@ config = {
 				"x_from_table":"Processes",
 				"y_from_table":"Speedup",
 			},
-			"executionTimeField":"total"
+			"executionTimeField":"total",
+			"th_complexity_program": ""
 		}
 
 def _extract(path_to_folder,plot_columns):
