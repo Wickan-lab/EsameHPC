@@ -132,11 +132,12 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 
 	// odd-even part, what doeas rank 0 do ? Rank 0 only sends to rank 1 and only receives from rank 1 (later), only sends to his successor (1)
 	// Look at the gather below
+#ifdef DEBUG
+		printstat(rank, -1, "before paiwise", local_a, 5);
+		printf("%d\n",__LINE__);
+#endif
 	for (i = 1; i <= size; i++) {
 
-#ifdef DEBUG
-		printstat(rank, i, "before", local_a, 5);
-#endif
 		// starting from odd ranked processes to exchange
 		if ((i + rank) % 2 == 0) {  // means i and rank have same nature
 			if (rank < size - 1) {
@@ -146,14 +147,17 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 		} else if (rank > 0) {
 			MPI_Pairwise_Exchange(n / size, local_a, rank - 1, rank, comm);
 		}
+		
 #ifdef DEBUG
+		printf("%d\n",__LINE__);
 		MPI_Barrier(MPI_COMM_WORLD);
 #endif
 
 	}
 
 #ifdef DEBUG
-	printstat(rank, i-1, "after", local_a, 10);
+	printstat(rank, i-1, "after", local_a, 5);
+	printf("%d\n",__LINE__);
 #endif
 
 	//gather local_a to a
@@ -180,6 +184,7 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n, int num_c
 
 #ifdef DEBUG
 	printf("[%d] Local len: %d\n",rank,local_len);
+	printf("%d\n",__LINE__);
 #endif
 
 	Point* local_dataset = (Point*)malloc(local_len * sizeof(Point));
@@ -212,13 +217,16 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n, int num_c
 		MPI_Recv(dataset + n - rem_elms,rem_elms,point_type,size-1,\
 			 0,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 #ifdef DEBUG
-		//printstat(0,0,"Checking after gather",dataset,n);
+		printstat(0,0,"Checking after gather",dataset,n);
+		printf("%d\n",__LINE__);
 #endif
 	}
 
 	MPI_OddEven_Sort(n,dataset,0,MPI_COMM_WORLD);
-#ifdef DEBUG
 	MPI_Barrier(MPI_COMM_WORLD);
+
+#ifdef DEBUG
+	printf("%d\n",__LINE__);
 	if (rank == 0)
 		printstat(rank, 0, " all done ", dataset, k);
 #endif

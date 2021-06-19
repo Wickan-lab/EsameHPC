@@ -57,37 +57,38 @@ int main(int argc, char const *argv[])
 	dataset = (Point*)malloc(n*sizeof(Point));
 	Point test_point;
 
-	srand(time(NULL)); 
+	srand(time(NULL));
 	
 	test_point.x = (rand() / (float)RAND_MAX) * (n*3.6);
 	test_point.y = (rand() / (float)RAND_MAX) * (n*3.6);
 
 	struct timeval generate_start_time, generate_end_time;
-   gettimeofday(&generate_start_time, NULL);
+   	gettimeofday(&generate_start_time, NULL);
 
 	generate_points(dataset, n, num_threads, num_clusters);
 
 	gettimeofday(&generate_end_time, NULL);
-   long g_seconds = generate_end_time.tv_sec - generate_start_time.tv_sec;
-   long g_microseconds = generate_end_time.tv_usec - generate_start_time.tv_usec;
+   	long g_seconds = generate_end_time.tv_sec - generate_start_time.tv_sec;
+   	long g_microseconds = generate_end_time.tv_usec - generate_start_time.tv_usec;
 
 #ifdef DEBUG
 	printf("Points generated\n");
 #endif
 
 	struct timeval classify_start_time, classify_end_time;
-   gettimeofday(&classify_start_time, NULL);
+    gettimeofday(&classify_start_time, NULL);
 
 	test_point.cluster_number = classify_point_no_conflict(dataset, test_point, k, n, num_threads, FACADE);
 
-	 gettimeofday(&classify_end_time, NULL);
+	gettimeofday(&classify_end_time, NULL);
     long c_seconds = classify_end_time.tv_sec - classify_start_time.tv_sec;
     long c_microseconds = classify_end_time.tv_usec - classify_start_time.tv_usec;
 
 	time_generate = g_seconds + g_microseconds * 1e-6;
-   time_classify = c_seconds + c_microseconds * 1e-6;
-
-	printf("%d;%d;%d;%d;%f;%f;%f\n", n, k, num_clusters, num_threads, time_generate, time_classify,time_generate+time_classify);
+   	time_classify = c_seconds + c_microseconds * 1e-6;
+   	//time_generate+ we do not consider generation time anymore.
+	printf("%d;%d;%d;%d;%f;%f;%f\n", n, k, num_clusters, num_threads, time_generate, time_classify,time_classify);
+	
 #ifdef DEBUG
 	printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif

@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 		time_generate = end_time_generate - start_time_generate;
 #ifdef DEBUG
 		printf("Points generated\n");
+		printf("%d\n",__LINE__);
 #endif
 	}
 
