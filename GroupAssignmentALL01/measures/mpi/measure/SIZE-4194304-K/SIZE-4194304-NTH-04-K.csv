@@ -1,0 +1,11 @@
+NPoints,K,NClusters,processes,generate,classify,total,user,elapsed,sys,pCPU
+0,027;0,053;0,113;263,16
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.026,0.023,0.023,210.16
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.020,0.341,0.072,26.97
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.023,0.033,0.053,231.80
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.022,0.028,0.039,215.58
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.015,0.344,0.079,27.14
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.020,0.034,0.065,251.21
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.017,0.030,0.054,239.62
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.042,0.359,0.099,39.24
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_mpi [n : points to generate] [k] [#clusters],0.025,0.057,0.115,245.98

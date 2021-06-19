@@ -1,0 +1,11 @@
+NPoints,K,NClusters,processes,generate,classify,total,user,elapsed,sys,pCPU
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,108.42
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,108.77
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.000,0.001,0.001,107.63
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,108.53
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,108.81
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.000,0.001,0.001,107.76
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,108.70
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,109.89
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,108.60
+Usage:,	/home/ammanas/Documents/EsameHPC/GroupAssignmentALL01/build/program_seq [n : points to generate] [k] [#clusters] [num_threads],0.001,0.001,0.000,107.87
