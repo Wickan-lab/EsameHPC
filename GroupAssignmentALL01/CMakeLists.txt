@@ -116,20 +116,22 @@ target_compile_definitions(program_mpi PRIVATE -D_MPI)
 
 # ---------------------------------- GENERATE MEASURES ----------------------------------
 add_custom_target(
-	generate_measures
-	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}
-    COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
+	generate_measures_omp
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/omp/measures.bash ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/omp/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
     DEPENDS	
 		program_omp_bitonic
 		program_seq
 )
 
 add_custom_target(
-	 change_ref
-	 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash -p
-	 COMMENT "Change graph ref [${CMAKE_CURRENT_SOURCE_DIR}/measures/measures.bash -p]"
-	)
-
+	generate_measures_mpi
+	COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/measures/mpi/measures.bash ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating measures [${CMAKE_CURRENT_SOURCE_DIR}/measures/mpi/measures.bash ${CMAKE_CURRENT_BINARY_DIR}]"
+    DEPENDS	
+		program_omp_bitonic
+		program_seq
+)
 # --------------------------------- MEASURES EXTRACTION ---------------------------------
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 find_program(PipEnv pipenv REQUIRED)

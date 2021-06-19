@@ -29,7 +29,13 @@ int main(int argc, char *argv[])
 	int k = atoi(argv[2]);
 	int num_clusters = atoi(argv[3]);
 
-	if(((n % size)!=0 || (k % size)!=0 || (num_clusters % size)!=0) && (n < size && k < size && num_clusters < size)){
+
+	if(n < size || k < size || num_clusters < size){
+		if(rank == 0)fprintf(stderr,"Exiting ... n, k, num_clusters must be greater than P\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if(((n % size)!=0 || (k % size)!=0 || (num_clusters % size)!=0)){
 		if(rank == 0){
 			fprintf(stderr,"Exiting ... n, k, num_clusters must be a multiple of P\n");	
 		}
@@ -67,10 +73,12 @@ int main(int argc, char *argv[])
 	double global_time_generate,global_time_classify;
 	MPI_Reduce(&time_generate,&global_time_generate,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
 	MPI_Reduce(&time_classify,&global_time_classify,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
+
+	MPI_Barrier(MPI_COMM_WORLD);
 	
-	if(rank == 1)printf("%d;%d;%f;%f\n", n, size, time_generate, time_classify);
+	if(rank == 0)printf("%d;%d;%d;%d;%f;%f;%f\n", n,k,num_clusters, size, time_generate, time_classify,time_classify);
 #ifdef DEBUG
-	if(rank == 1)printf("Point belongs to cluster: %d\n", test_point.cluster_number);
+	if(rank == 0)printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif
 
 	exit(EXIT_SUCCESS);

@@ -30,10 +30,10 @@
 TIME_STAMP=$(date +%s)
 NMEASURES=7
 
-ARRAY_RC=(16384 65538 524288)
+ARRAY_RC=(65538 262144 524288)
 ARRAY_THS=(0 1 2 4 8 16)
-CLUSTER_NUM=(2 4 8 5)
-ARRAY_K_VALUES=(724 1024 1448 2048)
+CLUSTER_NUM=(32 32 32)
+ARRAY_K_VALUES=(1024 1448 2048)
 TIMEFORMAT='%3U;%3E;%3S;%P'
 
 trap "exit" INT
@@ -65,8 +65,7 @@ for ((j = 0; j < "${#ARRAY_RC[@]}"; j++)); do
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			else
-				#mpirun.mpich -np $ths $1/program_O3_V$ver $size $size $size $size >> $OUT_FILE
-				(time $1/program_omp_bitonic ${ARRAY_RC[$j]} ${ARRAY_K_VALUES[$j]} ${CLUSTER_NUM[$j]} $ths)2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
+				(time mpirun.mpich -np $ths $1/program_mpi ${ARRAY_RC[$j]} ${ARRAY_K_VALUES[$j]} ${CLUSTER_NUM[$j]})2>&1 | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/;/g' -e 's/,/./g' -e 's/;/,/g' >> $OUT_FILE
 				printf "\r> %d/%d %3.1d%% " $(expr $i + 1) $NMEASURES $(expr \( \( $i + 1 \) \* 100 \) / $NMEASURES)
 				printf "#%.0s" $(seq -s " " 1 $(expr \( $i \* 40 \) / $NMEASURES))
 			fi
