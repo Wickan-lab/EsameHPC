@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	int k = atoi(argv[2]);
 	int num_clusters = atoi(argv[3]);
 
-	if((n % size)!=0 || (k % size)!=0 || (num_clusters % size)!=0){
+	if(((n % size)!=0 || (k % size)!=0 || (num_clusters % size)!=0) && (n < size && k < size && num_clusters < size)){
 		if(rank == 0){
 			fprintf(stderr,"Exiting ... n, k, num_clusters must be a multiple of P\n");	
 		}

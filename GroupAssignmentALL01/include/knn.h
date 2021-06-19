@@ -69,7 +69,7 @@ void omp_merge(Point* arr, int l, int m, int r);
 void mergeSort(Point* arr, int l, int r, int num_threads);
 void bubble_sort(Point*arr,int N, int num_threads);
 void k_selection_sort(Point*arr, int N, int k, int num_threads);
-void BitonicSort(Point*arr, int n, int num_threads);
+void BitonicSort(Point*arr, int n);
 
 void facade_k_selection_sort(Point*arr, ...);
 void facade_bubble_sort(Point*arr, ...);

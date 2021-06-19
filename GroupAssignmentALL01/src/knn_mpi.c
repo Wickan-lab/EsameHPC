@@ -80,6 +80,8 @@ int MPI_Type_create_Point(MPI_Datatype *point_type){
 	return MPI_Type_create_struct(2, lengths, displacements, types, point_type);
 }
 
+
+
 int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 {
 	int rank, size, i;
@@ -102,7 +104,8 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 	//				Send 			   |		  	Recv			  | from on comm
 	MPI_Scatter(a, n / size, point_type, local_a, n / size, point_type, root, comm);
 	// sort local_a
-	QuickSortIterative(local_a, n/size);
+	//QuickSortIterative(local_a, n/size);
+	bitonicSequenceGenerator(0, n/size - 1, local_a, 0);
 
 	// odd-even part, what doeas rank 0 do ? Rank 0 only sends to rank 1 and only receives from rank 1 (later), only sends to his successor (1)
 	// Look at the gather below

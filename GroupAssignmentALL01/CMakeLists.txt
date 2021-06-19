@@ -85,7 +85,7 @@ target_compile_features(program_omp_bitonic PRIVATE c_std_11)
 target_compile_features(program_omp_bubble PRIVATE c_std_11)
 target_compile_features(program_mpi PRIVATE c_std_11)
 
-target_compile_definitions(program_seq PRIVATE -DFACADE=facade_quicksort)
+target_compile_definitions(program_seq PRIVATE -DFACADE=facade_bitonicSort)
 target_compile_definitions(program_omp_selection PRIVATE -DFACADE=facade_k_selection_sort)
 target_compile_definitions(program_omp_merge PRIVATE -DFACADE=facade_mergeSort)
 target_compile_definitions(program_omp_quick PRIVATE -DFACADE=facade_quicksort)

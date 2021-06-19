@@ -509,7 +509,7 @@ void bitonicSequenceGenerator(int startIndex, int lastIndex, Point*ar,int num_th
 
 /*-----Non parallelizzabile per bene------*/
 /*    https://courses.cs.duke.edu//fall08/cps196.1/Pthreads/bitonic.c    */
-void BitonicSort(Point* arr, int N, int num_threads) {
+void BitonicSort(Point* arr, int N) {
 
   int i,j,k;
       for (k=2; k<=N; k = k*2) {
