@@ -28,7 +28,7 @@ void printstat(int rank, int iter, char *txt, Point *la, int n) {
 				la[j].cluster_number, la[j].x, la[j].y, la[j].distance);
 }
 
-void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank,MPI_Comm comm) {
+void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank, MPI_Comm comm) {
 
 	/*
 	 * the sending rank just sends the data and waits for the results;
@@ -42,7 +42,7 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank
 	const int sortedtag = 2;
 	 // Create the datatype
 	MPI_Datatype point_type;
-	 MPI_Type_create_Point(&point_type);
+	MPI_Type_create_Point(&point_type);
 	MPI_Type_commit(&point_type);
 
 	MPI_Comm_rank(comm, &rank);
@@ -54,7 +54,7 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank
 		mpi_merge(locala, localn, remote, localn, all);
 
 		int theirstart = 0, mystart = localn;
-		if (sendrank > rank) {
+		if (sendrank > rank) { //entra mai qua dentro ?
 			theirstart = localn;
 			mystart = 0;
 		}
@@ -85,32 +85,36 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 	int rank, size, i;
 	Point *local_a;
 
-// get rank and size of comm
+	// get rank and size of comm
 	MPI_Comm_rank(comm, &rank); //&rank = address of rank
 	MPI_Comm_size(comm, &size);
 
 	local_a = (Point *) calloc(n / size, sizeof(Point));
 
 
-	 // Create the datatype
+	// Create the datatype
 	MPI_Datatype point_type;
-	 MPI_Type_create_Point(&point_type);
+	MPI_Type_create_Point(&point_type);
 	MPI_Type_commit(&point_type);
 
-// scatter the array a to local_a
-	MPI_Scatter(a, n / size, point_type, local_a, n / size, point_type,
-		root, comm);
-// sort local_a
+	// scatter the array a to local_a
+	// when function is called only rank 0 has both space allocated and elements initialized. So we scatter from root (0) to all other processes.
+	//				Send 			   |		  	Recv			  | from on comm
+	MPI_Scatter(a, n / size, point_type, local_a, n / size, point_type, root, comm);
+	// sort local_a
 	QuickSortIterative(local_a, n/size);
 
-//odd-even part
+	// odd-even part, what doeas rank 0 do ? Rank 0 only sends to rank 1 and only receives from rank 1 (later), only sends to his successor (1)
+	// Look at the gather below
 	for (i = 1; i <= size; i++) {
+
 #ifdef DEBUG
 		printstat(rank, i, "before", local_a, n/size);
 #endif
-
+		// starting from odd ranked processes to exchange
 		if ((i + rank) % 2 == 0) {  // means i and rank have same nature
 			if (rank < size - 1) {
+				//if i is odd, odd processes send to even processes and wait for something from even processes (each odd process from its successor)
 				MPI_Pairwise_Exchange(n / size, local_a, rank, rank + 1, comm);
 			}
 		} else if (rank > 0) {
@@ -123,11 +127,11 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 	printstat(rank, i-1, "after", local_a, n/size);
 #endif
 
-// gather local_a to a
-	MPI_Gather(local_a, n / size, point_type, a, n / size, point_type,
-		   root, comm);
+	//gather local_a to a
+	MPI_Allgather(local_a, n / size, point_type, a, n / size, point_type, comm);
 
-	 MPI_Type_free(&point_type);
+	MPI_Type_free(&point_type);
+
 #ifdef DEBUG
 	if (rank == root)
 		printstat(rank, i, " all done ", a, n);
@@ -136,7 +140,8 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 	return MPI_SUCCESS;
 }
 
-// ORIGINAL CODE
+//!!!! Il codice inizia qua Armando !!!
+
 int MPI_classify_point(Point *dataset, Point test_point, int k, int n, int num_clusters){
 	int rank,size,i,z;
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -239,9 +244,11 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n, int num_c
 	//| . | . | . | . |
 	//-----------------
 	MPI_Allreduce(&local_max,&global_max, 1, MPI_2INT, MPI_MAXLOC, MPI_COMM_WORLD);
+#ifdef DEBUG
 	if(rank == 0){
 		printf("val: %d pos: %d\n",global_max.val,global_max.pos);
 	}
+#endif	
 	MPI_Type_free(&point_type);
 	return global_max.pos;
 }

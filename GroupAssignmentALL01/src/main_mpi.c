@@ -5,8 +5,8 @@
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  main
- *  Description:  
+ *      Name:  main
+ *  	Description:  
  * =====================================================================================
  */
 int main(int argc, char *argv[])
@@ -25,19 +25,18 @@ int main(int argc, char *argv[])
 
 	double time_generate = 0.0, time_classify = 0.0;
 
-
-	//int n = atoi(argv[1]);
-	//int x = atoi(argv[2]);
-	//int y = atoi(argv[3]);
-	//int k = atoi(argv[4]);
-
-
 	int n = atoi(argv[1]);
 	int k = atoi(argv[2]);
 	int num_clusters = atoi(argv[3]);
 
+	if((n % size)!=0 || (k % size)!=0 || (num_clusters % size)!=0){
+		if(rank == 0){
+			fprintf(stderr,"Exiting ... n, k, num_clusters must be a multiple of P\n");	
+		}
+		exit(EXIT_FAILURE);
+	}
 
-	Point* dataset = (Point*) malloc(((n % size) ? (n/size) : n) * sizeof(Point));
+	Point* dataset = (Point*) malloc(n * sizeof(Point));
 	Point test_point;
 
 	test_point.x = ((float)RAND_MAX) / (k*7.6);
