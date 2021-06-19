@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
 	MPI_Type_create_Point(&point_type);
 	MPI_Type_commit(&point_type);
 	MPI_Bcast(dataset,n,point_type,0,MPI_COMM_WORLD);
-	MPI_Type_free(&point_type);
 
 	double start_time_classify = MPI_Wtime();
 	test_point.cluster_number = MPI_classify_point(dataset, test_point, k, n, num_clusters);
@@ -74,12 +73,14 @@ int main(int argc, char *argv[])
 	MPI_Reduce(&time_generate,&global_time_generate,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
 	MPI_Reduce(&time_classify,&global_time_classify,1,MPI_DOUBLE,MPI_MAX,0,MPI_COMM_WORLD);
 
-	MPI_Barrier(MPI_COMM_WORLD);
+	//MPI_Barrier(MPI_COMM_WORLD);
 	
 	if(rank == 0)printf("%d;%d;%d;%d;%f;%f;%f\n", n,k,num_clusters, size, time_generate, time_classify,time_classify);
+
 #ifdef DEBUG
 	if(rank == 0)printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif
 
+	MPI_Type_free(&point_type);
 	exit(EXIT_SUCCESS);
 }				/* ----------  end of function main  ---------- */

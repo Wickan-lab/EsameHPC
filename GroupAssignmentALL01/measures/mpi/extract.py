@@ -127,13 +127,20 @@ def _extract(path_to_folder,plot_columns):
 			#extract the selected column
 			x_data = ds[col]
 			#compute gaussian mean
-			mean,std=stats.norm.fit(x_data)
-			#compute mean as usual, to use when only few measures are taken
-			np_mean = np.mean(x_data)
+			#mean is zero to avoid not defining variable
+			mean = 0
+			np_mean = 0
+			try:
+				mean,std=stats.norm.fit(x_data)
+				#compute mean as usual, to use when only few measures are taken
+				np_mean = np.mean(x_data)
 
-			#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
-			x_data = ds[(ds[col] < (mean + std)) & (ds[col] > (mean - std))][col]
-			mean,std=stats.norm.fit(x_data)
+				#68,3% = P{ μ − 1,00 σ < X < μ + 1,00 σ }
+				x_data = ds[(ds[col] < (mean + std)) & (ds[col] > (mean - std))][col]
+				mean,std=stats.norm.fit(x_data)
+			except RuntimeError as lt:
+				#pass so np.mean is used
+				pass
 			file_mean[col] = mean if np_mean == mean else np_mean
 			
 			if plot_columns[col]['jpg']:
