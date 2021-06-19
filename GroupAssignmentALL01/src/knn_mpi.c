@@ -35,11 +35,19 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank
 	 * the receiving rank receives it, sorts the combined data, and returns
 	 * the correct half of the data.
 	 */
+#ifdef DEBUG
+	printf("Rank %d sending to rank %d on %d elements\n",sendrank,recvrank,localn);
+#endif
 	int rank;
-	Point remote[localn];
-	Point all[2*localn];
+	Point *remote;
+	remote = (Point*)malloc(localn*sizeof(Point));
+	Point *all;
+	all = (Point*)malloc(2*localn*sizeof(Point));
 	const int mergetag = 1;
 	const int sortedtag = 2;
+#ifdef DEBUG
+	printf("[%d] Creating Point datatype\n",rank);
+#endif
 	 // Create the datatype
 	MPI_Datatype point_type;
 	MPI_Type_create_Point(&point_type);
@@ -47,10 +55,22 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank
 
 	MPI_Comm_rank(comm, &rank);
 	if (rank == sendrank) {
+#ifdef DEBUG
+		printf("[%d] Sending to %d\n",rank,recvrank);
+#endif
 		MPI_Send(locala, localn, point_type, recvrank, mergetag, MPI_COMM_WORLD);
+#ifdef DEBUG
+		printf("[%d] Receiving from %d\n",rank,recvrank);
+#endif
 		MPI_Recv(locala, localn, point_type, recvrank, sortedtag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	} else {
+#ifdef DEBUG
+		printf("[%d] Receiving from %d\n",rank,sendrank);
+#endif
 		MPI_Recv(remote, localn, point_type, sendrank, mergetag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+#ifdef DEBUG
+		printf("[%d] Merging\n",rank);
+#endif
 		mpi_merge(locala, localn, remote, localn, all);
 
 		int theirstart = 0, mystart = localn;
@@ -58,6 +78,9 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank, int recvrank
 			theirstart = localn;
 			mystart = 0;
 		}
+#ifdef DEBUG
+		printf("[%d] Sending to %d\n",rank,sendrank);
+#endif
 		MPI_Send(&(all[theirstart]), localn, point_type, sendrank, sortedtag, MPI_COMM_WORLD);
 		for (int i=mystart; i<mystart+localn; i++)
 			locala[i-mystart] = all[i];
@@ -112,7 +135,7 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 	for (i = 1; i <= size; i++) {
 
 #ifdef DEBUG
-		printstat(rank, i, "before", local_a, n/size);
+		printstat(rank, i, "before", local_a, 5);
 #endif
 		// starting from odd ranked processes to exchange
 		if ((i + rank) % 2 == 0) {  // means i and rank have same nature
@@ -123,11 +146,14 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 		} else if (rank > 0) {
 			MPI_Pairwise_Exchange(n / size, local_a, rank - 1, rank, comm);
 		}
+#ifdef DEBUG
+		MPI_Barrier(MPI_COMM_WORLD);
+#endif
 
 	}
 
 #ifdef DEBUG
-	printstat(rank, i-1, "after", local_a, n/size);
+	printstat(rank, i-1, "after", local_a, 10);
 #endif
 
 	//gather local_a to a
@@ -135,10 +161,6 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 
 	MPI_Type_free(&point_type);
 
-#ifdef DEBUG
-	if (rank == root)
-		printstat(rank, i, " all done ", a, n);
-#endif
 
 	return MPI_SUCCESS;
 }
@@ -195,6 +217,11 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n, int num_c
 	}
 
 	MPI_OddEven_Sort(n,dataset,0,MPI_COMM_WORLD);
+#ifdef DEBUG
+	MPI_Barrier(MPI_COMM_WORLD);
+	if (rank == 0)
+		printstat(rank, 0, " all done ", dataset, k);
+#endif
 
 	//printstat(0,0,"Checking after sorreta",dataset,k);
 	// Majority voting
