@@ -1,39 +1,45 @@
+/*
+ * Course: High Performance Computing 2020/2021
+ *
+ * Lecturer: Francesco Moscato  fmoscato@unisa.it
+ *
+ * Group:
+ * Capitani Giuseppe    0622701085  g.capitani@studenti.unisa.it
+ * Falanga  Armando 0622701140  a.falanga13@studenti.unisa.it
+ * Terrone  Luigi       0622701071  l.terrone2@studenti.unisa.it
+ *
+ * Copyright (C) 2021 - All Rights Reserved
+ *
+ * This file is part of GroupAssignment01.
+ *
+ * GroupAssignmentALL01 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GroupAssignment01 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GroupAssignmentALL01.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <mpi.h>
-#include "knn.h"
+#include "knn_mpi.h"
+#include "point.h"
+#include "sort.h"
 
 // https://stackoverflow.com/questions/23633916/how-does-mpi-odd-even-sort-work
 
-int mpi_merge(Point *ina, int lena, Point *inb, int lenb, Point *out)
-{
-    int i, j;
-    int outcount = 0;
 
-    for (i = 0, j = 0; i < lena; i++) {
-        while ((inb[j].distance < ina[i].distance) && j < lenb) {
-            out[outcount++] = inb[j++];
-        }
-        out[outcount++] = ina[i];
-    }
-    while (j < lenb)
-        out[outcount++] = inb[j++];
 
-    return 0;
-}
-
-void printstat(int rank, int iter, char *txt, Point *la, int n)
-{
-    printf("[%d] %s iter %d: >\n", rank, txt, iter);
-    for (int j = 0; j < n; j++)
-        printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n", \
-               la[j].cluster_number, la[j].x, la[j].y, la[j].distance);
-}
-
-void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank,
+void MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
                            int recvrank, MPI_Comm comm)
 {
-
     /*
      * the sending rank just sends the data and waits for the results;
      * the receiving rank receives it, sorts the combined data, and returns
@@ -79,7 +85,7 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank,
 #ifdef DEBUG
         printf("[%d] Merging\n", rank);
 #endif
-        mpi_merge(locala, localn, remote, localn, all);
+        merge(locala, localn, remote, localn, all);
 
         int theirstart = 0, mystart = localn;
         if (sendrank > rank) { //entra mai qua dentro ?
@@ -96,24 +102,6 @@ void MPI_Pairwise_Exchange(int localn, Point *locala, int sendrank,
     }
     MPI_Type_free(&point_type);
 }
-
-int MPI_Type_create_Point(MPI_Datatype *point_type)
-{
-    int lengths[2] = { 1, 3 };
-
-    MPI_Aint displacements[2];
-    Point dummy_point;
-    MPI_Aint base_address;
-    MPI_Get_address(&dummy_point, &base_address);
-    MPI_Get_address(&dummy_point.cluster_number, &displacements[0]);
-    MPI_Get_address(&dummy_point.x, &displacements[1]);
-    displacements[0] = MPI_Aint_diff(displacements[0], base_address);
-    displacements[1] = MPI_Aint_diff(displacements[1], base_address);
-    MPI_Datatype types[2] = { MPI_INT, MPI_FLOAT };
-    return MPI_Type_create_struct(2, lengths, displacements,
-                                  types, point_type);
-}
-
 
 
 int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
@@ -149,7 +137,7 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
     // only sends to his successor (1)
     // Look at the gather below
 #ifdef DEBUG
-    printstat(rank, -1, "before pairwise", local_a, 5);
+    Point_Print( -1, "before pairwise", local_a, 5);
     printf("%d\n", __LINE__);
 #endif
     for (i = 1; i <= size; i++) {
@@ -160,10 +148,10 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
                 //if i is odd, odd processes send to even processes
                 //and wait for something from even
                 //processes (each odd process from its successor)
-                MPI_Pairwise_Exchange(n / size, local_a, rank, rank + 1, comm);
+                MPI_PairwiseExchange(n / size, local_a, rank, rank + 1, comm);
             }
         } else if (rank > 0) {
-            MPI_Pairwise_Exchange(n / size, local_a, rank - 1, rank, comm);
+            MPI_PairwiseExchange(n / size, local_a, rank - 1, rank, comm);
         }
 
 #ifdef DEBUG
@@ -174,7 +162,7 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
     }
 
 #ifdef DEBUG
-    printstat(rank, i - 1, "after", local_a, 5);
+    Point_Print( i - 1, "after", local_a, 5);
     printf("%d\n", __LINE__);
 #endif
 
@@ -188,9 +176,7 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
     return MPI_SUCCESS;
 }
 
-//!!!! Il codice inizia qua Armando !!!
-
-int MPI_classify_point(Point *dataset, Point test_point, int k, int n,
+int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
                        int num_clusters)
 {
     int rank, size, i, z;
@@ -212,8 +198,7 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n,
 
     for (i = rank * (n / size), z = 0; z < local_len; z++, i++) {
         local_dataset[z] = dataset[i];
-        local_dataset[z].distance = euclidean_distance(dataset[i], test_point);
-        //printf("[%d] computed distance %.2f\n",rank,local_dataset[z].distance);
+        local_dataset[z].distance = Point_EuclideanDistance(dataset[i], test_point);
     }
 
     // Create the datatype
@@ -240,7 +225,7 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n,
         MPI_Recv(dataset + n - rem_elms, rem_elms, point_type, size - 1, \
                  0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 #ifdef DEBUG
-        printstat(0, 0, "Checking after gather", dataset, n);
+        Point_Print( 0, "Checking after gather", dataset, n);
         printf("%d\n", __LINE__);
 #endif
     }
@@ -251,10 +236,9 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n,
 #ifdef DEBUG
     printf("%d\n", __LINE__);
     if (rank == 0)
-        printstat(rank, 0, " all done ", dataset, k);
+        Point_Print( 0, " all done ", dataset, k);
 #endif
 
-    //printstat(0,0,"Checking after sorreta",dataset,k);
     // Majority voting
     int local_k;
     if (rank == size - 1)
@@ -271,7 +255,6 @@ int MPI_classify_point(Point *dataset, Point test_point, int k, int n,
     }
 
 #ifdef DEBUG
-    //printf("Total number of clusters %d\n",num_clusters);
     for (i = rank * (num_clusters / size), z = 0; z < num_clusters ; z++, i++) {
         printf("[%d] Local Cluster n_%d : %d\n", rank, z, local_clusters[i]);
     }
