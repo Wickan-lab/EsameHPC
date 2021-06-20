@@ -30,10 +30,10 @@
 TIME_STAMP=$(date +%s)
 NMEASURES=100
 
-ARRAY_RC=(2097152 4194304)
-ARRAY_THS=(0 1 2 4 8)
-CLUSTER_NUM=(16 16)
-ARRAY_K_VALUES=(512 1024) # mi basta fare mcm dei processi che dato che sono potenze di due viene 16
+ARRAY_RC=(65536 131072 262144)
+ARRAY_THS=(0 1 2 4 8 16)
+CLUSTER_NUM=(16 16 16)
+ARRAY_K_VALUES=(512 1024 2048) # mi basta fare mcm dei processi che dato che sono potenze di due viene 16
 TIMEFORMAT='%3U;%3E;%3S;%P'
 
 trap "exit" INT
