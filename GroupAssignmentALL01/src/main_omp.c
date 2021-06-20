@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/time.h>
-#include "knn.h"
+#include "knn_omp.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -67,7 +67,7 @@ int main(int argc, char const *argv[])
     struct timeval generate_start_time, generate_end_time;
     gettimeofday(&generate_start_time, NULL);
 
-    generate_points(dataset, n, num_threads, num_clusters);
+    Point_GeneratePoints(dataset, n, num_threads, num_clusters);
 
     gettimeofday(&generate_end_time, NULL);
     long g_seconds = generate_end_time.tv_sec - generate_start_time.tv_sec;
@@ -81,7 +81,7 @@ int main(int argc, char const *argv[])
     struct timeval classify_start_time, classify_end_time;
     gettimeofday(&classify_start_time, NULL);
 
-    test_point.cluster_number = classify_point_no_conflict(dataset, test_point,
+    test_point.cluster_number = OMP_ClassifyPoint(dataset, test_point,
                                 k, n, num_threads, FACADE);
 
     gettimeofday(&classify_end_time, NULL);

@@ -39,29 +39,43 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
 
 enable_testing()
 
-add_executable(program_seq src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_omp_selection src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_omp_merge src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_omp_quick src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_omp_bitonic src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_omp_bubble src/main_omp.c src/knn.c include/knn.h)
-add_executable(program_mpi src/main_mpi.c src/knn_mpi.c src/knn.c include/knn.h)
+add_executable(program_seq src/main_omp.c 
+						src/knn_omp.c src/point.c src/sort.c 
+						include/knn_omp.h include/point.h include/sort.h)
 
-target_include_directories(program_seq PRIVATE include)
-target_include_directories(program_omp_selection PRIVATE include)
-target_include_directories(program_omp_merge	PRIVATE include)
-target_include_directories(program_omp_quick PRIVATE include)
-target_include_directories(program_omp_bitonic PRIVATE include)
-target_include_directories(program_omp_bubble PRIVATE include)
-target_include_directories(program_mpi PRIVATE include)
+add_executable(program_omp_selection src/main_omp.c 
+						src/knn_omp.c src/point.c src/sort.c 
+						include/knn_omp.h include/point.h include/sort.h)
+
+add_executable(program_omp_quick src/main_omp.c 
+						src/knn_omp.c src/point.c src/sort.c 
+						include/knn_omp.h include/point.h include/sort.h)
+
+add_executable(program_omp_bitonic src/main_omp.c 
+						src/knn_omp.c src/point.c src/sort.c 
+						include/knn_omp.h include/point.h include/sort.h)
+
+add_executable(program_omp_bubble src/main_omp.c  
+						src/knn_omp.c src/point.c src/sort.c 
+						include/knn_omp.h include/point.h include/sort.h)
+
+add_executable(program_mpi src/main_mpi.c  
+						src/knn_mpi.c src/point.c src/sort.c 
+						include/knn_mpi.h include/point.h include/sort.h)
+
+target_include_directories(program_seq				PRIVATE include)
+target_include_directories(program_omp_selection	PRIVATE include)
+target_include_directories(program_omp_quick		PRIVATE include)
+target_include_directories(program_omp_bitonic		PRIVATE include)
+target_include_directories(program_omp_bubble		PRIVATE include)
+target_include_directories(program_mpi				PRIVATE include)
 
 find_package(OpenMP REQUIRED)
 if(OpenMP_C_FOUND)
-		  target_link_libraries(program_omp_selection PRIVATE OpenMP::OpenMP_C)
-		  target_link_libraries(program_omp_merge PRIVATE OpenMP::OpenMP_C)
-		  target_link_libraries(program_omp_quick PRIVATE OpenMP::OpenMP_C)
-		  target_link_libraries(program_omp_bitonic PRIVATE OpenMP::OpenMP_C)
-		  target_link_libraries(program_omp_bubble PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_selection	PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_quick		PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_bitonic		PRIVATE OpenMP::OpenMP_C)
+		  target_link_libraries(program_omp_bubble		PRIVATE OpenMP::OpenMP_C)
 endif()
 
 find_package(MPI REQUIRED)
@@ -70,27 +84,24 @@ if(MPI_C_FOUND)
 	target_link_libraries(program_mpi PUBLIC MPI::MPI_C)
 endif()
 
-target_compile_options(program_omp_selection PRIVATE -O3)
-target_compile_options(program_omp_merge PRIVATE -O3)
-target_compile_options(program_omp_quick PRIVATE -O3)
-target_compile_options(program_omp_bitonic PRIVATE -O3)
-target_compile_options(program_omp_bubble PRIVATE -O3)
-target_compile_options(program_mpi PRIVATE -O3)
+target_compile_options(program_omp_selection	PRIVATE -O3)
+target_compile_options(program_omp_quick		PRIVATE -O3)
+target_compile_options(program_omp_bitonic		PRIVATE -O3)
+target_compile_options(program_omp_bubble		PRIVATE -O3)
+target_compile_options(program_mpi				PRIVATE -O3)
 
-target_compile_features(program_seq PRIVATE c_std_11)
-target_compile_features(program_omp_selection PRIVATE c_std_11)
-target_compile_features(program_omp_merge PRIVATE c_std_11)
-target_compile_features(program_omp_quick PRIVATE c_std_11)
-target_compile_features(program_omp_bitonic PRIVATE c_std_11)
-target_compile_features(program_omp_bubble PRIVATE c_std_11)
-target_compile_features(program_mpi PRIVATE c_std_11)
+target_compile_features(program_seq				PRIVATE c_std_11)
+target_compile_features(program_omp_selection	PRIVATE c_std_11)
+target_compile_features(program_omp_quick		PRIVATE c_std_11)
+target_compile_features(program_omp_bitonic		PRIVATE c_std_11)
+target_compile_features(program_omp_bubble		PRIVATE c_std_11)
+target_compile_features(program_mpi				PRIVATE c_std_11)
 
-target_compile_definitions(program_seq PRIVATE -DFACADE=facade_bitonicSort)
-target_compile_definitions(program_omp_selection PRIVATE -DFACADE=facade_k_selection_sort)
-target_compile_definitions(program_omp_merge PRIVATE -DFACADE=facade_mergeSort)
-target_compile_definitions(program_omp_quick PRIVATE -DFACADE=facade_quicksort)
-target_compile_definitions(program_omp_bitonic PRIVATE -DFACADE=facade_bitonicSort)
-target_compile_definitions(program_omp_bubble PRIVATE -DFACADE=facade_bubble_sort)
+target_compile_definitions(program_seq				PRIVATE	-DFACADE=OMP_Facade_BitonicSort)
+target_compile_definitions(program_omp_selection	PRIVATE	-DFACADE=OMP_Facade_SelectionSort)
+target_compile_definitions(program_omp_quick		PRIVATE	-DFACADE=OMP_Facade_QuickSort)
+target_compile_definitions(program_omp_bitonic		PRIVATE	-DFACADE=OMP_Facade_BitonicSort)
+target_compile_definitions(program_omp_bubble		PRIVATE	-DFACADE=OMP_Facade_BubbleSort)
 
 target_compile_definitions(program_mpi PRIVATE -D_MPI)
 

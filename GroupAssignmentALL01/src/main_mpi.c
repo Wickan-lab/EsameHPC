@@ -1,7 +1,34 @@
+/*
+ * Course: High Performance Computing 2020/2021
+ *
+ * Lecturer: Francesco Moscato  fmoscato@unisa.it
+ *
+ * Group:
+ * Capitani Giuseppe    0622701085  g.capitani@studenti.unisa.it
+ * Falanga  Armando 0622701140  a.falanga13@studenti.unisa.it
+ * Terrone  Luigi       0622701071  l.terrone2@studenti.unisa.it
+ *
+ * Copyright (C) 2021 - All Rights Reserved
+ *
+ * This file is part of GroupAssignment01.
+ *
+ * GroupAssignmentALL01 is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GroupAssignment01 is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GroupAssignmentALL01.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <mpi.h>
-#include    <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
-#include "knn.h"
+#include "knn_mpi.h"
 
 /*
  * ===  FUNCTION  ======================================================================
@@ -53,7 +80,7 @@ int main(int argc, char *argv[])
     if (rank == 0) {
         double start_time_generate = MPI_Wtime();
         //no -fopenmp so num_threads can be aribitrary
-        generate_points(dataset, n, 1, num_clusters);
+        Point_GeneratePoints(dataset, n, 1, num_clusters);
         double end_time_generate = MPI_Wtime();
         time_generate = end_time_generate - start_time_generate;
 #ifdef DEBUG
@@ -68,7 +95,7 @@ int main(int argc, char *argv[])
     MPI_Bcast(dataset, n, point_type, 0, MPI_COMM_WORLD);
 
     double start_time_classify = MPI_Wtime();
-    test_point.cluster_number = MPI_classify_point(dataset, test_point, k, n,
+    test_point.cluster_number = MPI_ClassifyPoint(dataset, test_point, k, n,
                                 num_clusters);
     double end_time_classify = MPI_Wtime();
     time_classify = end_time_classify - start_time_classify;
