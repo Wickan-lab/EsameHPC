@@ -62,6 +62,7 @@ int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
                       int n, int num_threads, sort_alg alg)
 {
     int counter_cluster_0 = 0, counter_cluster_1 = 0;
+    //k ?
     unsigned int *clusters_array = calloc(k, sizeof(unsigned int));
     unsigned int max_val = 0;
     unsigned int max_pos = 0;
