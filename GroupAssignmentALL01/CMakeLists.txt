@@ -92,7 +92,7 @@ target_compile_features(program_omp_bitonic		PRIVATE c_std_11)
 target_compile_features(program_omp_bubble		PRIVATE c_std_11)
 target_compile_features(program_mpi				PRIVATE c_std_11)
 
-target_compile_definitions(program_seq				PRIVATE	-DALG=QUICK)
+target_compile_definitions(program_seq				PRIVATE	-DALG=BITONIC)
 target_compile_definitions(program_omp_selection	PRIVATE	-DALG=SELECTION)
 target_compile_definitions(program_omp_bitonic		PRIVATE	-DALG=BITONIC)
 target_compile_definitions(program_omp_bubble		PRIVATE	-DALG=BUBBLE)
