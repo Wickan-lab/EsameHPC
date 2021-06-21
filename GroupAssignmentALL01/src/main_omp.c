@@ -31,6 +31,7 @@
 #include <stdint.h>
 #include <sys/time.h>
 #include "knn_omp.h"
+//#include "TestLib.h"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -98,6 +99,12 @@ int main(int argc, char const *argv[])
 #ifdef DEBUG
     printf("Point belongs to cluster: %d\n", test_point.cluster_number);
 #endif
+
+//    if(validate_sort(dataset, n)){
+//        printf("Sort OK\n");
+//   }else{
+//        printf("Addio amici addio noi ci dobbiamo lasciaree\n");
+//    }
 
     exit(EXIT_SUCCESS);
 }
