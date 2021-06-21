@@ -5,7 +5,7 @@
 #
 # Group:
 # Capitani	Giuseppe	0622701085	g.capitani@studenti.unisa.it               
-# Falanga	Armando	0622701140  a.falanga13@studenti.unisa.it 
+# Falanga	Armando		0622701140  a.falanga13@studenti.unisa.it 
 # Terrone	Luigi		0622701071  l.terrone2@studenti.unisa.it
 #
 # This file is part of EsameHPC.
@@ -26,7 +26,7 @@
 
 cmake_minimum_required(VERSION 3.9)
 project(GroupAssignmentALL01
-	DESCRIPTION "K Nearest Niggas implementation in OpenMP, MPI & CUDA"
+	DESCRIPTION "K-Nearest Niggas implementation in OpenMP, MPI & CUDA"
 	VERSION 0.1
 	LANGUAGES C
 	)
@@ -47,15 +47,11 @@ add_executable(program_omp_selection src/main_omp.c
 						src/knn_omp.c src/point.c src/sort.c 
 						include/knn_omp.h include/point.h include/sort.h)
 
-add_executable(program_omp_quick src/main_omp.c 
-						src/knn_omp.c src/point.c src/sort.c 
-						include/knn_omp.h include/point.h include/sort.h)
-
 add_executable(program_omp_bitonic src/main_omp.c 
 						src/knn_omp.c src/point.c src/sort.c 
 						include/knn_omp.h include/point.h include/sort.h)
 
-add_executable(program_omp_bubble src/main_omp.c  
+add_executable(program_omp_bubble src/main_omp.c
 						src/knn_omp.c src/point.c src/sort.c 
 						include/knn_omp.h include/point.h include/sort.h)
 
@@ -65,7 +61,6 @@ add_executable(program_mpi src/main_mpi.c
 
 target_include_directories(program_seq				PRIVATE include)
 target_include_directories(program_omp_selection	PRIVATE include)
-target_include_directories(program_omp_quick		PRIVATE include)
 target_include_directories(program_omp_bitonic		PRIVATE include)
 target_include_directories(program_omp_bubble		PRIVATE include)
 target_include_directories(program_mpi				PRIVATE include)
@@ -73,7 +68,6 @@ target_include_directories(program_mpi				PRIVATE include)
 find_package(OpenMP REQUIRED)
 if(OpenMP_C_FOUND)
 		  target_link_libraries(program_omp_selection	PRIVATE OpenMP::OpenMP_C)
-		  target_link_libraries(program_omp_quick		PRIVATE OpenMP::OpenMP_C)
 		  target_link_libraries(program_omp_bitonic		PRIVATE OpenMP::OpenMP_C)
 		  target_link_libraries(program_omp_bubble		PRIVATE OpenMP::OpenMP_C)
 endif()
@@ -81,38 +75,41 @@ endif()
 find_package(MPI REQUIRED)
 if(MPI_C_FOUND)
 	message(STATUS "Run: ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${MPIEXEC_MAX_NUMPROCS} ${MPIEXEC_PREFLAGS} EXECUTABLE ${MPIEXEC_POSTFLAGS} ARGS")
+	
 	target_link_libraries(program_mpi PUBLIC MPI::MPI_C)
+	
+	target_compile_definitions(program_mpi PRIVATE -D_MPI)
 endif()
 
 target_compile_options(program_omp_selection	PRIVATE -O3)
-target_compile_options(program_omp_quick		PRIVATE -O3)
 target_compile_options(program_omp_bitonic		PRIVATE -O3)
 target_compile_options(program_omp_bubble		PRIVATE -O3)
 target_compile_options(program_mpi				PRIVATE -O3)
 
 target_compile_features(program_seq				PRIVATE c_std_11)
 target_compile_features(program_omp_selection	PRIVATE c_std_11)
-target_compile_features(program_omp_quick		PRIVATE c_std_11)
 target_compile_features(program_omp_bitonic		PRIVATE c_std_11)
 target_compile_features(program_omp_bubble		PRIVATE c_std_11)
 target_compile_features(program_mpi				PRIVATE c_std_11)
 
-target_compile_definitions(program_seq				PRIVATE	-DALG=BITONIC)
+target_compile_definitions(program_seq				PRIVATE	-DALG=QUICK)
 target_compile_definitions(program_omp_selection	PRIVATE	-DALG=SELECTION)
-target_compile_definitions(program_omp_quick		PRIVATE	-DALG=QUICK)
 target_compile_definitions(program_omp_bitonic		PRIVATE	-DALG=BITONIC)
 target_compile_definitions(program_omp_bubble		PRIVATE	-DALG=BUBBLE)
 
-target_compile_definitions(program_mpi PRIVATE -D_MPI)
 
 # ---------------------------------------- TEST -----------------------------------------
-#add_executable(dotprod_test test/test.c src/dotprod.c)
-#target_include_directories(dotprod_test PRIVATE include)
-#target_compile_definitions(dotprod_test PRIVATE -DELEMENT_TYPE=${ELEMENT_TYPE})
-#
-#add_test(NAME dotprod_test
-#	COMMAND dotprod_test )
-#
+add_executable(sqrt_test test/compare_sqrt_algos.c src/point.c include/point.h)
+add_executable(sort_test test/SortTest.c test/TestLib.c src/point.c src/knn_omp.c src/sort.c include/point.h include/sort.h include/knn_omp.h include/TestLib.h)
+
+target_include_directories(sqrt_test PRIVATE include)
+target_include_directories(sort_test PRIVATE include)
+
+target_link_libraries(sqrt_test PRIVATE m)
+
+add_test(NAME sqrt_test COMMAND sqrt_test 262144 0.18 )
+add_test(NAME sort_test COMMAND sort_test 4 4 )
+
 # ------------------------------------ DOCUMENTATION ------------------------------------
 find_package(Doxygen
              REQUIRED dot)
@@ -121,7 +118,7 @@ if(DOXYGEN_FOUND)
 	set(DOXYGEN_GENERATE_XML YES)
 	doxygen_add_docs(
 		docs
-		./src/knn_mpi.c ./src/knn_omp.c ./src/point.c ./include/point.h
+		./src/knn_mpi.c ./src/knn_omp.c ./src/point.c ./include/point.h ./test/TestLib.c
 		)
 endif()
 

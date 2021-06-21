@@ -39,13 +39,12 @@
 
 /**
  * @brief Structure representing a point into the space.
- *
  */
 typedef struct {
-    int cluster_number; /** Cluster to which the point belongs */
-    float x;            /** Coordinate x of the point */
-    float y;            /** Coordinate y of the point */
-    float distance;     /** Distance from test point */
+    int cluster_number; /**< Cluster to which the point belongs */
+    float x;            /**< Coordinate x of the point */
+    float y;            /**< Coordinate y of the point */
+    float distance;     /**< Distance from test point */
 } Point;
 
 void Point_GeneratePoints(Point *dataset, int n, int num_threads,

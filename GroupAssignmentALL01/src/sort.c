@@ -124,7 +124,6 @@ int QuickSort_partition(Point data[], int left, int right)
     Point x = data[right];
     int i = (left - 1);
 
-    #pragma omp parallel for
     for (int j = left; j <= right - 1; ++j) {
         if (data[j].distance <= x.distance) {
             ++i;
