@@ -26,7 +26,7 @@
 
 cmake_minimum_required(VERSION 3.9)
 project(GroupAssignmentALL01
-	DESCRIPTION "K Nearest Niggas implementation in OpenMP, MPI, CUDA"
+	DESCRIPTION "K Nearest Niggas implementation in OpenMP, MPI & CUDA"
 	VERSION 0.1
 	LANGUAGES C
 	)
@@ -97,11 +97,11 @@ target_compile_features(program_omp_bitonic		PRIVATE c_std_11)
 target_compile_features(program_omp_bubble		PRIVATE c_std_11)
 target_compile_features(program_mpi				PRIVATE c_std_11)
 
-target_compile_definitions(program_seq				PRIVATE	-DFACADE=OMP_Facade_QuickSort)
-target_compile_definitions(program_omp_selection	PRIVATE	-DFACADE=OMP_Facade_SelectionSort)
-target_compile_definitions(program_omp_quick		PRIVATE	-DFACADE=OMP_Facade_QuickSort)
-target_compile_definitions(program_omp_bitonic		PRIVATE	-DFACADE=OMP_Facade_BitonicSort)
-target_compile_definitions(program_omp_bubble		PRIVATE	-DFACADE=OMP_Facade_BubbleSort)
+target_compile_definitions(program_seq				PRIVATE	-DALG=BITONIC)
+target_compile_definitions(program_omp_selection	PRIVATE	-DALG=SELECTION)
+target_compile_definitions(program_omp_quick		PRIVATE	-DALG=QUICK)
+target_compile_definitions(program_omp_bitonic		PRIVATE	-DALG=BITONIC)
+target_compile_definitions(program_omp_bubble		PRIVATE	-DALG=BUBBLE)
 
 target_compile_definitions(program_mpi PRIVATE -D_MPI)
 
@@ -114,16 +114,16 @@ target_compile_definitions(program_mpi PRIVATE -D_MPI)
 #	COMMAND dotprod_test )
 #
 # ------------------------------------ DOCUMENTATION ------------------------------------
-#find_package(Doxygen
-#             REQUIRED dot)
-#
-#if(DOXYGEN_FOUND)
-#	set(DOXYGEN_GENERATE_XML YES)
-#	doxygen_add_docs(
-#		docs
-#		./src/dotprod.c ./include/dotprod.h ./test/test.c 
-#		)
-#endif()
+find_package(Doxygen
+             REQUIRED dot)
+
+if(DOXYGEN_FOUND)
+	set(DOXYGEN_GENERATE_XML YES)
+	doxygen_add_docs(
+		docs
+		./src/knn_mpi.c ./src/knn_omp.c ./src/point.c ./include/point.h
+		)
+endif()
 
 # ---------------------------------- GENERATE MEASURES ----------------------------------
 add_custom_target(

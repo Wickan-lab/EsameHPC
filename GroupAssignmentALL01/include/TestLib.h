@@ -26,18 +26,14 @@
  * along with GroupAssignment01.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef KNN_H_
-#define KNN_H_
-
-#include <time.h>
+#ifndef  TEST_LIB_INC
+#define  TEST_LIB_INC
 #include "point.h"
 
-typedef enum {QUICK, BUBBLE, SELECTION, BITONIC} sort_alg;
-
-int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
-                      int num_clusters,
-                      int n, int num_threads, sort_alg alg);
-
-void OMP_Sort(Point *arr, int n, int k, int num_threads, sort_alg alg);
+int validate_sort(Point*, int );
+Point* make_square(Point* dataset, int l, int nc, int* n);
+Point* Test_Point_GeneratePoints(Point*dataset,int l, int* n, int nc, Point *(*shape)(Point*, int, int, int*));
+void Test_Points_EuclideanDistance(Point* dataset, int N, Point test_point);
+int Test_classify(Point* ordered_dataset, int N, int k, int nc);
 
 #endif

@@ -82,7 +82,7 @@ int main(int argc, char const *argv[])
     gettimeofday(&classify_start_time, NULL);
 
     test_point.cluster_number = OMP_ClassifyPoint(dataset, test_point,
-                                k, n, num_threads, FACADE);
+                                k, num_clusters, n, num_threads, ALG);
 
     gettimeofday(&classify_end_time, NULL);
     long c_seconds = classify_end_time.tv_sec - classify_start_time.tv_sec;

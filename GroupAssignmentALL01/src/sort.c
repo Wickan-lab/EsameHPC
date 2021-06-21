@@ -5,7 +5,7 @@
  *
  * Group:
  * Capitani Giuseppe    0622701085  g.capitani@studenti.unisa.it
- * Falanga  Armando		0622701140  a.falanga13@studenti.unisa.it
+ * Falanga  Armando     0622701140  a.falanga13@studenti.unisa.it
  * Terrone  Luigi       0622701071  l.terrone2@studenti.unisa.it
  *
  * Copyright (C) 2021 - All Rights Reserved
@@ -35,27 +35,8 @@
 #endif
 
 /*-----------------------------------------------------------------------------
- * BITONIC SORT 
+ * BITONIC SORT
  *-----------------------------------------------------------------------------*/
-void ascendingSwap(int index1, int index2,
-                   Point *ar) // Swap two values such that they appear in ascending order in the array
-{
-    if (ar[index2].distance < ar[index1].distance) {
-        Point temp = ar[index2];
-        ar[index2] = ar[index1];
-        ar[index1] = temp;
-    }
-}
-
-void decendingSwap(int index1, int index2,
-                   Point *ar) // Swap two values such that they appear in decending order in the array
-{
-    if (ar[index1].distance < ar[index2].distance) {
-        Point temp = ar[index2];
-        ar[index2] = ar[index1];
-        ar[index1] = temp;
-    }
-}
 
 void bitonicSortFromBitonicSequence(int startIndex, int lastIndex, int dir,
                                     Point *ar) // Form a increaseing or decreasing array when a bitonic input is given to the function
@@ -68,7 +49,8 @@ void bitonicSortFromBitonicSequence(int startIndex, int lastIndex, int dir,
             counter = 0;
             for (int i = startIndex; i + j <= lastIndex; i++) {
                 if (counter < j) {
-                    ascendingSwap(i, i + j, ar);
+                    if (ar[i + j].distance < ar[i].distance)
+                        Point_Swap(ar + i, ar + i + j);
                     counter++;
                 } else {
                     counter = 0;
@@ -83,7 +65,8 @@ void bitonicSortFromBitonicSequence(int startIndex, int lastIndex, int dir,
             counter = 0;
             for (int i = startIndex; i <= (lastIndex - j); i++) {
                 if (counter < j) {
-                    decendingSwap(i, i + j, ar);
+                    if (ar[i].distance < ar[i + j].distance)
+                        Point_Swap(ar + i, ar + i + j);
                     counter++;
                 } else {
                     counter = 0;
@@ -134,7 +117,7 @@ void BitonicSort(Point *arr, int N)
 }
 
 /*-----------------------------------------------------------------------------
- * QUICK SORT 
+ * QUICK SORT
  *-----------------------------------------------------------------------------*/
 int QuickSort_partition(Point data[], int left, int right)
 {
@@ -186,7 +169,7 @@ void QuickSortIterative(Point data[], int count)
 
 
 /*-----------------------------------------------------------------------------
- * SELECTION SORT 
+ * SELECTION SORT
  *-----------------------------------------------------------------------------*/
 void SelectionSort(Point *arr, int N, int k, int num_threads)
 {
@@ -210,12 +193,12 @@ void SelectionSort(Point *arr, int N, int k, int num_threads)
 }
 
 /*-----------------------------------------------------------------------------
- * MERGE SORT 
+ * MERGE SORT
  *-----------------------------------------------------------------------------*/
 int merge(Point *ina, int lena, Point *inb, int lenb, Point *out)
 {
 #ifdef DEBUG
-	printf("merge( %p , %d , %p , %d , %p )\n",ina,lena,inb,lenb,out);
+    printf("merge( %p , %d , %p , %d , %p )\n", ina, lena, inb, lenb, out);
 #endif
     int i, j;
     int outcount = 0;
@@ -233,7 +216,7 @@ int merge(Point *ina, int lena, Point *inb, int lenb, Point *out)
 }
 
 /*-----------------------------------------------------------------------------
- * BUBBLE SORT 
+ * BUBBLE SORT
  *-----------------------------------------------------------------------------*/
 void BubbleSort(Point *arr, int n, int num_threads)
 {

@@ -31,7 +31,7 @@
 
 
 /*-----------------------------------------------------------------------------
- * MERGE SORT 
+ * MERGE SORT
  *-----------------------------------------------------------------------------*/
 void MergeSort_merge(Point *arr, int l, int m, int r);
 int merge(Point *ina, int lena, Point *inb, int lenb, Point *out);
@@ -43,18 +43,18 @@ void MergeSort(Point *arr, int l, int r, int num_threads);
 void BubbleSort(Point *arr, int N, int num_threads);
 
 /*-----------------------------------------------------------------------------
- * SELECTION SORT 
+ * SELECTION SORT
  *-----------------------------------------------------------------------------*/
 void SelectionSort(Point *arr, int N, int k, int num_threads);
 
 /*-----------------------------------------------------------------------------
- * QUICK SORT 
+ * QUICK SORT
  *-----------------------------------------------------------------------------*/
 int QuickSort_partition(Point data[], int left, int right);
 void QuickSortIterative(Point data[], int count);
 
 /*-----------------------------------------------------------------------------
- * BITONIC SORT 
+ * BITONIC SORT
  *-----------------------------------------------------------------------------*/
 void BitonicSort(Point *arr, int n);
 void bitonicSequenceGenerator(int startIndex, int lastIndex, Point *ar,

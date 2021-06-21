@@ -25,6 +25,10 @@
  * You should have received a copy of the GNU General Public License
  * along with GroupAssignmentALL01.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * @file point.h
+ * @brief Point structure definition.
+ */
 
 #ifndef  POINT_INC
 #define  POINT_INC
@@ -33,10 +37,15 @@
 #include <mpi.h>
 #endif
 
+/**
+ * @brief Structure representing a point into the space.
+ *
+ */
 typedef struct {
-    int cluster_number;   /* Cluster to which the point belongs */
-    float x, y;           /* Coordinate x and y of the point    */
-    float distance;       /* Distance from test point           */
+    int cluster_number; /** Cluster to which the point belongs */
+    float x;            /** Coordinate x of the point */
+    float y;            /** Coordinate y of the point */
+    float distance;     /** Distance from test point */
 } Point;
 
 void Point_GeneratePoints(Point *dataset, int n, int num_threads,
