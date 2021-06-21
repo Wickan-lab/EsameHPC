@@ -166,8 +166,8 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
                            point_type, root,
                            comm));
     // sort local_a
-    QuickSortIterative(local_a, n/size);
-    //bitonicSequenceGenerator(0, n / size - 1, local_a, 0);
+    //QuickSortIterative(local_a, n/size);
+    bitonicSequenceGenerator(0, n / size - 1, local_a, 0);
 
     // odd-even part, what doeas rank 0 do ? Rank 0 only
     // sends to rank 1 and only receives from rank 1 (later),
