@@ -5,7 +5,7 @@
  *
  * Group:
  * Capitani Giuseppe    0622701085  g.capitani@studenti.unisa.it
- * Falanga  Armando		0622701140  a.falanga13@studenti.unisa.it
+ * Falanga  Armando     0622701140  a.falanga13@studenti.unisa.it
  * Terrone  Luigi       0622701071  l.terrone2@studenti.unisa.it
  *
  * Copyright (C) 2021 - All Rights Reserved
@@ -33,10 +33,22 @@
 #include "point.h"
 #include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef _MPI
 #include <mpi.h>
 #endif
+
+#define MYRAND_MAX UINT16_MAX
+
+uint16_t lfsr = 0xACE1u;
+uint16_t bit;
+// https://stackoverflow.com/questions/7602919/how-do-i-generate-random-numbers-without-rand-function
+unsigned my_rand()
+{
+    bit  = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5) ) & 1;
+    return lfsr =  (lfsr >> 1) | (bit << 15);
+}
 
 /**
  * @brief Fast inverse square root.
@@ -77,13 +89,15 @@ void Point_GeneratePoints(Point *dataset, int n, int num_threads,
     int i;
     Point new_point;
 
-
     #pragma omp parallel for default(none) shared(dataset, n, num_clusters) private (i, new_point) num_threads(num_threads)
     for (i = 0; i < n; ++i) {
-        new_point.x = (i + 3.5) * 2.43;           /*  HARDCODED  */
-        new_point.y = (i + 2.1) * 3.6;           /*  HARDCODED  */
-        new_point.cluster_number = ((int)((i + 1.7) * 5.49)) %
-                                   num_clusters; /*  HARDCODED  */
+		new_point.x = (float) my_rand() / MYRAND_MAX * 1000;
+		new_point.y = (float) my_rand() / MYRAND_MAX * 1000;
+        //new_point.x = (i + 3.5) * 2.43;           /*  HARDCODED  */
+        //new_point.y = (i + 2.1) * 3.6;           /*  HARDCODED  */
+		new_point.cluster_number = my_rand() % num_clusters;
+        //new_point.cluster_number = ((int)((i + 1.7) * 5.49)) %
+        //                           num_clusters; /*  HARDCODED  */
         dataset[i] = new_point;
     }
 }
