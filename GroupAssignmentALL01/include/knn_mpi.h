@@ -31,9 +31,18 @@
 #include <mpi.h>
 #include "point.h"
 
+#define CHECK_MPI(fn) {int error,eclass,len;char estring[MPI_MAX_ERROR_STRING];\
+        if((error = fn) != MPI_SUCCESS) \
+        {\
+            MPI_Error_class(error, &eclass);\
+            MPI_Error_string(error, estring, &len);\
+            fprintf(stderr,"Error %d: %s\n", eclass, estring);fflush(stderr);\
+            return error;\
+        }}
+
 int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
-                       int num_clusters);
-void MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
-                           int recvrank, MPI_Comm comm);
+                      int num_clusters);
+int MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
+                         int recvrank, MPI_Comm comm);
 int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm);
 #endif   /* ----- #ifndef KNN_MPI_INC  ----- */

@@ -5,7 +5,7 @@
  *
  * Group:
  * Capitani Giuseppe    0622701085  g.capitani@studenti.unisa.it
- * Falanga  Armando 0622701140  a.falanga13@studenti.unisa.it
+ * Falanga  Armando		0622701140  a.falanga13@studenti.unisa.it
  * Terrone  Luigi       0622701071  l.terrone2@studenti.unisa.it
  *
  * Copyright (C) 2021 - All Rights Reserved
@@ -26,6 +26,10 @@
  * along with GroupAssignmentALL01.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file point.c
+ * @brief Point structure utility methods.
+ */
 #include "point.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -34,6 +38,14 @@
 #include <mpi.h>
 #endif
 
+/**
+ * @brief Fast inverse square root.
+ *
+ * Historically implemented in Quake III Arena, see [here](https://en.wikipedia.org/wiki/Fast_inverse_square_root).
+ *
+ * @param number The number of we want to compute the inverse square root
+ * @return The inverse square root of `number`
+ */
 float Q_rsqrt(float number)
 {
     const float x2 = number * 0.5F;
@@ -50,8 +62,17 @@ float Q_rsqrt(float number)
     return conv.f;
 }
 
+/** @brief Fill an array with `n` randomlly generated points.
+ *
+ * Implementation can be eventually optimized with OpenMP.
+ *
+ * @param dataset The array to fill
+ * @param n The number of points to generate
+ * @param num_threads The number of threads to use in case of OMP
+ * @param num_clusters Number of possible clusters for each point
+ */
 void Point_GeneratePoints(Point *dataset, int n, int num_threads,
-                        int num_clusters)
+                          int num_clusters)
 {
     int i;
     Point new_point;
@@ -66,6 +87,14 @@ void Point_GeneratePoints(Point *dataset, int n, int num_threads,
         dataset[i] = new_point;
     }
 }
+
+/**
+ * @brief Compute the euclidean distance between two points.
+ *
+ * @param a The first point
+ * @param b The second point
+ * @return The distance between `a` and  `b`
+ */
 float Point_EuclideanDistance(Point a, Point b)
 {
     float square_difference_x = (b.x - a.x) * (b.x - a.x);
@@ -74,6 +103,12 @@ float Point_EuclideanDistance(Point a, Point b)
     return 1 / Q_rsqrt(sum);
 }
 
+/**
+ * @brief Swap two points.
+ *
+ * @param a The first point
+ * @param b The second point
+ */
 void Point_Swap(Point *a, Point *b)
 {
     Point temp = *a;
@@ -81,11 +116,19 @@ void Point_Swap(Point *a, Point *b)
     *b = temp;
 }
 
+/**
+ * @brief Print an array of points.
+ *
+ * @param iter Used to indicate the current iteration (useful for sorting algorithms)
+ * @param txt Additional text to be printed before the points
+ * @param la Array of points
+ * @param n Number of points in `la`
+ */
 void Point_Print(int iter, char *txt, Point *la, int n)
 {
-	int rank = 0;
+    int rank = 0;
 #ifdef _MPI
-	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
     printf("[%d] %s iter %d: >\n", rank, txt, iter);
     for (int j = 0; j < n; j++)
@@ -94,6 +137,14 @@ void Point_Print(int iter, char *txt, Point *la, int n)
 }
 
 #ifdef _MPI
+
+/**
+ * @brief Create the `MPI_Datatype` for the Point structure.
+ *
+ * @see Point
+ * @param point_type Pointer to the 'MPI_Datatype'
+ * @return `MPI_SUCCESS` if no error encountered, the error code otherwise
+ */
 int MPI_Type_create_Point(MPI_Datatype *point_type)
 {
     int lengths[2] = { 1, 3 };

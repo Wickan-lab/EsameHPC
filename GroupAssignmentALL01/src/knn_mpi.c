@@ -25,6 +25,12 @@
  * You should have received a copy of the GNU General Public License
  * along with GroupAssignmentALL01.  If not, see <http://www.gnu.org/licenses/>.
  */
+/**
+ * @file knn_mpi.c
+ * @brief Implementation of KNN written in C using MPI and based on the Odd-Even sort algorithm.
+ *
+ * MPI_PairwiseExchange and MPI_ClassifyPoint can be found [here](https://stackoverflow.com/questions/23633916/how-does-mpi-odd-even-sort-work)
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,12 +39,28 @@
 #include "point.h"
 #include "sort.h"
 
-// https://stackoverflow.com/questions/23633916/how-does-mpi-odd-even-sort-work
+/*
+ * @brief
+ *
+ * @param
+ * @return
+ */
 
-
-
-void MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
-                           int recvrank, MPI_Comm comm)
+/**
+ * @brief Performs the exchange of local sub-arrays between two processes.
+ * This function has to be called by both processes in order to perform the exchange.
+ *
+ * The original implementation can be found at [How does MPI Odd-Even sort work?](https://stackoverflow.com/questions/23633916/how-does-mpi-odd-even-sort-work)
+ *
+ * @param localn Length of the sub-array of the process.
+ * @param locala Sub-array of the process.
+ * @param sendrank Rank of the process that will send its sub-array.
+ * @param recvrank Rank of the receiving process that will order the full array.
+ * @param comm The communicator in which processes are contained.
+ * @return `MPI_SUCCESS` if no error encountered, the error code otherwise.
+ */
+int MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
+                         int recvrank, MPI_Comm comm)
 {
     /*
      * the sending rank just sends the data and waits for the results;
@@ -69,19 +91,19 @@ void MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
 #ifdef DEBUG
         printf("[%d] Sending to %d\n", rank, recvrank);
 #endif
-        MPI_Send(locala, localn, point_type, recvrank, mergetag,
-                 MPI_COMM_WORLD);
+        CHECK_MPI(MPI_Send(locala, localn, point_type, recvrank, mergetag,
+                           MPI_COMM_WORLD));
 #ifdef DEBUG
         printf("[%d] Receiving from %d\n", rank, recvrank);
 #endif
-        MPI_Recv(locala, localn, point_type, recvrank, sortedtag,
-                 MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        CHECK_MPI(MPI_Recv(locala, localn, point_type, recvrank, sortedtag,
+                           MPI_COMM_WORLD, MPI_STATUS_IGNORE));
     } else {
 #ifdef DEBUG
         printf("[%d] Receiving from %d\n", rank, sendrank);
 #endif
-        MPI_Recv(remote, localn, point_type, sendrank, mergetag,
-                 MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        CHECK_MPI(MPI_Recv(remote, localn, point_type, sendrank, mergetag,
+                           MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 #ifdef DEBUG
         printf("[%d] Merging\n", rank);
 #endif
@@ -95,15 +117,29 @@ void MPI_PairwiseExchange(int localn, Point *locala, int sendrank,
 #ifdef DEBUG
         printf("[%d] Sending to %d\n", rank, sendrank);
 #endif
-        MPI_Send(&(all[theirstart]), localn, point_type, sendrank, sortedtag,
-                 MPI_COMM_WORLD);
+        CHECK_MPI(MPI_Send(&(all[theirstart]), localn, point_type, sendrank,
+                           sortedtag,
+                           MPI_COMM_WORLD));
         for (int i = mystart; i < mystart + localn; i++)
             locala[i - mystart] = all[i];
     }
     MPI_Type_free(&point_type);
+
+    return MPI_SUCCESS;
 }
 
 
+/**
+ * @brief Odd-even sort algorithm implementation.
+ *
+ * The original implementation can be found at [How does MPI Odd-Even sort work?](https://stackoverflow.com/questions/23633916/how-does-mpi-odd-even-sort-work)
+ *
+ * @param n Length of the array.
+ * @param a Array to be sorted.
+ * @param root Rank of the root process.
+ * @param comm Communicator containing the processes that will be used for sorting the array.
+ * @return `MPI_SUCCESS` if no error encountered, the error code otherwise.
+ */
 int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 {
     int rank, size, i;
@@ -126,8 +162,9 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
     // and elements initialized. So we scatter from root (0)
     // to all other processes.
     //              Send               |            Recv              | from on comm
-    MPI_Scatter(a, n / size, point_type, local_a, n / size, point_type, root,
-                comm);
+    CHECK_MPI( MPI_Scatter(a, n / size, point_type, local_a, n / size,
+                           point_type, root,
+                           comm));
     // sort local_a
     //QuickSortIterative(local_a, n/size);
     bitonicSequenceGenerator(0, n / size - 1, local_a, 0);
@@ -148,10 +185,11 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
                 //if i is odd, odd processes send to even processes
                 //and wait for something from even
                 //processes (each odd process from its successor)
-                MPI_PairwiseExchange(n / size, local_a, rank, rank + 1, comm);
+                CHECK_MPI(MPI_PairwiseExchange(n / size, local_a, rank, rank + 1, \
+							comm));
             }
         } else if (rank > 0) {
-            MPI_PairwiseExchange(n / size, local_a, rank - 1, rank, comm);
+            CHECK_MPI(MPI_PairwiseExchange(n / size, local_a, rank - 1, rank, comm));
         }
 
 #ifdef DEBUG
@@ -167,8 +205,8 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
 #endif
 
     //gather local_a to a
-    MPI_Allgather(local_a, n / size, point_type,
-                  a, n / size, point_type, comm);
+    CHECK_MPI(MPI_Allgather(local_a, n / size, point_type,
+                            a, n / size, point_type, comm));
 
     MPI_Type_free(&point_type);
 
@@ -176,8 +214,18 @@ int MPI_OddEven_Sort(int n, Point *a, int root, MPI_Comm comm)
     return MPI_SUCCESS;
 }
 
+/**
+ * @brief Classify a given point using the KNN algorithm.
+ *
+ * @param dataset The dataset used for classification.
+ * @param test_point The point to be classified.
+ * @param k The number of nearest points to be considered.
+ * @param n The number of points in the dataset.
+ * @param num_clusters The number of clusters.
+ * @return The resulting cluster number.
+ */
 int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
-                       int num_clusters)
+                      int num_clusters)
 {
     int rank, size, i, z;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -205,8 +253,8 @@ int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
     MPI_Datatype point_type;
     MPI_Type_create_Point(&point_type);
     MPI_Type_commit(&point_type);
-    MPI_Gather(local_dataset, n / size, point_type, dataset,
-               n / size, point_type, 0, MPI_COMM_WORLD);
+    CHECK_MPI(MPI_Gather(local_dataset, n / size, point_type, dataset,
+               n / size, point_type, 0, MPI_COMM_WORLD));
 
     //Each process has already given his local chunk with MPI_Gather,
     //only the last one needs to send the last elements remaining.
@@ -215,23 +263,23 @@ int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
     if (rank == size - 1 && size > 1) {
         int rem_elms = n % size;
         int starting_local_index = local_len - rem_elms;
-        MPI_Send(local_dataset + starting_local_index, rem_elms, point_type, \
-                 0, 0, MPI_COMM_WORLD);
+        CHECK_MPI(MPI_Send(local_dataset + starting_local_index, rem_elms, point_type, \
+                 0, 0, MPI_COMM_WORLD));
     }
 
     //receiving remaining elements on rank 0.
     if (rank == 0 && size > 1) {
         int rem_elms = n % size;
-        MPI_Recv(dataset + n - rem_elms, rem_elms, point_type, size - 1, \
-                 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        CHECK_MPI(MPI_Recv(dataset + n - rem_elms, rem_elms, point_type, size - 1, \
+                 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE));
 #ifdef DEBUG
         Point_Print( 0, "Checking after gather", dataset, n);
         printf("%d\n", __LINE__);
 #endif
     }
 
-    MPI_OddEven_Sort(n, dataset, 0, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
+    CHECK_MPI(MPI_OddEven_Sort(n, dataset, 0, MPI_COMM_WORLD));
+    CHECK_MPI(MPI_Barrier(MPI_COMM_WORLD));
 
 #ifdef DEBUG
     printf("%d\n", __LINE__);
@@ -261,8 +309,8 @@ int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
 #endif
 
     int global_counter_cluster_0, global_counter_cluster_1;
-    MPI_Allreduce(local_clusters, global_clusters, num_clusters, MPI_INTEGER,
-                  MPI_SUM, MPI_COMM_WORLD);
+    CHECK_MPI(MPI_Allreduce(local_clusters, global_clusters, num_clusters, MPI_INTEGER,
+                  MPI_SUM, MPI_COMM_WORLD));
     //number of clusters is a multiple of the number of processes
     typedef struct {
         int pos;
@@ -288,8 +336,8 @@ int MPI_ClassifyPoint(Point *dataset, Point test_point, int k, int n,
     //| . | . | . | . |
     //| . | . | . | . |
     //-----------------
-    MPI_Allreduce(&local_max, &global_max, 1, MPI_2INT, MPI_MAXLOC,
-                  MPI_COMM_WORLD);
+    CHECK_MPI(MPI_Allreduce(&local_max, &global_max, 1, MPI_2INT, MPI_MAXLOC,
+                  MPI_COMM_WORLD));
 #ifdef DEBUG
     if (rank == 0) {
         printf("val: %d pos: %d\n", global_max.val, global_max.pos);

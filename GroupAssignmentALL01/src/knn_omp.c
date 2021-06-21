@@ -27,8 +27,11 @@
  */
 
 /**
-    @file knn.c
-*/
+ * @file knn_omp.c
+ * @brief Implementation of KNN written in C using OMP.
+ *
+ * Different sorting algorithms are avaliable.
+ */
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -43,8 +46,20 @@
 #include "point.h"
 #include "sort.h"
 
+/**
+ * @brief Classify a given point using the KNN algorithm.
+ *
+ * @param dataset The dataset used for classification.
+ * @param test_point The point to be classified.
+ * @param k The number of nearest points to be considered.
+ * @param n The number of points in the dataset.
+ * @param num_clusters The number of clusters.
+ * @param num_threads The number of threads to be used.
+ * @return The resulting cluster number.
+ */
 int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
-                     int n, int num_threads, void (*sort)(Point *, ...))
+                      int num_clusters,
+                      int n, int num_threads, sort_alg alg)
 {
     int counter_cluster_0 = 0, counter_cluster_1 = 0;
     unsigned int *clusters_array = calloc(k, sizeof(unsigned int));
@@ -57,22 +72,14 @@ int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
         for (int i = 0; i < n; ++i) {
             dataset[i].distance = Point_EuclideanDistance(dataset[i], test_point);
         }
-
-        //pass arguments in a predefined order
     }
 
 #ifdef DEBUG
-    printf("Before sorting:\n");
-    for (int i = 0; i < n; ++i) {
-        printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n",
-               dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
-    }
-#endif
-
-#ifdef DEBUG
+    Point_Print(-1, "Before sorting", dataset, n);
     printf("Start sorting\n");
 #endif
-    sort(dataset, 0, n - 1, k, n, num_threads);
+    OMP_Sort(dataset, n, k, num_threads, alg);
+    //sort(dataset, 0, n - 1, k, n, num_threads);
 
     #pragma omp parallel  shared(max_val, max_pos) num_threads(num_threads)
     {
@@ -93,80 +100,44 @@ int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
                 max_val = clusters_array[j];
                 max_pos = j;
             }
-
             //max_val = max_val > clusters_array[j] ? max_val : clusters_array[j];
         }
     }
 
-
-
 #ifdef DEBUG
-    for (int i = 0; i < n; ++i) {
-        printf("Cluster = %d -- x = %.2f -- y = %.2f -- distance = %.2f\n",
-               dataset[i].cluster_number, dataset[i].x, dataset[i].y, dataset[i].distance);
-    }
+    Point_Print(-1, "After sorting", dataset, n);
 #endif
 
     return max_pos;
 }
 
-/*-----------------------------------------------------------------------------
- * FACADES 
- *-----------------------------------------------------------------------------*/
-void OMP_Facade_BubbleSort(Point *arr, ...)
+/**
+ * @brief Facade function for the selection of the sorting algorithm.
+ *
+ * @see sort_alg
+ * @param arr Array to be sorted.
+ * @param n Number of elements into the array.
+ * @param k Number of neighbors to be considered.
+ * @param num_threads Number of threads to use for parallelization.
+ * @param alg The algorithm to use when sorting.
+ */
+void OMP_Sort(Point *arr, int n, int k, int num_threads, sort_alg alg)
 {
-    va_list list;
-    va_start(list, arr);
-    int start = va_arg(list, int);
-    int end = va_arg(list, int);
-    int k = va_arg(list, int);
-    int N = va_arg(list, int);
-    int num_threads = va_arg(list, int);
-    va_end(list);
-    BubbleSort(arr, N, num_threads);
+    switch (alg) {
+    case QUICK:
+        QuickSortIterative(arr, n);
+        break;
+    case BUBBLE:
+        BubbleSort(arr, n, num_threads);
+        break;
+    case SELECTION:
+        SelectionSort(arr, n, k, num_threads);
+        break;
+    case BITONIC:
+        bitonicSequenceGenerator(0, n - 1, arr, num_threads);
+        break;
+    default:
+        fprintf(stderr, "ERROR: Sorting algorithm not valid.\n");
+        break;
+    }
 }
-
-void OMP_Facade_SelectionSort(Point *arr, ...)
-{
-    va_list list;
-    va_start(list, arr);
-    //get 3rd argument which is k.
-
-    int start = va_arg(list, int);//start
-    int end = va_arg(list, int);//end
-    int k = va_arg(list, int);
-    int n = va_arg(list, int);
-    int num_threads = va_arg(list, int);
-    va_end(list);
-    SelectionSort(arr, n, k, num_threads);
-
-}
-
-void OMP_Facade_BitonicSort(Point *arr, ...)
-{
-    va_list list;
-    va_start(list, arr);
-
-    int start = va_arg(list, int);//start
-    int end = va_arg(list, int);//end
-    int k = va_arg(list, int);
-    int n = va_arg(list, int);
-    int num_threads = va_arg(list, int);
-    va_end(list);
-    bitonicSequenceGenerator(start, end, arr, num_threads);
-}
-
-void OMP_Facade_QuickSort(Point *arr, ...)
-{
-    va_list list;
-    va_start(list, arr);
-
-    int start = va_arg(list, int);//start
-    int end = va_arg(list, int);//end
-    int k = va_arg(list, int);
-    int n = va_arg(list, int);
-    va_end(list);
-
-    QuickSortIterative(arr, n);
-}
-

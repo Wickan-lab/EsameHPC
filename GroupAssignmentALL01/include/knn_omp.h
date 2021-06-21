@@ -32,15 +32,12 @@
 #include <time.h>
 #include "point.h"
 
-int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
-                      int n, int num_threads, void (*sort)(Point *, ...));
+typedef enum {QUICK, BUBBLE, SELECTION, BITONIC} sort_alg;
 
-/*-----------------------------------------------------------------------------
- * FACADES FOR OMP_ClassifyPoint()
- *-----------------------------------------------------------------------------*/
-void OMP_Facade_SelectionSort(Point *arr, ...);
-void OMP_Facade_BubbleSort(Point *arr, ...);
-void OMP_Facade_QuickSort(Point *arr, ...);
-void OMP_Facade_BitonicSort(Point *arr, ...);
+int OMP_ClassifyPoint(Point *dataset, Point test_point, int k,
+                      int num_clusters,
+                      int n, int num_threads, sort_alg alg);
+
+void OMP_Sort(Point *arr, int n, int k, int num_threads, sort_alg alg);
 
 #endif
