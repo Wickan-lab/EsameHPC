@@ -30,7 +30,7 @@
 TIME_STAMP=$(date +%s)
 NMEASURES=100
 
-ARRAY_RC=(1048576)
+ARRAY_RC=(2097152)
 ARRAY_THS=(0 1 2 4 8 16)
 CLUSTER_NUM=(32)
 ARRAY_K_VALUES=(1024) # mi basta fare mcm dei processi che dato che sono potenze di due viene 16
