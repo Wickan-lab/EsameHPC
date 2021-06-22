@@ -10,14 +10,14 @@
  *
  * Copyright (C) 2021 - All Rights Reserved
  *
- * This file is part of GroupAssignment01.
+ * This file is part of GroupAssignmentALL01.
  *
  * GroupAssignmentALL01 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * GroupAssignment01 is distributed in the hope that it will be useful,
+ * GroupAssignmentALL01 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -81,7 +81,7 @@ void bitonicSequenceGenerator(int startIndex, int lastIndex, Point *ar,
                               int num_threads) // Generate a bitonic sequence from a random order
 {
     int noOfElements = lastIndex - startIndex + 1;
-    for (int j = 2; j <= noOfElements; j = j * 2) {
+    for (int j = 2; j <= noOfElements; j = j * 2) { // K phases (power of 2)
         #pragma omp parallel for num_threads(num_threads)//parallel implementation results in most performance gains here
         for (int i = 0; i < noOfElements; i = i + j) {
             if (((i / j) % 2) == 0) {
@@ -97,7 +97,6 @@ void bitonicSequenceGenerator(int startIndex, int lastIndex, Point *ar,
 /*    https://courses.cs.duke.edu//fall08/cps196.1/Pthreads/bitonic.c    */
 void BitonicSort(Point *arr, int N)
 {
-
     int i, j, k;
     for (k = 2; k <= N; k = k * 2) {
         for (j = k >> 1; j > 0; j = j / 2) {

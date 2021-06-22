@@ -5,19 +5,19 @@
  *
  * Group:
  * Capitani Giuseppe    0622701085  g.capitani@studenti.unisa.it
- * Falanga  Armando 0622701140  a.falanga13@studenti.unisa.it
+ * Falanga  Armando     0622701140  a.falanga13@studenti.unisa.it
  * Terrone  Luigi       0622701071  l.terrone2@studenti.unisa.it
  *
  * Copyright (C) 2021 - All Rights Reserved
  *
- * This file is part of GroupAssignment01.
+ * This file is part of GroupAssignmentALL01.
  *
  * GroupAssignmentALL01 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * GroupAssignment01 is distributed in the hope that it will be useful,
+ * GroupAssignmentALL01 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.

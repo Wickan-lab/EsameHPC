@@ -10,14 +10,14 @@
  *
  * Copyright (C) 2021 - All Rights Reserved
  *
- * This file is part of GroupAssignment01.
+ * This file is part of GroupAssignmentALL01.
  *
  * GroupAssignmentALL01 is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * GroupAssignment01 is distributed in the hope that it will be useful,
+ * GroupAssignmentALL01 is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -39,11 +39,20 @@
 #include <mpi.h>
 #endif
 
-#define MYRAND_MAX UINT16_MAX
-
 uint16_t lfsr = 0xACE1u;
 uint16_t bit;
-// https://stackoverflow.com/questions/7602919/how-do-i-generate-random-numbers-without-rand-function
+
+/**
+ * @brief Function for the generation of pseudo-random numbers.
+ *
+ * The necessity for this function rises from the fact that the rand() implementation provided
+ * by the standard C library performs a series of concurrent system calls that leads to a very
+ * poor parallelizable function, so a completly indipendent function is preferred.
+ * 
+ * The original implementation can be found [here](https://stackoverflow.com/questions/7602919/how-do-i-generate-random-numbers-without-rand-function)
+ *
+ * @return A pseudo-random 16-bit unsigned integer value.
+ */
 unsigned my_rand()
 {
     bit  = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5) ) & 1;
